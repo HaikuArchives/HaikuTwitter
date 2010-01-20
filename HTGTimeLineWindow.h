@@ -43,7 +43,7 @@ private:
 
 	BTabView *tabView;
 	
-	twitCurl *twitObj;
+	twitCurl *newTweetObj;
 	
 	HTGTimeLineView *friendsTimeLine;
 	HTGTimeLineView *mentionsTimeLine;
