@@ -24,17 +24,13 @@ int main()
 {   
 	BApplication HaikuApp("application/HaikuTwitter");
 	
-	/*Instanciate the twitcurl object*/
-	twitCurl *twitterObj = new twitCurl();
-	
-	/*Set username and password*/
+	/*Get configuration*/
     std::string username(retrieveSettings().username);
     std::string password(retrieveSettings().password);
-    twitterObj->setTwitterUsername( username );
-    twitterObj->setTwitterPassword( password );
+    int refreshTime = retrieveSettings().refreshTime;
 	
 	/*Display timeline*/
-	HTGTimeLineWindow *theWindow = new HTGTimeLineWindow(twitterObj);
+	HTGTimeLineWindow *theWindow = new HTGTimeLineWindow(username, password, refreshTime);
 	theWindow->Show();
 	
 	HaikuApp.Run();

@@ -7,6 +7,7 @@
 #include <string>
 #include <iostream>
 #include <string.h>
+#include <stdlib.h>
 
 #include <Window.h>
 #include <Alert.h>
@@ -50,6 +51,7 @@ private:
 	BButton *revertButton;
 	BTextControl *passwordView;
 	BTextControl *usernameView;
+	BTextControl *refreshView;
 	BView *backgroundView;
 	BStringView *informationView;
 	

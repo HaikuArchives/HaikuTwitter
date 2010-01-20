@@ -9,29 +9,24 @@
 HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE) : BScrollView("Loading...", new BView(BRect(0, 0, 300-4, 580), "ContainerView", B_FOLLOW_LEFT | B_FOLLOW_TOP, 0), B_FOLLOW_LEFT | B_FOLLOW_TOP, 0, false, true, B_FANCY_BORDER) {	
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
+	thread_id previousThread = B_NAME_NOT_FOUND;
 	
-	/*Get current timeline based on TYPE*/
-	this->timeLineParser = new TimeLineParser();
+	/*Set view name*/
 	switch(TYPE) {
 		case TIMELINE_FRIENDS:
-			this->SetName("Timeline");
-			twitObj->timelineFriendsGet();
+			SetName("Timeline");
 			break;
 		case TIMELINE_MENTIONS:
-			this->SetName("Mentions");
-			twitObj->mentionsGet();
+			SetName("Mentions");
 			break;
 		case TIMELINE_PUBLIC:
-			this->SetName("Public");
 			twitObj->timelinePublicGet();
+			SetName("Public");
 			break;
 		default:
-			this->SetName("Public");
 			twitObj->timelinePublicGet();
+			SetName("Public");
 	}
-	std::string replyMsg(" ");
-	twitObj->getLastWebResponse(replyMsg);
-	timeLineParser->readData(replyMsg.c_str());
 	
 	/*Set up listview*/
 	this->listView = new BListView(BRect(0, 0, 300-5, 72*20), "ListView");
@@ -41,34 +36,49 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE) : BScrollV
 	containerView->AddChild(listView);
 	this->SetTarget(containerView);
 	
-	/*Fill the listView with tweets*/
-	for (int i = 0; i < timeLineParser->count(); i++) {
-		HTGTweetItem *currentTweet = new HTGTweetItem(timeLineParser->getTweets()[i]);
-		this->listView->AddItem(currentTweet);
-	}
-	
-	/*Clean up*/
-	delete timeLineParser;
-	timeLineParser = NULL;
+	updateTimeLine();
 }
 
 void HTGTimeLineView::updateTimeLine() {
+	previousThread = spawn_thread(updateTimeLineThread, "UpdateThread", 10, this);
+	resume_thread(previousThread);
+}
+
+status_t updateTimeLineThread(void *data) {
 	//Could not figure out how to update a BListItem with a child view (BTextView).
 	//Could be a bug in Haiku API's. After hours of investigation without any
 	//result, I just don't care anymore. Reallocating all HTGTweetItem on update.
 	
+	HTGTimeLineView *super = (HTGTimeLineView*)data;
+	
+	/*Wait for previous thread*/
+	status_t junkId;
+	wait_for_thread(super->previousThread, &junkId);
+	
+	BListView *listView = super->listView;
+	BView *containerView;
+	char *tabName;
+		
+	TimeLineParser *timeLineParser = new TimeLineParser();
+	twitCurl *twitObj = super->twitObj;
+	int32 TYPE = super->TYPE;
+	
 	switch(TYPE) {
 		case TIMELINE_FRIENDS:
 			twitObj->timelineFriendsGet();
+			tabName = "Timeline";
 			break;
 		case TIMELINE_MENTIONS:
 			twitObj->mentionsGet();
+			tabName = "Mentions";
 			break;
 		case TIMELINE_PUBLIC:
 			twitObj->timelinePublicGet();
+			tabName = "Public";
 			break;
 		default:
 			twitObj->timelinePublicGet();
+			tabName = "Public";
 	}	
 	std::string replyMsg(" ");
 	twitObj->getLastWebResponse(replyMsg);
@@ -77,24 +87,34 @@ void HTGTimeLineView::updateTimeLine() {
 	}
 	timeLineParser->readData(replyMsg.c_str());
 	
-	HTGTweetItem *mostRecentItem = (HTGTweetItem *)listView->FirstItem();
-	HTTweet *mostRecentTweet = mostRecentItem->getTweetPtr();
-	HTTweet *currentTweet = timeLineParser->getTweets()[0];
+	HTGTweetItem *mostRecentItem;
+	HTTweet *mostRecentTweet;
+	HTTweet *currentTweet;
 	
-	/*If we are up to date, don't do anything more*/
-	if(!(*mostRecentTweet < *currentTweet)) {
-		delete timeLineParser;
-		timeLineParser = NULL;
-		return ;
+	bool initialLoad = (listView->FirstItem() == NULL);
+	
+	if(!initialLoad) {
+		mostRecentItem = (HTGTweetItem *)listView->FirstItem();
+		mostRecentTweet = mostRecentItem->getTweetPtr();
+		currentTweet = timeLineParser->getTweets()[0];
+	
+		/*If we are up to date, don't do anything more*/
+		if(!(*mostRecentTweet < *currentTweet)) {
+			delete timeLineParser;
+			timeLineParser = NULL;
+			return B_OK;
+		}
 	}
 		
 	BList *newList = new BList();
 	
 	for (int i = 0; i < timeLineParser->count(); i++) {
 		currentTweet = timeLineParser->getTweets()[i];
-		if(*mostRecentTweet < *currentTweet) {
+		bool addItem = initialLoad;
+		if(!initialLoad)
+			addItem = (*mostRecentTweet < *currentTweet);
+		if(addItem) {
 			newList->AddItem(new HTGTweetItem(currentTweet));
-			std::cout << "Added a new item" << std::endl;
 		}
 		else
 			break;
@@ -107,10 +127,21 @@ void HTGTimeLineView::updateTimeLine() {
 		delete currentItem;
 		newList->AddItem(new HTGTweetItem(currentTweet));
 	}
-	listView->Invalidate();
+	
+	/*Try to lock listView (This failes if tab is not active, so we need to use a loop:/ )*/
+	while(!listView->LockLooper()) {
+		sleep(2);
+	}
+	
+	/*Update the view*/
 	listView->AddList(newList);
+	listView->UnlockLooper();
+			
+	/*Cleanup*/
 	delete timeLineParser;
 	timeLineParser = NULL;
+	
+	return B_OK;
 }
 
 HTGTimeLineView::~HTGTimeLineView() {

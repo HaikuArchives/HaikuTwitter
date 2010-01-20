@@ -20,15 +20,19 @@ const int32 TIMELINE_FRIENDS = 'TML';
 const int32 TIMELINE_MENTIONS = 'MNTN';
 const int32 TIMELINE_PUBLIC = 'PBLC';
 
+status_t updateTimeLineThread(void *data);
+
 class HTGTimeLineView : public BScrollView {
 public:
 	HTGTimeLineView(twitCurl *, const int32);
 	void updateTimeLine();
 	~HTGTimeLineView();
 	
-private:
+//private:
 	BListView *listView;
 	BView *containerView;
+	
+	thread_id previousThread;
 	
 	TimeLineParser *timeLineParser;
 	twitCurl *twitObj;

@@ -6,8 +6,7 @@
 
 #include "HTGTimeLineWindow.h"
 
-HTGTimeLineWindow::HTGTimeLineWindow(twitCurl *twitObj) : BWindow(BRect(300, 300, 615, 900), "HaikuTwitter", B_TITLED_WINDOW, 0) {	
-	this->twitObj = twitObj;
+HTGTimeLineWindow::HTGTimeLineWindow(string username, string password, int refreshTime) : BWindow(BRect(300, 300, 615, 900), "HaikuTwitter", B_TITLED_WINDOW, 0) {	
 	
 	/*Set up the menu bar*/
 	_SetupMenu();
@@ -17,15 +16,25 @@ HTGTimeLineWindow::HTGTimeLineWindow(twitCurl *twitObj) : BWindow(BRect(300, 300
 	this->AddChild(tabView);
 	
 	/*Set up timeline*/
-	friendsTimeLine = new HTGTimeLineView(twitObj, TIMELINE_FRIENDS);
+	twitCurl *timelineTwitObj = new twitCurl();
+	timelineTwitObj->setTwitterUsername( username );
+    timelineTwitObj->setTwitterPassword( password );
+	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS);
 	tabView->AddTab(friendsTimeLine);
 	
 	/*Set up mentions timeline*/
-	mentionsTimeLine = new HTGTimeLineView(twitObj, TIMELINE_MENTIONS);
+	twitCurl *mentionsTwitObj = new twitCurl();
+	mentionsTwitObj->setTwitterUsername( username );
+    mentionsTwitObj->setTwitterPassword( password );
+	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS);
 	tabView->AddTab(mentionsTimeLine);
 	
 	/*Set up public timeline - Weird symbols on the public timeline, probably a language with non UTF-8 symbols*/
-	//tabView->AddTab(new HTGTimeLineView(twitObj, TIMELINE_PUBLIC));
+	/*twitCurl *publicTwitObj = new twitCurl();
+	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC);
+	tabView->AddTab(publicTimeLine);*/
+	
+	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
 
 bool HTGTimeLineWindow::QuitRequested() {
