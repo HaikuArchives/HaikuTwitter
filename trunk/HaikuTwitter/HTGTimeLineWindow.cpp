@@ -7,6 +7,9 @@
 #include "HTGTimeLineWindow.h"
 
 HTGTimeLineWindow::HTGTimeLineWindow(string username, string password, int refreshTime) : BWindow(BRect(300, 300, 615, 900), "HaikuTwitter", B_TITLED_WINDOW, 0) {	
+	newTweetObj = new twitCurl();
+	newTweetObj->setTwitterUsername( username );
+	newTweetObj->setTwitterPassword( password );
 	
 	/*Set up the menu bar*/
 	_SetupMenu();
@@ -72,7 +75,7 @@ void HTGTimeLineWindow::_SetupMenu() {
 void HTGTimeLineWindow::MessageReceived(BMessage *msg) {
 	switch(msg->what) {
 		case NEW_TWEET:
-			newTweetWindow = new HTGNewTweetWindow(twitObj);
+			newTweetWindow = new HTGNewTweetWindow(newTweetObj);
 			newTweetWindow->Show();
 			break;
 		case REFRESH:
