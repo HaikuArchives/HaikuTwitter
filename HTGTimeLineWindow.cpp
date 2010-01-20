@@ -33,9 +33,9 @@ HTGTimeLineWindow::HTGTimeLineWindow(string username, string password, int refre
 	tabView->AddTab(mentionsTimeLine);
 	
 	/*Set up public timeline - Weird symbols on the public timeline, probably a language with non UTF-8 symbols*/
-	twitCurl *publicTwitObj = new twitCurl();
+	/*twitCurl *publicTwitObj = new twitCurl();
 	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC);
-	tabView->AddTab(publicTimeLine);
+	tabView->AddTab(publicTimeLine);*/
 	
 	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
@@ -81,7 +81,7 @@ void HTGTimeLineWindow::MessageReceived(BMessage *msg) {
 		case REFRESH:
 			friendsTimeLine->updateTimeLine();
 			mentionsTimeLine->updateTimeLine();
-			publicTimeLine->updateTimeLine();
+			//publicTimeLine->updateTimeLine();
 			break;
 		case ACCOUNT_SETTINGS:
 			accountSettingsWindow = new HTGAccountSettingsWindow();
