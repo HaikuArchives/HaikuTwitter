@@ -116,8 +116,10 @@ status_t updateTimeLineThread(void *data) {
 			break;
 	}
 	
-	/*Try to lock listView (This failes if tab is not active, so we need to use a loop:/ )*/
-	
+	/*Try to lock listView*/
+	//This failes if tab is not active, so we need to use a loop for now:/
+	//Also, threads are queued up if one of the threads is hanging here...
+	//Really need to figure out how to lock the looper even when the tab is not active.
 	while(!listView->LockLooper()) {
 		sleep(2);
 	}
