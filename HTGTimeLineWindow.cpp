@@ -26,18 +26,15 @@ HTGTimeLineWindow::HTGTimeLineWindow(twitCurl *twitObj) : BWindow(BRect(300, 300
 	containerView = new BView(BRect(Bounds().left, Bounds().top+20, Bounds().right-15, Bounds().bottom), "ContainerView", B_FOLLOW_LEFT | B_FOLLOW_TOP, 0);
 	containerView->AddChild(listView);
 	this->scrollView = new BScrollView("ScrollView", containerView, B_FOLLOW_LEFT | B_FOLLOW_TOP, 0, false, true, B_FANCY_BORDER);
-	
-	string screenString("martinhpedersen");
-	string textString("Har vært i Bergen for påfyll av klassisk musikk. BFO spillte til Chaplin i Grieghallen, og sangelever fra Griegak. holdt nyttårskonsert!");
-	string urlString("");
-	string dateString("Sun Jan 01 19:52:48 +0000 20");
-	
 	this->AddChild(scrollView);
 	
+	/*Fill the listView with tweets*/
 	for (int i = 0; i < timeLineParser->count(); i++) {
 		HTGTweetItem *currentTweet = new HTGTweetItem(timeLineParser->getTweets()[i]);
 		this->listView->AddItem(currentTweet);
-	}	
+	}
+	
+	/*Clean up*/
 	delete timeLineParser;
 	timeLineParser = NULL;
 }
