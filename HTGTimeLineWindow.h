@@ -12,6 +12,7 @@
 #include "Menu.h"
 #include "MenuItem.h"
 #include "TabView.h"
+#include "MessageRunner.h"
 
 #include "TimeLineParser.h"
 #include "twitcurl/twitcurl.h"
@@ -32,7 +33,7 @@ const int32 ABOUT = 'BOUT';
 
 class HTGTimeLineWindow : public BWindow {
 public:
-	HTGTimeLineWindow(twitCurl *);
+	HTGTimeLineWindow(string username, string password, int refreshTime);
 	void MessageReceived(BMessage *msg);
 	bool QuitRequested();
 	~HTGTimeLineWindow();
@@ -51,7 +52,7 @@ private:
 	HTGNewTweetWindow *newTweetWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
 	HTGAboutWindow *aboutWindow;
-	
+		
 	BMenuBar *fMenuBar;
 	BMenu *fTwitterMenu;
 	BMenu *fEditMenu;
