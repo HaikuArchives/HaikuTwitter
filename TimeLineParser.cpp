@@ -144,7 +144,16 @@ void TimeLineParser::readData(const char *xmlData)
       // Get the top-level element: NAme is "root". No attributes for "root"
       
       DOMElement* elementRoot = xmlDoc->getDocumentElement();
-      if( !elementRoot ) throw(std::runtime_error( "empty XML document" ));
+      if( !elementRoot ) {
+      		string theName("martinhpedersen");
+      		string theText("Could not retrieve data. Please check your internet connection.");
+      		string theUrl("");
+      		string theDate("");
+      		tweetPtr = new HTTweet*[1];
+      		tweetPtr[0] = new HTTweet(theName, theText, theUrl, theDate);
+      		numberOfEntries++;
+      		return;
+      }
 				
       // Parse XML file for tags of interest: "text"
 		DOMNodeList* statusNodes = elementRoot->getElementsByTagName(TAG_text);
