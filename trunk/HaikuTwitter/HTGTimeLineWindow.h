@@ -11,6 +11,7 @@
 #include "MenuBar.h"
 #include "Menu.h"
 #include "MenuItem.h"
+#include "TabView.h"
 
 #include "TimeLineParser.h"
 #include "twitcurl/twitcurl.h"
@@ -19,6 +20,7 @@
 #include "HTGAccountSettingsWindow.h"
 #include "HTGAboutWindow.h"
 #include "HTGTweetItem.h"
+#include "HTGTimeLineView.h"
 
 #ifndef HTG_TIMELINEWINDOW_H
 #define HTG_TIMELINEWINDOW_H
@@ -37,14 +39,15 @@ public:
 	
 private:
 	void _SetupMenu();
-	void updateTimeLine();
 
-	BListView *listView;
-	BScrollView *scrollView;
-	BView *containerView;
-	TimeLineParser *timeLineParser;
+	BTabView *tabView;
+	
 	twitCurl *twitObj;
-	HTTweet** tweetPtr;
+	
+	HTGTimeLineView *friendsTimeLine;
+	HTGTimeLineView *mentionsTimeLine;
+	HTGTimeLineView *publicTimeLine;
+	
 	HTGNewTweetWindow *newTweetWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
 	HTGAboutWindow *aboutWindow;
