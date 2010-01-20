@@ -5,9 +5,10 @@
 
 
 #include "Window.h"
-#include "TextView.h"
+#include "HTGTextView.h"
 #include "Button.h"
 #include "View.h"
+#include "StringView.h"
 #include "Alert.h"
 
 #include "twitcurl/twitcurl.h"
@@ -18,23 +19,28 @@
 #ifndef HTG_NEWTWEETWINDOW_H
 #define HTG_NEWTWEETWINDOW_H
 
+#define NUMBER_OF_ALLOWED_CHARS 140
+
 const int32 POST = 'POST';
 const int32 CANCEL = 'CNL';
-static const rgb_color kDarkGrey = { 100, 100, 100, 255 };
+const int32 UPDATED = 'UPDT';
 
 class HTGNewTweetWindow : public BWindow {
 public:
 	HTGNewTweetWindow(twitCurl *);
 	~HTGNewTweetWindow();
+	void inputChanged(int length);
 	void MessageReceived(BMessage *msg);
 
 private:
 	void postTweet();
+	void updateCounter();
 	
 	twitCurl *twitObj;
-	BTextView *message;
+	HTGTextView *message;
 	BButton *postButton;
 	BButton *cancelButton;
 	BView *theView;
+	BStringView *counterView;
 };
 #endif

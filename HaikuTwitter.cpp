@@ -34,7 +34,8 @@ int main()
     twitterObj->setTwitterPassword( password );
 	
 	/*Display timeline*/
-	HTGTimeLineWindow *theWindow = new HTGTimeLineWindow(twitterObj);
+	//HTGTimeLineWindow *theWindow = new HTGTimeLineWindow(twitterObj);
+	HTGNewTweetWindow *theWindow = new HTGNewTweetWindow(twitterObj);
 	theWindow->Show();
 	
 	HaikuApp.Run();
