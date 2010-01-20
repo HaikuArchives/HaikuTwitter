@@ -22,6 +22,8 @@ using namespace std;
 
 TimeLineParser::TimeLineParser()
 {
+	thread_id junkId;
+	wait_for_thread(find_thread("UpdateThread"), &junkId);
    try
    {
       XMLPlatformUtils::Initialize();  // Initialize Xerces infrastructure

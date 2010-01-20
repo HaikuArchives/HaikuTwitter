@@ -53,7 +53,7 @@ status_t updateTimeLineThread(void *data) {
 	
 	/*Wait for previous thread*/
 	status_t junkId;
-	wait_for_thread(super->previousThread, &junkId);
+	wait_for_thread(find_thread("UpdateThread"), &junkId);
 	
 	BListView *listView = super->listView;
 	BView *containerView;
@@ -66,19 +66,15 @@ status_t updateTimeLineThread(void *data) {
 	switch(TYPE) {
 		case TIMELINE_FRIENDS:
 			twitObj->timelineFriendsGet();
-			tabName = "Timeline";
 			break;
 		case TIMELINE_MENTIONS:
 			twitObj->mentionsGet();
-			tabName = "Mentions";
 			break;
 		case TIMELINE_PUBLIC:
 			twitObj->timelinePublicGet();
-			tabName = "Public";
 			break;
 		default:
 			twitObj->timelinePublicGet();
-			tabName = "Public";
 	}	
 	std::string replyMsg(" ");
 	twitObj->getLastWebResponse(replyMsg);
@@ -120,24 +116,26 @@ status_t updateTimeLineThread(void *data) {
 			break;
 	}
 	
-	while(!listView->IsEmpty()) {
-		HTGTweetItem *currentItem = (HTGTweetItem *)listView->FirstItem();
-		currentTweet = currentItem->getTweetPtr();
-		listView->RemoveItem(currentItem);
-		delete currentItem;
-		newList->AddItem(new HTGTweetItem(currentTweet));
-	}
-	
 	/*Try to lock listView (This failes if tab is not active, so we need to use a loop:/ )*/
+	
 	while(!listView->LockLooper()) {
 		sleep(2);
 	}
 	
+	while(!listView->IsEmpty()) {
+		HTGTweetItem *currentItem = (HTGTweetItem *)listView->FirstItem();
+		currentTweet = currentItem->getTweetPtr();
+		listView->RemoveItem(currentItem); //Must lock looper before we do this!
+		delete currentItem;
+		newList->AddItem(new HTGTweetItem(currentTweet));
+	}
+	
+	
 	/*Update the view*/
-	listView->AddList(newList);
-	listView->UnlockLooper();
+	listView->AddList(newList); //Must lock looper before we do this!
 			
 	/*Cleanup*/
+	listView->UnlockLooper();
 	delete timeLineParser;
 	timeLineParser = NULL;
 	
