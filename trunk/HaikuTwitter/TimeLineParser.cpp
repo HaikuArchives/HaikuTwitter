@@ -81,6 +81,11 @@ TimeLineParser::~TimeLineParser()
    {
       cerr << "Unknown exception encountered in TagNamesdtor" << endl;
    }
+   
+   for(int i = 0; i < numberOfEntries; i++) {
+   		delete tweetPtr[i];
+   }
+   delete tweetPtr;
 }
 
 int TimeLineParser::count() {

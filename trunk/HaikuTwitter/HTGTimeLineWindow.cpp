@@ -36,7 +36,8 @@ HTGTimeLineWindow::HTGTimeLineWindow(string username, string password, int refre
 	/*twitCurl *publicTwitObj = new twitCurl();
 	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC);
 	tabView->AddTab(publicTimeLine);*/
-	
+		
+	/*Fire a REFRESH message every 'refreshTime' minute*/
 	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
 
