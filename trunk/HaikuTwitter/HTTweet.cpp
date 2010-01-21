@@ -22,7 +22,9 @@ HTTweet::HTTweet(HTTweet *originalTweet) {
 	this->screenName = originalTweet->getScreenName();
 	this->text = originalTweet->getText();
 	this->profileImageUrl = originalTweet->getProfileImageUrl();
-	this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
+	if (originalTweet->imageBitmap != NULL)
+		if(originalTweet->imageBitmap->IsValid()) //Not interested in corrupted data.
+			this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
 	this->date = originalTweet->getDate();
 }
 
@@ -121,9 +123,17 @@ void HTTweet::setProfileImageUrl(string &profileImageUrl) {
 }
 
 BBitmap* HTTweet::getBitmap() {
-	if (imageBitmap == NULL)
-		this->downloadBitmap(profileImageUrl.c_str());
 	return imageBitmap;
+}
+
+void HTTweet::downloadBitmap() {
+	this->downloadBitmap(profileImageUrl.c_str());
+	/*if(imageBitmap == NULL)
+		this->downloadBitmap(profileImageUrl.c_str());
+	if(!imageBitmap->IsValid()) {
+		delete imageBitmap;
+		imageBitmap = NULL;
+	}*/
 }
 
 void HTTweet::downloadBitmap(const char *url) {

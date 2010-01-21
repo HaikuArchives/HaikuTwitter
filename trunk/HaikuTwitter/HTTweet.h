@@ -40,6 +40,7 @@ public:
 	const string getProfileImageUrl();
 	BBitmap* getBitmap();
 	struct DateStruct getDate() const;
+	void downloadBitmap();
 	void setScreenName(string&);
 	void setText(string&);
 	void setProfileImageUrl(string&);

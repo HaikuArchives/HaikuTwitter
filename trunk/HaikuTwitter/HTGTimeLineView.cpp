@@ -123,8 +123,9 @@ status_t updateTimeLineThread(void *data) {
 		if(!initialLoad)
 			addItem = (*mostRecentTweet < *currentTweet);
 		if(addItem) {
-			/*Make a copy and add it to newList*/
+			/*Make a copy, download bitmap and add it to newList*/
 			HTTweet *copiedTweet = new HTTweet(currentTweet);
+			copiedTweet->downloadBitmap();
 			newList->AddItem(new HTGTweetItem(copiedTweet));
 		}
 		else
@@ -134,6 +135,7 @@ status_t updateTimeLineThread(void *data) {
 	/*Try to lock listView*/
 	if(!listView->LockLooper()) {
 		/*Not active view: Cleanup and return*/
+		super->waitingForUpdate = true;
 		delete timeLineParser;
 		timeLineParser = NULL;
 		return B_OK;
