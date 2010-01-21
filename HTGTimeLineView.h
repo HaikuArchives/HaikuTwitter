@@ -26,9 +26,11 @@ class HTGTimeLineView : public BScrollView {
 public:
 	HTGTimeLineView(twitCurl *, const int32);
 	void updateTimeLine();
+	void AttachedToWindow();
 	~HTGTimeLineView();
 	
 //private:
+	bool waitingForUpdate;
 	BListView *listView;
 	BView *containerView;
 	

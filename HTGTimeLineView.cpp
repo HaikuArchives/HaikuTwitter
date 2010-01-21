@@ -36,12 +36,25 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE) : BScrollV
 	containerView->AddChild(listView);
 	this->SetTarget(containerView);
 	
-	updateTimeLine();
+	waitingForUpdate = true;
+}
+
+void HTGTimeLineView::AttachedToWindow() {
+	BScrollView::AttachedToWindow();
+	if(waitingForUpdate)
+		updateTimeLine();
 }
 
 void HTGTimeLineView::updateTimeLine() {
-	previousThread = spawn_thread(updateTimeLineThread, "UpdateThread", 10, this);
-	resume_thread(previousThread);
+	/*Update timeline only if we can lock window looper*/
+	if(!listView->LockLooper())
+		waitingForUpdate = true;
+	else {
+		listView->UnlockLooper(); //Assume we can lock it later
+		previousThread = spawn_thread(updateTimeLineThread, "UpdateThread", 10, this);
+		resume_thread(previousThread);
+		waitingForUpdate = false;
+	}
 }
 
 status_t updateTimeLineThread(void *data) {
@@ -51,7 +64,7 @@ status_t updateTimeLineThread(void *data) {
 	
 	HTGTimeLineView *super = (HTGTimeLineView*)data;
 	
-	/*Wait for previous thread*/
+	/*Wait for previous thread to end*/
 	status_t junkId;
 	wait_for_thread(find_thread("UpdateThread"), &junkId);
 	
@@ -110,18 +123,20 @@ status_t updateTimeLineThread(void *data) {
 		if(!initialLoad)
 			addItem = (*mostRecentTweet < *currentTweet);
 		if(addItem) {
-			newList->AddItem(new HTGTweetItem(currentTweet));
+			/*Make a copy and add it to newList*/
+			HTTweet *copiedTweet = new HTTweet(currentTweet);
+			newList->AddItem(new HTGTweetItem(copiedTweet));
 		}
 		else
 			break;
 	}
 	
 	/*Try to lock listView*/
-	//This failes if tab is not active, so we need to use a loop for now:/
-	//Also, threads are queued up if one of the threads is hanging here...
-	//Really need to figure out how to lock the looper even when the tab is not active.
-	while(!listView->LockLooper()) {
-		sleep(2);
+	if(!listView->LockLooper()) {
+		/*Not active view: Cleanup and return*/
+		delete timeLineParser;
+		timeLineParser = NULL;
+		return B_OK;
 	}
 	
 	while(!listView->IsEmpty()) {
@@ -146,7 +161,5 @@ status_t updateTimeLineThread(void *data) {
 
 HTGTimeLineView::~HTGTimeLineView() {
 	containerView->RemoveSelf();
-	delete containerView;
-	delete timeLineParser;
-	
+	delete containerView;	
 }

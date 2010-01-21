@@ -6,13 +6,24 @@
 
 #include "HTTweet.h"
 
-HTTweet::HTTweet() {}
+HTTweet::HTTweet() {
+	imageBitmap = NULL;
+}
 
 HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString) {
 	this->screenName = screenName;
 	this->text = text;
 	this->profileImageUrl = profileImageUrl;
 	this->setDate(dateString);
+	imageBitmap = NULL;
+}
+
+HTTweet::HTTweet(HTTweet *originalTweet) {
+	this->screenName = originalTweet->getScreenName();
+	this->text = originalTweet->getText();
+	this->profileImageUrl = originalTweet->getProfileImageUrl();
+	this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
+	this->date = originalTweet->getDate();
 }
 
 const string HTTweet::getScreenName() {
@@ -107,10 +118,11 @@ const int HTTweet::stringToMonth(const char *date) {
 
 void HTTweet::setProfileImageUrl(string &profileImageUrl) {
 	this->profileImageUrl = profileImageUrl;
-	this->downloadBitmap(profileImageUrl.c_str());
 }
 
 BBitmap* HTTweet::getBitmap() {
+	if (imageBitmap == NULL)
+		this->downloadBitmap(profileImageUrl.c_str());
 	return imageBitmap;
 }
 
@@ -145,7 +157,8 @@ void HTTweet::downloadBitmap(const char *url) {
 }
 
 HTTweet::~HTTweet() {
-	delete imageBitmap;
+	if(imageBitmap != NULL)
+		delete imageBitmap;
 }
 
 /*Callback function for cURL (userIcon download)*/

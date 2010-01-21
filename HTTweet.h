@@ -32,6 +32,7 @@ class HTTweet {
 public:
 	HTTweet();
 	HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString);
+	HTTweet(HTTweet *originalTweet);
 	~HTTweet();
 	bool operator<(const HTTweet &b) const;
 	const string getScreenName();
