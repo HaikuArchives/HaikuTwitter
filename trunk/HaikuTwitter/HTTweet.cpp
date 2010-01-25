@@ -127,19 +127,15 @@ BBitmap* HTTweet::getBitmap() {
 }
 
 void HTTweet::downloadBitmap() {
-	this->downloadBitmap(profileImageUrl.c_str());
-	/*if(imageBitmap == NULL)
-		this->downloadBitmap(profileImageUrl.c_str());
-	if(!imageBitmap->IsValid()) {
+	if(imageBitmap != NULL)
 		delete imageBitmap;
-		imageBitmap = NULL;
-	}*/
+	this->downloadBitmap(profileImageUrl.c_str());
 }
 
 void HTTweet::downloadBitmap(const char *url) {
 	CURL *curl_handle;
-	char buffer[1536*2];
-	BMemoryIO *memoryIO = new BMemoryIO(buffer, 1536*2);
+	char buffer[4096*4];
+	BMemoryIO *memoryIO = new BMemoryIO(buffer, 4096*4);
 	
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
@@ -154,7 +150,8 @@ void HTTweet::downloadBitmap(const char *url) {
 	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "haikutwitter-agent/1.0");
 	
 	/*get the data*/
-	curl_easy_perform(curl_handle);
+	if(curl_easy_perform(curl_handle) < 0)
+		std::cout << "libcURL: Download of bitmap failed." << std::endl;
 	
 	/*cleanup curl stuff*/
 	curl_easy_cleanup(curl_handle);
