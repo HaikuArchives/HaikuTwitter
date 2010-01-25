@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string.h>
+#include <string>
 #include <TranslationUtils.h>
 #include <TranslatorFormats.h>
 #include <DataIO.h>

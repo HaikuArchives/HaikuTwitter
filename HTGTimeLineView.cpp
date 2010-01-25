@@ -149,8 +149,7 @@ status_t updateTimeLineThread(void *data) {
 		if(newList->CountItems() < 20) //Only allow 20 tweets to be displayed at once... for now.
 			newList->AddItem(new HTGTweetItem(currentTweet));
 		else
-			delete
-				currentTweet;
+			delete currentTweet;
 	}
 	
 	
