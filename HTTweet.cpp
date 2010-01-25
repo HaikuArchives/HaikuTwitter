@@ -127,8 +127,6 @@ BBitmap* HTTweet::getBitmap() {
 }
 
 void HTTweet::downloadBitmap() {
-	if(imageBitmap != NULL)
-		delete imageBitmap;
 	this->downloadBitmap(profileImageUrl.c_str());
 }
 
