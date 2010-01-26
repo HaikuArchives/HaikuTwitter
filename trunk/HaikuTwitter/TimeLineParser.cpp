@@ -2,7 +2,6 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
-#include <list>
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -57,6 +56,13 @@ TimeLineParser::TimeLineParser()
 
 TimeLineParser::~TimeLineParser()
 {
+   XMLString::release( &TAG_root );
+   XMLString::release( &TAG_status );
+   XMLString::release( &TAG_text );
+   XMLString::release( &TAG_username );
+   XMLString::release( &TAG_user );
+   XMLString::release( &TAG_image);
+   XMLString::release( &TAG_date );
    try
    {
       XMLPlatformUtils::Terminate();  // Terminate Xerces
@@ -67,19 +73,6 @@ TimeLineParser::~TimeLineParser()
 
       cerr << "XML ttolkit teardown error: " << message << endl;
       XMLString::release( &message );
-   }
-
-   try
-   {
-		//Freeing these makes the app crash WHY???
-      //XMLString::release( &TAG_root );
-      //XMLString::release( &TAG_status );
-      //XMLString::release( &TAG_text );
-      //XMLString::release( &TAG_username );
-   }
-   catch( ... )
-   {
-      cerr << "Unknown exception encountered in TagNamesdtor" << endl;
    }
    
    for(int i = 0; i < numberOfEntries; i++) {
@@ -109,23 +102,6 @@ HTTweet** TimeLineParser::getTweets() {
 void TimeLineParser::readData(const char *xmlData)
         throw( std::runtime_error )
 {
-   // Test to see if the file is ok.
-
-   /*struct stat fileStatus;
-
-   int iretStat = stat(configFile.c_str(), &fileStatus);
-   if( iretStat == ENOENT )
-      throw ( std::runtime_error("Path file_name does not exist, or path is an empty string.") );
-   else if( iretStat == ENOTDIR )
-      throw ( std::runtime_error("A component of the path is not a directory."));
-   else if( iretStat == ELOOP )
-      throw ( std::runtime_error("Too many symbolic links encountered while traversing the path."));
-   else if( iretStat == EACCES )
-      throw ( std::runtime_error("Permission denied."));
-   else if( iretStat == ENAMETOOLONG )
-      throw ( std::runtime_error("File can not be read\n"));
-    */
-
    // Configure DOM parser.
 
    m_ConfigFileParser->setValidationScheme( XercesDOMParser::Val_Never );
@@ -150,9 +126,9 @@ void TimeLineParser::readData(const char *xmlData)
       
       DOMElement* elementRoot = xmlDoc->getDocumentElement();
       if( !elementRoot ) {
-      		string theName("martinhpedersen");
+      		string theName("HaikuTwitter");
       		string theText("Could not retrieve data. Please check your internet connection.");
-      		string theUrl("");
+      		string theUrl("file://default_image.png");
       		string theDate("");
       		tweetPtr = new HTTweet*[1];
       		tweetPtr[0] = new HTTweet(theName, theText, theUrl, theDate);
