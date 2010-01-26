@@ -160,9 +160,11 @@ status_t updateTimeLineThread(void *data) {
 	listView->AddList(newList); //Must lock looper before we do this!
 			
 	/*Cleanup*/
+	super->waitingForUpdate = false;
 	listView->UnlockLooper();
 	delete timeLineParser;
 	timeLineParser = NULL;
+	delete newList;
 	
 	return B_OK;
 }
