@@ -193,6 +193,7 @@ void TimeLineParser::readData(const char *xmlData)
             		
             		string textString(rawString);
             		tweetPtr[i]->setScreenName(textString);
+            		delete rawString;
             	}
          	}
 		}
@@ -219,6 +220,7 @@ void TimeLineParser::readData(const char *xmlData)
             		
             		string textString(rawString);
             		tweetPtr[i]->setProfileImageUrl(textString);
+            		delete rawString;
             	}
          	}
 		}
@@ -245,6 +247,7 @@ void TimeLineParser::readData(const char *xmlData)
             		
             		string textString(rawString);
             		tweetPtr[i/2]->setDate(textString);
+            		delete rawString;
             	}
          	}
 		}
