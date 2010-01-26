@@ -151,7 +151,8 @@ status_t updateTimeLineThread(void *data) {
 		currentTweet = currentItem->getTweetPtr();
 		listView->RemoveItem(currentItem); //Must lock looper before we do this!
 		if(newList->CountItems() < 20) //Only allow 20 tweets to be displayed at once... for now.
-			newList->AddItem(new HTGTweetItem(currentTweet));
+			newList->AddItem(new HTGTweetItem(new HTTweet(currentTweet)));
+			
 		delete currentItem;
 	}
 	

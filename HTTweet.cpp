@@ -130,6 +130,10 @@ BBitmap* HTTweet::getBitmap() {
 	return imageBitmap;
 }
 
+BBitmap HTTweet::getBitmapCopy() {
+	return *imageBitmap;
+}
+
 void HTTweet::downloadBitmap() {
 	this->downloadBitmap(profileImageUrl.c_str());
 }
