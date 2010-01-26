@@ -6,7 +6,7 @@
 
 #include "HTGTimeLineWindow.h"
 
-HTGTimeLineWindow::HTGTimeLineWindow(string username, string password, int refreshTime) : BWindow(BRect(300, 300, 615, 900), "HaikuTwitter (Alpha)", B_TITLED_WINDOW, B_NOT_RESIZABLE) {	
+HTGTimeLineWindow::HTGTimeLineWindow(string username, string password, int refreshTime) : BWindow(BRect(300, 300, 615, 900), "HaikuTwitter (Alpha)", B_TITLED_WINDOW, B_NOT_H_RESIZABLE) {	
 	newTweetObj = new twitCurl();
 	newTweetObj->setTwitterUsername( username );
 	newTweetObj->setTwitterPassword( password );
