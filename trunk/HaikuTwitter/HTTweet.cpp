@@ -136,8 +136,7 @@ void HTTweet::downloadBitmap() {
 
 void HTTweet::downloadBitmap(const char *url) {
 	CURL *curl_handle;
-	char buffer[4096*4];
-	BMemoryIO *memoryIO = new BMemoryIO(buffer, 4096*4);
+	BMallocIO *mallocIO = new BMallocIO();
 	
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
@@ -146,8 +145,8 @@ void HTTweet::downloadBitmap(const char *url) {
 	/*send all data to this function*/
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 	
-	/*we pass out 'chunk' struct to the callback function*/
-	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)memoryIO);
+	/*we pass out 'mallocIO' object to the callback function*/
+	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)mallocIO);
 	
 	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "haikutwitter-agent/1.0");
 	
@@ -159,10 +158,10 @@ void HTTweet::downloadBitmap(const char *url) {
 	curl_easy_cleanup(curl_handle);
 	
 	/*Translate downloaded data to bitmap*/
-	imageBitmap = BTranslationUtils::GetBitmap(memoryIO);
+	imageBitmap = BTranslationUtils::GetBitmap(mallocIO);
 	
 	/*Delete the buffer*/
-	delete memoryIO;
+	delete mallocIO;
 }
 
 HTTweet::~HTTweet() {
@@ -174,7 +173,7 @@ HTTweet::~HTTweet() {
 /*Callback function for cURL (userIcon download)*/
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
 	size_t realsize = size *nmemb;
-	BMemoryIO *memoryIO = (BMemoryIO *)data;
+	BMallocIO *mallocIO = (BMallocIO *)data;
 	
-	return memoryIO->Write(ptr, realsize);
+	return mallocIO->Write(ptr, realsize);
 }
