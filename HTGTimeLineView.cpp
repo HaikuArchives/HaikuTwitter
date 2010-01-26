@@ -6,7 +6,7 @@
 
 #include "HTGTimeLineView.h"
 
-HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE) : BScrollView("Loading...", new BView(BRect(0, 0, 300-4, 580), "ContainerView", B_FOLLOW_LEFT | B_FOLLOW_TOP, 0), B_FOLLOW_LEFT | B_FOLLOW_TOP, 0, false, true, B_FANCY_BORDER) {	
+HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE) : BScrollView("Loading...", new BView(BRect(0, 0, 300-4, 552), "ContainerView", B_FOLLOW_LEFT | B_FOLLOW_TOP, 0), B_FOLLOW_LEFT | B_FOLLOW_TOP, 0, false, true, B_FANCY_BORDER) {	
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
 	thread_id previousThread = B_NAME_NOT_FOUND;
@@ -91,9 +91,13 @@ status_t updateTimeLineThread(void *data) {
 	}	
 	std::string replyMsg(" ");
 	twitObj->getLastWebResponse(replyMsg);
-	if(timeLineParser == NULL) {
-		timeLineParser = new TimeLineParser();
+	if(replyMsg.length() < 20)  { //Length of data is less than 20 characters. Clearly,
+		delete timeLineParser;		//something is wrong... abort.
+		timeLineParser = NULL;
+      	std::cout << "UpdateThread: Databuffer too small. Aborting." << std::endl;
+		return B_ERROR;
 	}
+		
 	timeLineParser->readData(replyMsg.c_str());
 	
 	HTGTweetItem *mostRecentItem;
@@ -138,6 +142,7 @@ status_t updateTimeLineThread(void *data) {
 		super->waitingForUpdate = true;
 		delete timeLineParser;
 		timeLineParser = NULL;
+		delete newList;
 		return B_OK;
 	}
 	
@@ -145,11 +150,9 @@ status_t updateTimeLineThread(void *data) {
 		HTGTweetItem *currentItem = (HTGTweetItem *)listView->FirstItem();
 		currentTweet = currentItem->getTweetPtr();
 		listView->RemoveItem(currentItem); //Must lock looper before we do this!
-		delete currentItem;
 		if(newList->CountItems() < 20) //Only allow 20 tweets to be displayed at once... for now.
 			newList->AddItem(new HTGTweetItem(currentTweet));
-		else
-			delete currentTweet;
+		delete currentItem;
 	}
 	
 	

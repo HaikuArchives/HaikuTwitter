@@ -8,6 +8,10 @@
 
 HTTweet::HTTweet() {
 	imageBitmap = NULL;
+	date.day = -1;
+	date.day = -1;
+	date.day = -1;
+	date.day = -1;
 }
 
 HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString) {
@@ -162,8 +166,9 @@ void HTTweet::downloadBitmap(const char *url) {
 }
 
 HTTweet::~HTTweet() {
-	if(imageBitmap != NULL)
+	if(imageBitmap != NULL) {
 		delete imageBitmap;
+	}
 }
 
 /*Callback function for cURL (userIcon download)*/

@@ -57,4 +57,5 @@ HTGTweetItem::~HTGTweetItem() {
 		textView->RemoveSelf();
 		delete textView;
 	}
+	delete theTweet;
 }
