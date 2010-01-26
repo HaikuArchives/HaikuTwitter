@@ -56,6 +56,7 @@ TimeLineParser::TimeLineParser()
 
 TimeLineParser::~TimeLineParser()
 {
+   delete m_ConfigFileParser;
    XMLString::release( &TAG_root );
    XMLString::release( &TAG_status );
    XMLString::release( &TAG_text );
@@ -169,6 +170,7 @@ void TimeLineParser::readData(const char *xmlData)
             	}
          	}
 		}
+		
 		// Parse XML file for tags of interest: "screen_name"
 		statusNodes = elementRoot->getElementsByTagName(TAG_username);
 		
@@ -194,6 +196,7 @@ void TimeLineParser::readData(const char *xmlData)
             	}
          	}
 		}
+		
 		// Parse XML file for tags of interest: "profile_image_url"
 		statusNodes = elementRoot->getElementsByTagName(TAG_image);
 		
@@ -219,6 +222,7 @@ void TimeLineParser::readData(const char *xmlData)
             	}
          	}
 		}
+		
 		// Parse XML file for tags of interest: "created_at"
 		statusNodes = elementRoot->getElementsByTagName(TAG_date);
 		
