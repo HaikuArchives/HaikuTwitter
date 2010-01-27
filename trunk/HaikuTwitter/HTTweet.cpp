@@ -12,6 +12,7 @@ HTTweet::HTTweet() {
 	date.day = -1;
 	date.day = -1;
 	date.day = -1;
+	id = -1;
 }
 
 HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString) {
@@ -20,6 +21,7 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 	this->profileImageUrl = profileImageUrl;
 	this->setDate(dateString);
 	imageBitmap = NULL;
+	id = -1;
 }
 
 HTTweet::HTTweet(HTTweet *originalTweet) {
@@ -30,6 +32,7 @@ HTTweet::HTTweet(HTTweet *originalTweet) {
 		if(originalTweet->imageBitmap->IsValid()) //Not interested in corrupted data.
 			this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
 	this->date = originalTweet->getDate();
+	this->id = originalTweet->getId();
 }
 
 const string HTTweet::getScreenName() {
@@ -91,6 +94,14 @@ bool HTTweet::operator<(const HTTweet &b) const {
 	if(aDate.second < bDate.second)
 		return true;
 	return false;	
+}
+
+int HTTweet::getId() {
+	return id;
+}
+
+void HTTweet::setId(int id) {
+	this->id = id;
 }
 
 const int HTTweet::stringToMonth(const char *date) {

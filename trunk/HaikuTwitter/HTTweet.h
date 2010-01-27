@@ -47,6 +47,8 @@ public:
 	void setText(string&);
 	void setProfileImageUrl(string&);
 	void setDate(string&);
+	void setId(int);
+	int getId();
 	
 private:
 	const int stringToMonth(const char *date);
@@ -54,6 +56,7 @@ private:
 	string text;
 	string profileImageUrl;
 	struct DateStruct date;
+	int id;
 	BBitmap *imageBitmap;
 	void downloadBitmap(const char *url);
 };

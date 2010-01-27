@@ -7,10 +7,10 @@
 #include <ListItem.h>
 #include <Bitmap.h>
 #include <View.h>
-#include <TextView.h>
 #include <Window.h>
 
 #include "HTTweet.h"
+#include "HTGTweetTextView.h"
 
 #ifndef HTGTWEET_ITEM_H
 #define HTGTWEET_ITEM_H
@@ -23,6 +23,6 @@ public:
 	virtual ~HTGTweetItem();
 private:
 	HTTweet *theTweet;
-	BTextView *textView;
+	HTGTweetTextView *textView;
 };
 #endif

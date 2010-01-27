@@ -53,6 +53,8 @@ void HTGTimeLineWindow::_SetupMenu() {
 	/*Make Twitter Menu*/
 	fTwitterMenu = new BMenu("Twitter");
 	fTwitterMenu->AddItem(new BMenuItem("New tweet", new BMessage(NEW_TWEET), 'N'));
+	//fTwitterMenu->AddItem(new BMenuItem("Go to user...", new BMessage(GO_USER), 'G')); //This is not implemented yet.
+	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("Refresh", new BMessage(REFRESH), 'R'));
 	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("About HaikuTwitter...", new BMessage(ABOUT)));
@@ -62,7 +64,7 @@ void HTGTimeLineWindow::_SetupMenu() {
 	
 	/*Make Edit Menu*/
 	fEditMenu = new BMenu("Edit");
-	fEditMenu->AddItem(new BMenuItem("Copy", new BMessage(B_COPY), 'C')); //This is not implemented yet.
+	//fEditMenu->AddItem(new BMenuItem("Copy", new BMessage(B_COPY), 'C')); //This is not implemented yet.
 	fMenuBar->AddItem(fEditMenu);
 	
 	/*Make Settings Menu*/
@@ -83,6 +85,9 @@ void HTGTimeLineWindow::MessageReceived(BMessage *msg) {
 			friendsTimeLine->updateTimeLine();
 			mentionsTimeLine->updateTimeLine();
 			publicTimeLine->updateTimeLine();
+			break;
+		case GO_USER:
+			std::cout << "Go to user: This function is not implemented yet..." << std::endl;
 			break;
 		case ACCOUNT_SETTINGS:
 			accountSettingsWindow = new HTGAccountSettingsWindow();
