@@ -32,6 +32,11 @@ HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj) : BWindow(BRect(100, 100
 	theView->AddChild(counterView);
 }
 
+void HTGNewTweetWindow::SetText(const char *text) {
+	message->SetText(text);
+	this->MessageReceived(new BMessage('UPDT')); //Update counter
+}
+
 void HTGNewTweetWindow::postTweet() {
 	std::string replyMsg( "" );
 	std::string postMsg(message->Text());

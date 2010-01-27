@@ -76,9 +76,11 @@ void HTGTimeLineWindow::_SetupMenu() {
 }
 
 void HTGTimeLineWindow::MessageReceived(BMessage *msg) {
+	const char* text_label = "text";
 	switch(msg->what) {
 		case NEW_TWEET:
 			newTweetWindow = new HTGNewTweetWindow(newTweetObj);
+			newTweetWindow->SetText(msg->FindString(text_label, (int32)0)); //Set text (RT, reply, ie)
 			newTweetWindow->Show();
 			break;
 		case REFRESH:

@@ -15,6 +15,8 @@
 
 #include <iostream>
 
+#include "HTGTimeLineWindow.h"
+
 #ifndef HTG_TWEETTEXTVIEW_H
 #define HTG_TWEETTEXTVIEW_H
 
@@ -33,6 +35,8 @@ public:
 private:
 	void openUrl(const char *);
 	bool isValidScreenNameChar(const char &);
+	void sendRetweetMsgToParent();
+	void sendReplyMsgToParent();
 	BList* getScreenNames();
 	BList* getUrls();
 };

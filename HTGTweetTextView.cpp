@@ -21,8 +21,8 @@ void HTGTweetTextView::MouseDown(BPoint point) {
 	
 	BPopUpMenu *myPopUp = new BPopUpMenu("TweetOptions", false, true, B_ITEMS_IN_COLUMN);
 	
-	myPopUp->AddItem(new BMenuItem("Retweet...", new BMessage(123)));
-	myPopUp->AddItem(new BMenuItem("Reply...", new BMessage(123)));
+	myPopUp->AddItem(new BMenuItem("Retweet...", new BMessage(GO_RETWEET)));
+	myPopUp->AddItem(new BMenuItem("Reply...", new BMessage(GO_REPLY)));
 	myPopUp->AddSeparatorItem();
 	
 	BList *screenNameList = this->getScreenNames();
@@ -116,18 +116,39 @@ bool HTGTweetTextView::isValidScreenNameChar(const char& c) {
 	return false;
 }
 
+void HTGTweetTextView::sendRetweetMsgToParent() {
+	BMessage *retweetMsg = new BMessage(NEW_TWEET);
+	std::string RTString(this->Text());
+	RTString.insert(0, " ");
+	RTString.insert(0, this->Name());
+	RTString.insert(0, "@");
+	RTString.insert(0, "RT ");
+	retweetMsg->AddString("text", RTString.c_str());
+	BTextView::MessageReceived(retweetMsg);
+}
+
+void HTGTweetTextView::sendReplyMsgToParent() {
+	BMessage *replyMsg = new BMessage(NEW_TWEET);
+	std::string theString(" ");
+	theString.insert(0, this->Name());
+	theString.insert(0, "@");
+	replyMsg->AddString("text", theString.c_str());
+	BTextView::MessageReceived(replyMsg);
+}
+
 void HTGTweetTextView::MessageReceived(BMessage *msg) {
 	const char* url_label = "url";
 	const char* name_label = "screenName";
+	std::string newTweetAppend(" ");
 	switch(msg->what) {
 		case GO_TO_USER:
 			std::cout << "Go to user: This function is not implemented yet..." << std::endl;
 			break;
 		case GO_RETWEET:
-			std::cout << "Retweet: This function is not implemented yet..." << std::endl;
+			this->sendRetweetMsgToParent();
 			break;
 		case GO_REPLY:
-			std::cout << "Reply: This function is not implemented yet..." << std::endl;
+			this->sendReplyMsgToParent();
 			break;
 		case GO_TO_URL:
 			this->openUrl(msg->FindString(url_label, (int32)0));
