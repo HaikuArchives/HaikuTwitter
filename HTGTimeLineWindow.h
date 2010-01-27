@@ -29,6 +29,7 @@
 const int32 NEW_TWEET = 'NWTW';
 const int32 REFRESH = 'REFR';
 const int32 ACCOUNT_SETTINGS = 'ACC';
+const int32 GO_USER = 'GUSR';
 const int32 ABOUT = 'BOUT';
 
 class HTGTimeLineWindow : public BWindow {

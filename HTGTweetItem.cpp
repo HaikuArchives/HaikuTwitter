@@ -28,7 +28,7 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	/*Write text*/
 	BRect textRect(72,frame.top+15, frame.right, frame.bottom-3);
 	if(textView == NULL) {
-		textView = new BTextView(textRect, "Text", BRect(0,0,frame.right-72,frame.bottom-3), B_NOT_RESIZABLE, B_WILL_DRAW);
+		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-72,frame.bottom-3), B_NOT_RESIZABLE, B_WILL_DRAW);
 		owner->AddChild(textView);
 	}
 

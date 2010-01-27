@@ -42,6 +42,7 @@ TimeLineParser::TimeLineParser()
    TAG_username = XMLString::transcode("screen_name");
    TAG_image = XMLString::transcode("profile_image_url");
    TAG_date = XMLString::transcode("created_at");
+   TAG_id = XMLString::transcode("id");
 
    m_ConfigFileParser = new XercesDOMParser;
    tweetPtr = NULL;
@@ -64,6 +65,7 @@ TimeLineParser::~TimeLineParser()
    XMLString::release( &TAG_user );
    XMLString::release( &TAG_image);
    XMLString::release( &TAG_date );
+   XMLString::release( &TAG_id );
    try
    {
       XMLPlatformUtils::Terminate();  // Terminate Xerces
@@ -167,6 +169,32 @@ void TimeLineParser::readData(const char *xmlData)
             		tweetPtr[numberOfEntries] = new HTTweet();
             		tweetPtr[numberOfEntries]->setText(textString);
             		numberOfEntries++;
+            	}
+         	}
+		}
+		
+		// Parse XML file for tags of interest: "id"
+		statusNodes = elementRoot->getElementsByTagName(TAG_id);
+		
+		for(XMLSize_t i = 0; i < nodeCount; i++) {
+			DOMNode* currentNode = statusNodes->item(i);
+         	if( currentNode->getNodeType() &&  // true is not NULL
+            	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
+         	{
+            	// Found node which is an Element. Re-cast node as element
+            	DOMElement* currentElement
+                	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
+            	if( XMLString::equals(currentElement->getTagName(), TAG_id))
+            	{
+            		DOMText* textNode
+            				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
+            		
+            		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		/*Remove last character, holds ugly symbol.*/
+            		//rawString[strlen(rawString)-5] = '\0';
+            		
+            		tweetPtr[i]->setId(atoi(rawString));
+            		delete rawString;
             	}
          	}
 		}
