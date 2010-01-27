@@ -3,6 +3,8 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
+#ifndef HTG_TIMELINEWINDOW_H
+#define HTG_TIMELINEWINDOW_H
 
 #include "Application.h"
 #include "Window.h"
@@ -22,9 +24,6 @@
 #include "HTGAboutWindow.h"
 #include "HTGTweetItem.h"
 #include "HTGTimeLineView.h"
-
-#ifndef HTG_TIMELINEWINDOW_H
-#define HTG_TIMELINEWINDOW_H
 
 const int32 NEW_TWEET = 'NWTW';
 const int32 REFRESH = 'REFR';

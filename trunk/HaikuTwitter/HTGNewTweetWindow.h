@@ -31,6 +31,7 @@ public:
 	~HTGNewTweetWindow();
 	void inputChanged(int length);
 	void MessageReceived(BMessage *msg);
+	void SetText(const char *text);
 
 private:
 	void postTweet();
