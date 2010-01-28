@@ -12,7 +12,7 @@
 #include "twitcurl/twitcurl.h"
 
 #include "TimeLineParser.h"
-#include "HTGTimeLineWindow.h"
+#include "HTGMainWindow.h"
 #include "HTGNewTweetWindow.h"
 #include "HTGAccountSettingsWindow.h"
 #include "HTGAboutWindow.h"
@@ -30,7 +30,7 @@ int main()
     int refreshTime = retrieveSettings().refreshTime;
 	
 	/*Display timeline*/
-	HTGTimeLineWindow *theWindow = new HTGTimeLineWindow(username, password, refreshTime);
+	HTGMainWindow *theWindow = new HTGMainWindow(username, password, refreshTime);
 	theWindow->Show();
 	
 	HaikuApp.Run();
