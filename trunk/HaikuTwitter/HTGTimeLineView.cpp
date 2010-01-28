@@ -6,7 +6,7 @@
 
 #include "HTGTimeLineView.h"
 
-HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE) : BScrollView("Loading...", new BView(BRect(0, 0, 300-4, 552), "ContainerView", B_FOLLOW_LEFT | B_FOLLOW_TOP, 0), B_FOLLOW_LEFT | B_FOLLOW_TOP, 0, false, true, B_FANCY_BORDER) {	
+HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, const char* requestInfo) : BScrollView("Loading...", new BView(BRect(0, 0, 300-4, 552), "ContainerView", B_FOLLOW_LEFT | B_FOLLOW_TOP, 0), B_FOLLOW_LEFT | B_FOLLOW_TOP, 0, false, true, B_FANCY_BORDER) {	
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
 	thread_id previousThread = B_NAME_NOT_FOUND;
@@ -20,11 +20,15 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE) : BScrollV
 			SetName("Mentions");
 			break;
 		case TIMELINE_PUBLIC:
-			twitObj->timelinePublicGet();
 			SetName("Public");
 			break;
+		case TIMELINE_USER:
+			SetName(requestInfo);
+			break;
+		case TIMELINE_SEARCH:
+			SetName(requestInfo);
+			break;
 		default:
-			twitObj->timelinePublicGet();
 			SetName("Public");
 	}
 	
@@ -57,6 +61,16 @@ void HTGTimeLineView::updateTimeLine() {
 	}
 }
 
+std::string& htmlFormatedString(const char *orig) {
+	std::string newString(orig);
+	if(orig[0] == '#') {
+		newString = std::string(orig+1);
+		newString.insert(0, "%23");
+	}
+	std::string *returnPtr = new std::string(newString);
+	return *returnPtr;
+}
+
 status_t updateTimeLineThread(void *data) {
 	//Could not figure out how to update a BListItem with a child view (BTextView).
 	//Could be a bug in Haiku API's. After hours of investigation without any
@@ -86,11 +100,19 @@ status_t updateTimeLineThread(void *data) {
 		case TIMELINE_PUBLIC:
 			twitObj->timelinePublicGet();
 			break;
+		case TIMELINE_USER:
+			twitObj->timelineUserGet(*new std::string(super->Name()), false);
+			break;
+		case TIMELINE_SEARCH:
+			twitObj->search(htmlFormatedString(super->Name()));
+			break;
 		default:
 			twitObj->timelinePublicGet();
 	}	
 	std::string replyMsg(" ");
 	twitObj->getLastWebResponse(replyMsg);
+	if(TYPE == TIMELINE_SEARCH)
+		std::cout << replyMsg << std::endl;
 	if(replyMsg.length() < 20)  { //Length of data is less than 20 characters. Clearly,
 		delete timeLineParser;		//something is wrong... abort.
 		timeLineParser = NULL;
@@ -171,6 +193,14 @@ status_t updateTimeLineThread(void *data) {
 }
 
 HTGTimeLineView::~HTGTimeLineView() {
+	listView->RemoveSelf();
+	while(!listView->IsEmpty()) {
+		HTGTweetItem *currentItem = (HTGTweetItem *)listView->FirstItem();
+		listView->RemoveItem(currentItem);			
+		delete currentItem;
+	}
+	delete listView;
+	delete twitObj;
 	containerView->RemoveSelf();
-	delete containerView;	
+	delete containerView;
 }

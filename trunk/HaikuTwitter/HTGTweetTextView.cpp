@@ -28,11 +28,18 @@ void HTGTweetTextView::MouseDown(BPoint point) {
 	BList *screenNameList = this->getScreenNames();
 	for(int i = 0; i < screenNameList->CountItems(); i++)
 		myPopUp->AddItem((BMenuItem *)screenNameList->ItemAt(i));
-	myPopUp->AddSeparatorItem();
 	
 	BList *urlList = this->getUrls();
+	if(urlList->CountItems() > 0)
+		myPopUp->AddSeparatorItem();
 	for(int i = 0; i < urlList->CountItems(); i++)
 		myPopUp->AddItem((BMenuItem *)urlList->ItemAt(i));
+		
+	BList *tagList = this->getTags();
+	if(tagList->CountItems() > 0)
+		myPopUp->AddSeparatorItem();
+	for(int i = 0; i < tagList->CountItems(); i++)
+		myPopUp->AddItem((BMenuItem *)tagList->ItemAt(i));
 	
 	selected = myPopUp->Go(point);
 	
@@ -51,8 +58,8 @@ BList* HTGTweetTextView::getScreenNames() {
 	std::string tweetersName(this->Name());
 	tweetersName.insert(0, "@");
 	tweetersName.append("...");
-	BMessage *firstMessage = new BMessage(GO_TO_USER);
-	firstMessage->AddString("ScreenName", this->Name());
+	BMessage *firstMessage = new BMessage(GO_USER);
+	firstMessage->AddString("text", this->Name());
 	theList->AddItem(new BMenuItem(tweetersName.c_str(), firstMessage));
 			
 	for(int i = 0; Text()[i] != '\0'; i++) {
@@ -63,11 +70,10 @@ BList* HTGTweetTextView::getScreenNames() {
 				newName.append(1, Text()[i]);
 				i++;
 			}
-			const char *screenName = newName.c_str();
+			BMessage *theMessage = new BMessage(GO_USER);
+			theMessage->AddString("text", newName.c_str());
 			newName.insert(0, "@");
 			newName.append("...");
-			BMessage *theMessage = new BMessage(GO_TO_USER);
-			theMessage->AddString("ScreenName", screenName);
 			theList->AddItem(new BMenuItem(newName.c_str(), theMessage));
 		}
 	}
@@ -96,6 +102,31 @@ BList* HTGTweetTextView::getUrls() {
 			BMessage *theMessage = new BMessage(GO_TO_URL);
 			theMessage->AddString("url", theText.substr(start+1, end-start-1).c_str());
 			theList->AddItem(new BMenuItem(theText.substr(start+1, end-start-1).c_str(), theMessage));
+			pos = end;
+		}
+	}
+	
+	return theList;
+}
+
+BList* HTGTweetTextView::getTags() {
+	BList *theList = new BList();
+	size_t pos = 0;
+	std::string theText(this->Text());
+	
+	while(pos != std::string::npos) {
+		pos = theText.find("#", pos);
+		if(pos != std::string::npos) {
+			int start = pos;
+			int end = pos;
+			while(end < theText.length() && theText[end] != ' ') {
+				end++;
+			}
+			if(end == theText.length()-2) //For some reason, we have to do this.
+				end--;
+			BMessage *theMessage = new BMessage(GO_SEARCH);
+			theMessage->AddString("text", theText.substr(start, end-start).c_str());
+			theList->AddItem(new BMenuItem(theText.substr(start, end-start).c_str(), theMessage));
 			pos = end;
 		}
 	}
@@ -141,9 +172,6 @@ void HTGTweetTextView::MessageReceived(BMessage *msg) {
 	const char* name_label = "screenName";
 	std::string newTweetAppend(" ");
 	switch(msg->what) {
-		case GO_TO_USER:
-			std::cout << "Go to user: This function is not implemented yet..." << std::endl;
-			break;
 		case GO_RETWEET:
 			this->sendRetweetMsgToParent();
 			break;

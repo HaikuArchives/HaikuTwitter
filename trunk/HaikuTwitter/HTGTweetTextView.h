@@ -15,12 +15,11 @@
 
 #include <iostream>
 
-#include "HTGTimeLineWindow.h"
+#include "HTGMainWindow.h"
 
 #ifndef HTG_TWEETTEXTVIEW_H
 #define HTG_TWEETTEXTVIEW_H
 
-const int32 GO_TO_USER = 'GUSR';
 const int32 GO_TO_URL = 'GURL';
 const int32 GO_RETWEET = 'GRT';
 const int32 GO_REPLY = 'GRPL';
@@ -39,5 +38,6 @@ private:
 	void sendReplyMsgToParent();
 	BList* getScreenNames();
 	BList* getUrls();
+	BList* getTags();
 };
 #endif
