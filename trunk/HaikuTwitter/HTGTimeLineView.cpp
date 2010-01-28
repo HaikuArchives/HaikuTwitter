@@ -193,6 +193,9 @@ status_t updateTimeLineThread(void *data) {
 }
 
 HTGTimeLineView::~HTGTimeLineView() {
+	/*Kill the update thread*/
+	kill_thread(previousThread);
+	
 	listView->RemoveSelf();
 	while(!listView->IsEmpty()) {
 		HTGTweetItem *currentItem = (HTGTweetItem *)listView->FirstItem();
