@@ -30,9 +30,9 @@ HTTweet::HTTweet(HTTweet *originalTweet) {
 	this->screenName = originalTweet->getScreenName();
 	this->text = originalTweet->getText();
 	this->profileImageUrl = originalTweet->getProfileImageUrl();
-	//if (originalTweet->imageBitmap != NULL)
-	//	if(originalTweet->imageBitmap->IsValid()) //Not interested in corrupted data.
-	//		this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
+	if (originalTweet->imageBitmap != NULL)
+		if(originalTweet->imageBitmap->IsValid()) //Not interested in corrupted data.
+			this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
 	this->date = originalTweet->getDate();
 	this->id = originalTweet->getId();
 	bitmapDownloadInProgress = false;
@@ -196,6 +196,11 @@ status_t _threadDownloadBitmap(void *data) {
 
 bool HTTweet::isDownloadingBitmap() {
 	return bitmapDownloadInProgress;
+}
+
+void HTTweet::waitUntilDownloadComplete() {
+	status_t junkId;
+	wait_for_thread(downloadThread, &junkId);
 }
 
 HTTweet::~HTTweet() {

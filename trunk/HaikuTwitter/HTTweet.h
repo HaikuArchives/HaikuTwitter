@@ -50,6 +50,7 @@ public:
 	void setDate(string&);
 	void setId(int);
 	void setBitmap(BBitmap *);
+	void waitUntilDownloadComplete();
 	bool isDownloadingBitmap();
 	int getId();
 	
