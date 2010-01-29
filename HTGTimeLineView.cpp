@@ -168,8 +168,9 @@ status_t updateTimeLineThread(void *data) {
 		return B_OK;
 	}
 	
+	HTGTweetItem *currentItem;
 	while(!listView->IsEmpty()) {
-		HTGTweetItem *currentItem = (HTGTweetItem *)listView->FirstItem();
+		currentItem = (HTGTweetItem *)listView->FirstItem();
 		currentTweet = currentItem->getTweetPtr();
 		listView->RemoveItem(currentItem); //Must lock looper before we do this!
 		if(newList->CountItems() < 20) //Only allow 20 tweets to be displayed at once... for now.
@@ -177,7 +178,6 @@ status_t updateTimeLineThread(void *data) {
 			
 		delete currentItem;
 	}
-	
 	
 	/*Update the view*/
 	listView->AddList(newList); //Must lock looper before we do this!
