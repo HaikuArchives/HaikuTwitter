@@ -11,6 +11,9 @@
 #include <TranslatorFormats.h>
 #include <DataIO.h>
 #include <Bitmap.h>
+#include <File.h>
+#include <BitmapStream.h>
+#include <TranslatorRoster.h>
 
 #include "curl/curl.h"
 
@@ -19,6 +22,7 @@
 
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
 status_t _threadDownloadBitmap(void *);
+BBitmap* defaultBitmap();
 
 using namespace std;
 
