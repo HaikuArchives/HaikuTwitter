@@ -13,6 +13,7 @@ HTTweet::HTTweet() {
 	date.day = -1;
 	date.day = -1;
 	id = -1;
+	bitmapDownloadInProgress = false;
 }
 
 HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString) {
@@ -22,17 +23,19 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 	this->setDate(dateString);
 	imageBitmap = NULL;
 	id = -1;
+	bitmapDownloadInProgress = false;
 }
 
 HTTweet::HTTweet(HTTweet *originalTweet) {
 	this->screenName = originalTweet->getScreenName();
 	this->text = originalTweet->getText();
 	this->profileImageUrl = originalTweet->getProfileImageUrl();
-	if (originalTweet->imageBitmap != NULL)
-		if(originalTweet->imageBitmap->IsValid()) //Not interested in corrupted data.
-			this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
+	//if (originalTweet->imageBitmap != NULL)
+	//	if(originalTweet->imageBitmap->IsValid()) //Not interested in corrupted data.
+	//		this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
 	this->date = originalTweet->getDate();
 	this->id = originalTweet->getId();
+	bitmapDownloadInProgress = false;
 }
 
 const string HTTweet::getScreenName() {
@@ -141,21 +144,30 @@ BBitmap* HTTweet::getBitmap() {
 	return imageBitmap;
 }
 
+void HTTweet::setBitmap(BBitmap *bitmap) {
+	imageBitmap = bitmap;
+}
+
 BBitmap HTTweet::getBitmapCopy() {
 	return *imageBitmap;
 }
 
 void HTTweet::downloadBitmap() {
-	this->downloadBitmap(profileImageUrl.c_str());
+	if(!bitmapDownloadInProgress) {
+		downloadThread = spawn_thread(_threadDownloadBitmap, profileImageUrl.c_str(), 10, this);
+		resume_thread(downloadThread);
+	}
 }
 
-void HTTweet::downloadBitmap(const char *url) {
+status_t _threadDownloadBitmap(void *data) {
+	HTTweet *super = (HTTweet*)data;
+	super->bitmapDownloadInProgress = true;
 	CURL *curl_handle;
 	BMallocIO *mallocIO = new BMallocIO();
 	
 	curl_global_init(CURL_GLOBAL_ALL);
 	curl_handle = curl_easy_init();
-	curl_easy_setopt(curl_handle, CURLOPT_URL, url);
+	curl_easy_setopt(curl_handle, CURLOPT_URL, super->getProfileImageUrl().c_str());
 	
 	/*send all data to this function*/
 	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
@@ -173,16 +185,27 @@ void HTTweet::downloadBitmap(const char *url) {
 	curl_easy_cleanup(curl_handle);
 	
 	/*Translate downloaded data to bitmap*/
-	imageBitmap = BTranslationUtils::GetBitmap(mallocIO);
+	super->setBitmap(BTranslationUtils::GetBitmap(mallocIO));
 	
 	/*Delete the buffer*/
 	delete mallocIO;
+	
+	super->bitmapDownloadInProgress = false;
+	return B_OK;
+}
+
+bool HTTweet::isDownloadingBitmap() {
+	return bitmapDownloadInProgress;
 }
 
 HTTweet::~HTTweet() {
-	if(imageBitmap != NULL) {
+	/*Kill the download thread*/
+	if(bitmapDownloadInProgress)
+		kill_thread(downloadThread);
+	
+	if(imageBitmap != NULL)
 		delete imageBitmap;
-	}
+	imageBitmap == NULL;
 }
 
 /*Callback function for cURL (userIcon download)*/

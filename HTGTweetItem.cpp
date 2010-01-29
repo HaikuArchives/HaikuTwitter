@@ -45,6 +45,9 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	owner->StrokeLine(BPoint(frame.left, frame.bottom), BPoint(frame.right, frame.bottom));
 	
 	/*Draw userIcon*/
+	while(theTweet->isDownloadingBitmap()) {
+		sleep(0.1);
+	}
 	owner->DrawBitmap(theTweet->getBitmap(), BRect(frame.left+12, frame.top+12, frame.left+48+12, frame.bottom-12));
 }
 
