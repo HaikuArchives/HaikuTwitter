@@ -18,6 +18,7 @@
 #define HT_TWEET_H
 
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
+status_t _threadDownloadBitmap(void *);
 
 using namespace std;
 
@@ -48,16 +49,21 @@ public:
 	void setProfileImageUrl(string&);
 	void setDate(string&);
 	void setId(int);
+	void setBitmap(BBitmap *);
+	bool isDownloadingBitmap();
 	int getId();
 	
+	/*This must be public (threads)*/
+	bool bitmapDownloadInProgress;
+	
 private:
+	thread_id downloadThread;
 	const int stringToMonth(const char *date);
+	BBitmap *imageBitmap;
 	string screenName;
 	string text;
 	string profileImageUrl;
 	struct DateStruct date;
 	int id;
-	BBitmap *imageBitmap;
-	void downloadBitmap(const char *url);
 };
 #endif
