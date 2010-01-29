@@ -65,5 +65,6 @@ private:
 	XMLCh* TAG_image;
 	XMLCh* TAG_date;
 	XMLCh* TAG_id;
+	XMLCh* TAG_error;
 };
 #endif

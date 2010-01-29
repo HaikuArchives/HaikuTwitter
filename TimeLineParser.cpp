@@ -43,6 +43,7 @@ TimeLineParser::TimeLineParser()
    TAG_image = XMLString::transcode("profile_image_url");
    TAG_date = XMLString::transcode("created_at");
    TAG_id = XMLString::transcode("id");
+   TAG_error = XMLString::transcode("error");
 
    m_ConfigFileParser = new XercesDOMParser;
    tweetPtr = NULL;
@@ -66,6 +67,7 @@ TimeLineParser::~TimeLineParser()
    XMLString::release( &TAG_image);
    XMLString::release( &TAG_date );
    XMLString::release( &TAG_id );
+   XMLString::release( &TAG_error );
    try
    {
       XMLPlatformUtils::Terminate();  // Terminate Xerces
@@ -115,7 +117,6 @@ void TimeLineParser::readData(const char *xmlData)
    try
    {
    		// Creating a memory buffer inputsource for the parser
-   		std::cout << "Creating buffer" << std::endl;
    		const char *chId = std::string("TimeLineData").c_str();
    		MemBufInputSource memSource((XMLByte *)xmlData, (XMLSize_t)strlen(xmlData)*sizeof(char), chId);
    		
@@ -131,16 +132,51 @@ void TimeLineParser::readData(const char *xmlData)
       if( !elementRoot ) {
       		string theName("HaikuTwitter");
       		string theText("Could not retrieve data. Please check your internet connection.");
-      		string theUrl("file://default_image.png");
+      		string theUrl("error");
       		string theDate("");
       		tweetPtr = new HTTweet*[1];
       		tweetPtr[0] = new HTTweet(theName, theText, theUrl, theDate);
       		numberOfEntries++;
       		return;
       }
+      
+      // Parse XML file for tags of interest: "error"
+		DOMNodeList* statusNodes = elementRoot->getElementsByTagName(TAG_error);
+		
+		for(XMLSize_t i = 0; i < statusNodes->getLength(); i++) {
+			DOMNode* currentNode = statusNodes->item(i);
+         	if( currentNode->getNodeType() &&  // true is not NULL
+            	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
+         	{
+            	// Found node which is an Element. Re-cast node as element
+            	DOMElement* currentElement
+                	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
+            	if( XMLString::equals(currentElement->getTagName(), TAG_error))
+            	{
+            		DOMText* textNode
+            				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
+            		
+            		/*Transcode to UTF-8*/
+            		XMLTransService::Codes resValue;
+            		XMLByte utf8String[150];
+            		XMLSize_t blabla = 0;
+            		XMLTranscoder *t = XMLPlatformUtils::fgTransService->makeNewTranscoderFor("UTF-8", resValue, 150);
+            		t->transcodeTo(textNode->getWholeText(), (XMLSize_t)150, utf8String, (XMLSize_t)150, blabla, XMLTranscoder::UnRep_Throw);
+            		delete t;
+            		string textString((char *)utf8String);
+					string theName("HaikuTwitter");
+      				string theUrl("error");
+      				string theDate("");
+      				tweetPtr = new HTTweet*[1];
+      				tweetPtr[0] = new HTTweet(theName, textString, theUrl, theDate);
+      				numberOfEntries++;
+      				return;
+            	}
+         	}
+		}
 				
       // Parse XML file for tags of interest: "text"
-		DOMNodeList* statusNodes = elementRoot->getElementsByTagName(TAG_text);
+		statusNodes = elementRoot->getElementsByTagName(TAG_text);
 		const XMLSize_t nodeCount = statusNodes->getLength();
 		tweetPtr = new HTTweet*[nodeCount];
 		

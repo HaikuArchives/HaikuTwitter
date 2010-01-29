@@ -111,13 +111,8 @@ status_t updateTimeLineThread(void *data) {
 	}	
 	std::string replyMsg(" ");
 	twitObj->getLastWebResponse(replyMsg);
-	if(TYPE == TIMELINE_SEARCH)
-		std::cout << replyMsg << std::endl;
-	if(replyMsg.length() < 20)  { //Length of data is less than 20 characters. Clearly,
-		delete timeLineParser;		//something is wrong... abort.
-		timeLineParser = NULL;
-      	std::cout << "UpdateThread: Databuffer too small. Aborting." << std::endl;
-		return B_ERROR;
+	if(replyMsg.length() < 100)  { //Length of data is less than 100 characters. Clearly,
+		replyMsg = "error";				//something is wrong... abort.
 	}
 		
 	timeLineParser->readData(replyMsg.c_str());
