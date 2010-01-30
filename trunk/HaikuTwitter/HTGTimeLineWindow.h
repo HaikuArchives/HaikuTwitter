@@ -9,6 +9,8 @@
 #include "ScrollView.h"
 #include "MessageRunner.h"
 
+#include <string>
+
 #include "TimeLineParser.h"
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
@@ -17,6 +19,8 @@
 
 #ifndef HTG_TIMELINEWINDOW_H
 #define HTG_TIMELINEWINDOW_H
+
+static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
 
 class HTGTimeLineWindow : public BWindow {
 public:

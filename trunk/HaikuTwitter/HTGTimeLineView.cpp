@@ -13,8 +13,11 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, const char
 	
 	/*Set view name*/
 	switch(TYPE) {
+		case TIMELINE_HOME:
+			SetName("Home");
+			break;
 		case TIMELINE_FRIENDS:
-			SetName("Timeline");
+			SetName("Friends");
 			break;
 		case TIMELINE_MENTIONS:
 			SetName("Mentions");
@@ -91,6 +94,9 @@ status_t updateTimeLineThread(void *data) {
 	int32 TYPE = super->TYPE;
 	
 	switch(TYPE) {
+		case TIMELINE_HOME:
+			twitObj->timelineHomeGet();
+			break;
 		case TIMELINE_FRIENDS:
 			twitObj->timelineFriendsGet();
 			break;

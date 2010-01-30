@@ -24,6 +24,7 @@
 const int32 POST = 'POST';
 const int32 CANCEL = 'CNL';
 const int32 UPDATED = 'UPDT';
+const int32 SHORTEN = 'SURL';
 
 class HTGNewTweetWindow : public BWindow {
 public:
@@ -36,11 +37,14 @@ public:
 private:
 	void postTweet();
 	void updateCounter();
+	void shortenAllUrls();
+	char *shortenUrl(const char *longUrl);
 	
 	twitCurl *twitObj;
 	HTGTextView *message;
 	BButton *postButton;
 	BButton *cancelButton;
+	BButton *shortenButton;
 	BView *theView;
 	BStringView *counterView;
 };

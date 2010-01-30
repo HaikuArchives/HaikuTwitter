@@ -51,6 +51,7 @@ private:
 	
 	twitCurl *newTweetObj;
 	
+	HTGTimeLineView *homeTimeLine;
 	HTGTimeLineView *friendsTimeLine;
 	HTGTimeLineView *mentionsTimeLine;
 	HTGTimeLineView *publicTimeLine;
