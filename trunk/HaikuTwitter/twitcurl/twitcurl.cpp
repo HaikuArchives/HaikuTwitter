@@ -489,6 +489,31 @@ bool twitCurl::timelineFriendsGet()
 }
 
 /*++
+* @method: twitCurl::timelineHomeGet
+*
+* @description: method to get friends timeline
+*
+* @input: none
+*
+* @output: true if GET is success, otherwise false. This does not check http
+*          response by twitter. Use getLastWebResponse() for that.
+*
+*--*/
+bool twitCurl::timelineHomeGet()
+{
+    bool retVal = false;
+    if( isCurlInit() )
+    {
+        /* Prepare standard params */
+        prepareStandardParams();
+
+        /* Perform GET */
+        retVal = performGet( twitterDefaults::TWITCURL_HOME_TIMELINE_URL );
+    }
+    return retVal;
+}
+
+/*++
 * @method: twitCurl::mentionsGet
 *
 * @description: method to get mentions

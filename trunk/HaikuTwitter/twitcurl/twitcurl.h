@@ -38,6 +38,7 @@ namespace twitterDefaults
     const std::string TWITCURL_STATUDESTROY_URL = "http://twitter.com/statuses/destroy/";
 
     /* Timeline URLs */
+    const std::string TWITCURL_HOME_TIMELINE_URL = "http://twitter.com/statuses/home_timeline.xml";
     const std::string TWITCURL_PUBLIC_TIMELINE_URL = "http://twitter.com/statuses/public_timeline.xml";
     const std::string TWITCURL_FEATURED_USERS_URL = "http://twitter.com/statuses/featured.xml";
     const std::string TWITCURL_FRIENDS_TIMELINE_URL = "http://twitter.com/statuses/friends_timeline.xml";
@@ -106,6 +107,7 @@ public:
     bool statusDestroyById( std::string& statusId );
 
     /* Twitter timeline APIs */
+    bool timelineHomeGet();
     bool timelinePublicGet();
     bool timelineFriendsGet();
     bool timelineUserGet( std::string userInfo = "", bool isUserId = false );
