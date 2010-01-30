@@ -97,8 +97,6 @@ BList* HTGTweetTextView::getUrls() {
 			while(end < theText.length() && theText[end] != ' ') {
 				end++;
 			}
-			if(end == theText.length()-2) //For some reason, we have to do this.
-				end--;
 			BMessage *theMessage = new BMessage(GO_TO_URL);
 			theMessage->AddString("url", theText.substr(start+1, end-start-1).c_str());
 			theList->AddItem(new BMenuItem(theText.substr(start+1, end-start-1).c_str(), theMessage));

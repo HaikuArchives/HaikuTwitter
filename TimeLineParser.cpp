@@ -200,8 +200,9 @@ void TimeLineParser::readData(const char *xmlData)
             		XMLTranscoder *t = XMLPlatformUtils::fgTransService->makeNewTranscoderFor("UTF-8", resValue, 150);
             		t->transcodeTo(textNode->getWholeText(), (XMLSize_t)150, utf8String, (XMLSize_t)150, blabla, XMLTranscoder::UnRep_Throw);
             		delete t;
-            		
+            		            		
             		string textString((char *)utf8String);
+            		textString.erase(textString.length()-3, 3); //Last three chars is garbage!
             		tweetPtr[numberOfEntries] = new HTTweet();
             		tweetPtr[numberOfEntries]->setText(textString);
             		numberOfEntries++;

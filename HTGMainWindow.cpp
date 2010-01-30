@@ -22,7 +22,14 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime) 
 	tabView = new BTabView(BRect(0, 20, 315, 600), "TabView");
 	this->AddChild(tabView);
 	
-	/*Set up timeline*/
+	/*Set up home timeline*/	//The parser does not support home timeline yet.
+	/*twitCurl *homeTwitObj = new twitCurl();
+	homeTwitObj->setTwitterUsername( username );
+    homeTwitObj->setTwitterPassword( password );
+	homeTimeLine = new HTGTimeLineView(homeTwitObj, TIMELINE_HOME);
+	tabView->AddTab(homeTimeLine);*/
+	
+	/*Set up friends timeline*/
 	twitCurl *timelineTwitObj = new twitCurl();
 	timelineTwitObj->setTwitterUsername( username );
     timelineTwitObj->setTwitterPassword( password );
@@ -88,6 +95,7 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			newTweetWindow->Show();
 			break;
 		case REFRESH:
+			//homeTimeLine->updateTimeLine(); //The parser does not support home timeline yet.
 			friendsTimeLine->updateTimeLine();
 			mentionsTimeLine->updateTimeLine();
 			publicTimeLine->updateTimeLine();
