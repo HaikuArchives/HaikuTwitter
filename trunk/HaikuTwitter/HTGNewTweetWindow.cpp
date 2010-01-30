@@ -97,7 +97,18 @@ void HTGNewTweetWindow::shortenAllUrls() {
 
 void HTGNewTweetWindow::updateCounter() {
 	char counterString[32];
-	int symbolsLeft =  NUMBER_OF_ALLOWED_CHARS - strlen(message->Text());
+	int symbolsLeft =  NUMBER_OF_ALLOWED_CHARS;
+	
+	/*Have to check every character for a character with 2 byte representation*
+	 *Twitter count them as one character... and yeah, this is an UGLY FIX;p
+	 *It's really late, so I'm not that interested in testing this for every char.
+	 *Btw, I assume that two-byte chars is marked as negative.
+	 */
+	for(int i = 0;message->Text()[i] != '\0';i++) {
+		if(message->Text()[i] < 0) //If negative, then skip a step.
+			i++;
+		symbolsLeft--;
+	}
 	sprintf(counterString, "%i", symbolsLeft);
 	
 	/*Check symbolsLeft, disable/enable post button and change counter color.*/
