@@ -27,7 +27,7 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	
 	/*Write time*/
 	owner->SetHighColor(128,128,128);
-	owner->MovePenTo(frame.right-92, frame.top+12);
+	owner->MovePenTo(frame.right-95, frame.top+12);
 	owner->DrawString(theTweet->getRelativeDate().c_str());
 	
 	/*Write text*/
