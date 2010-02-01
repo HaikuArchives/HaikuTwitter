@@ -308,7 +308,7 @@ void TimeLineParser::readData(const char *xmlData)
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
             		/*Remove last character, holds ugly symbol.*/
-            		rawString[strlen(rawString)-5] = '\0';
+            		rawString[strlen(rawString)-3] = '\0';
             		
             		string textString(rawString);
             		tweetPtr[i/2]->setDate(textString);

@@ -21,9 +21,14 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	}
 	
 	/*Write screen name*/
-	owner->SetHighColor(128,128,128);
+	owner->SetHighColor(100,100,100);
 	owner->MovePenTo(frame.left+72, frame.top+12);
 	owner->DrawString(theTweet->getScreenName().c_str());
+	
+	/*Write time*/
+	owner->SetHighColor(128,128,128);
+	owner->MovePenTo(frame.right-85, frame.top+12);
+	owner->DrawString(theTweet->getRelativeDate().c_str());
 	
 	/*Write text*/
 	BRect textRect(72,frame.top+15, frame.right, frame.bottom-3);

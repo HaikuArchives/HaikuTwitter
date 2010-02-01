@@ -15,6 +15,7 @@
 #include <BitmapStream.h>
 #include <TranslatorRoster.h>
 
+#include <ctime>
 #include "curl/curl.h"
 
 #ifndef HT_TWEET_H
@@ -32,6 +33,7 @@ struct DateStruct {
 	int hour;
 	int minute;
 	int second;
+	int year;
 };
 
 class HTTweet {
@@ -44,6 +46,8 @@ public:
 	const string getScreenName();
 	const string getText();
 	const string getProfileImageUrl();
+	const string getRelativeDate();
+	const string getRawDate();
 	BBitmap* getBitmap();
 	BBitmap getBitmapCopy();
 	struct DateStruct getDate() const;
@@ -68,6 +72,7 @@ private:
 	string screenName;
 	string text;
 	string profileImageUrl;
+	string rawDate;
 	struct DateStruct date;
 	int id;
 };
