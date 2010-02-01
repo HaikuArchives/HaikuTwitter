@@ -104,7 +104,7 @@ const string HTTweet::getRelativeDate() {
 	else if(diffYear == 1)
 		sprintf(tempString, "Last year");
 	else if(diffMonth > 0)
-		sprintf(tempString, this->rawDate.substr(4, 5).c_str());
+		sprintf(tempString, this->rawDate.substr(4, 6).c_str());
 	else if(diffDay > 1)
 		sprintf(tempString, "%i days ago", diffMonth);
 	else if(diffDay == 1)
