@@ -32,6 +32,8 @@ HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj) : BWindow(BRect(100, 100
 	counterView = new BStringView(BRect(350, 75, 400, 95), "Counter", "140");
 	counterView->SetHighColor(128, 128, 128);
 	theView->AddChild(counterView);
+	
+	message->MakeFocus();
 }
 
 void HTGNewTweetWindow::SetText(const char *text) {
@@ -202,6 +204,9 @@ HTGNewTweetWindow::~HTGNewTweetWindow() {
 	
 	cancelButton->RemoveSelf();
 	delete cancelButton;
+	
+	shortenButton->RemoveSelf();
+	delete shortenButton;
 	
 	theView->RemoveSelf();
 	delete theView;
