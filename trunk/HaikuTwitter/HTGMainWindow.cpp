@@ -87,7 +87,7 @@ void HTGMainWindow::_SetupMenu() {
 	
 	/*Make Twitter Menu*/
 	fTwitterMenu = new BMenu("Twitter");
-	fTwitterMenu->AddItem(new BMenuItem("New tweet", new BMessage(NEW_TWEET), 'N'));
+	fTwitterMenu->AddItem(new BMenuItem("New tweet...", new BMessage(NEW_TWEET), 'N'));
 	//fTwitterMenu->AddItem(new BMenuItem("Go to user...", new BMessage(GO_USER), 'G')); //This is not implemented yet.
 	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("Refresh", new BMessage(REFRESH), 'R'));

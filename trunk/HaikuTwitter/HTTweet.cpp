@@ -21,6 +21,7 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 	this->text = text;
 	this->profileImageUrl = profileImageUrl;
 	this->setDate(dateString);
+	this->rawDate = dateString;
 	imageBitmap = NULL;
 	id = -1;
 	bitmapDownloadInProgress = false;
@@ -35,7 +36,12 @@ HTTweet::HTTweet(HTTweet *originalTweet) {
 			this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
 	this->date = originalTweet->getDate();
 	this->id = originalTweet->getId();
+	this->rawDate = originalTweet->getRawDate();
 	bitmapDownloadInProgress = false;
+}
+
+const string HTTweet::getRawDate() {
+	return rawDate;
 }
 
 const string HTTweet::getScreenName() {
@@ -59,8 +65,8 @@ void HTTweet::setText(string &text) {
 }
 
 void HTTweet::setDate(string &dateString) {
+	this->rawDate = dateString;
 	const char *cString = dateString.c_str();
-	
 	date.month = stringToMonth(cString);
 	
 	// The number 1 is represented by ASCII code 49.
@@ -69,10 +75,50 @@ void HTTweet::setDate(string &dateString) {
 	date.hour = cString[12]-48 + (cString[11]-48)*10;;
 	date.minute = cString[15]-48 + (cString[14]-48)*10;
 	date.second = cString[18]-48 + (cString[17]-48)*10;
+	date.year = cString[29]-48 + (cString[28]-48)*10;
 }
 
 struct DateStruct HTTweet::getDate() const {
 	return date;
+}
+
+const string HTTweet::getRelativeDate() {
+	time_t currentTime = time(NULL);
+	tm *timeinfo;
+	timeinfo = gmtime(&currentTime);
+	char tempString[100];
+	
+	//Amazingly, tm_year returns the year 110...
+	int diffYear = timeinfo->tm_year-this->getDate().year -100;
+	int diffHour = timeinfo->tm_hour-this->getDate().hour;
+	int diffDay = timeinfo->tm_mday-this->getDate().day;
+	int diffMin = timeinfo->tm_min-this->getDate().minute;
+	int diffMonth = timeinfo->tm_mon-this->getDate().month;
+	
+	//Special cases
+	if(diffMin > 45)
+		diffHour++;
+	
+	if(diffYear > 1)
+		sprintf(tempString, "%i years ago", diffMonth);
+	else if(diffYear == 1)
+		sprintf(tempString, "Last year");
+	else if(diffMonth > 0)
+		sprintf(tempString, this->rawDate.substr(4, 5).c_str());
+	else if(diffDay > 1)
+		sprintf(tempString, "%i days ago", diffMonth);
+	else if(diffDay == 1)
+		sprintf(tempString, "Yesterday");
+	else if(diffHour == 1)
+		sprintf(tempString, "Last hour");
+	else if(diffHour > 1)
+		sprintf(tempString, "%i hours ago", diffHour);
+	else if(diffMin > 1)
+		sprintf(tempString, "%i minutes ago", diffMin);
+	else
+		sprintf(tempString, "Moments ago");
+	
+	return std::string(tempString);
 }
 
 bool HTTweet::operator<(const HTTweet &b) const {
@@ -110,29 +156,29 @@ void HTTweet::setId(int id) {
 const int HTTweet::stringToMonth(const char *date) {
 	//jan feb mar apr may jun jul aug sep oct nov dec
 	if(strncmp(date+4, "Jan", 3) == 0)
-		return 1;
+		return 0;
 	if(strncmp(date+4, "Feb", 3) == 0)
-		return 2;
+		return 1;
 	if(strncmp(date+4, "Mar", 3) == 0)
-		return 3;
+		return 2;
 	if(strncmp(date+4, "Apr", 3) == 0)
-		return 4;
+		return 3;
 	if(strncmp(date+4, "May", 3) == 0)
-		return 5;
+		return 4;
 	if(strncmp(date+4, "Jun", 3) == 0)
-		return 6;
+		return 5;
 	if(strncmp(date+4, "Jul", 3) == 0)
-		return 7;
+		return 6;
 	if(strncmp(date+4, "Aug", 3) == 0)
-		return 8;
+		return 7;
 	if(strncmp(date+4, "Sep", 3) == 0)
-		return 9;
+		return 8;
 	if(strncmp(date+4, "Oct", 3) == 0)
-		return 10;
+		return 9;
 	if(strncmp(date+4, "Nov", 3) == 0)
-		return 11;
+		return 10;
 	if(strncmp(date+4, "Dec", 3) == 0)
-		return 12;
+		return 11;
 	return -1;
 }
 
