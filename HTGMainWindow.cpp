@@ -57,6 +57,30 @@ bool HTGMainWindow::QuitRequested() {
 	return true;
 }
 
+void HTGMainWindow::showAbout() {
+	std::string text("HaikuTwitter r.");
+	text.append(SVN_REV);
+	text.append("\n");
+	text.append("\tWritten by Martin Hebnes Pedersen\n"
+				"\tCopyright 2010, All rights reserved.\n"
+				"\t\n"
+				"\thttp://martinhpedersen.mine.nu/\n"
+				"\t@martinhpedersen\n");
+				
+	BAlert *alert = new BAlert("about", text.c_str(), "OK");
+	BTextView *view = alert->TextView();
+	BFont font;
+
+	view->SetStylable(true);
+
+	view->GetFont(&font);
+	font.SetSize(18);
+	font.SetFace(B_BOLD_FACE);
+	view->SetFontAndColor(0, 15+strlen(SVN_REV), &font);
+
+	alert->Go();
+}
+
 void HTGMainWindow::_SetupMenu() {
 	/*Menu bar object*/
 	fMenuBar = new BMenuBar(Bounds(), "mbar");
@@ -105,8 +129,6 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			timeLineWindow->Show();
 			break;
 		case GO_SEARCH:
-			//timeLineWindow = new HTGTimeLineWindow(this, username, password, refreshTime, TIMELINE_SEARCH, msg->FindString(text_label, (int32)0));
-			//timeLineWindow->Show();
 			std::cout << "Search not implemented yet..." << std::endl;
 			break;
 		case ACCOUNT_SETTINGS:
@@ -114,8 +136,7 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			accountSettingsWindow->Show();
 			break;
 		case ABOUT:
-			aboutWindow = new HTGAboutWindow();
-			aboutWindow->Show();
+			showAbout();
 			break;
 		case B_CLOSE_REQUESTED:
 			be_app->PostMessage(B_QUIT_REQUESTED);
