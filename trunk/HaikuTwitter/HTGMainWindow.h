@@ -21,7 +21,6 @@
 #include "HTTweet.h"
 #include "HTGNewTweetWindow.h"
 #include "HTGAccountSettingsWindow.h"
-#include "HTGAboutWindow.h"
 #include "HTGTweetItem.h"
 #include "HTGTimeLineView.h"
 #include "HTGTimeLineWindow.h"
@@ -46,6 +45,7 @@ private:
 	int refreshTime;
 
 	void _SetupMenu();
+	void showAbout();
 
 	BTabView *tabView;
 	
@@ -59,7 +59,6 @@ private:
 	HTGNewTweetWindow *newTweetWindow;
 	HTGTimeLineWindow *timeLineWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
-	HTGAboutWindow *aboutWindow;
 		
 	BMenuBar *fMenuBar;
 	BMenu *fTwitterMenu;

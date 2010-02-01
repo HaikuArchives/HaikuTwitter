@@ -11,11 +11,7 @@
 
 #include "twitcurl/twitcurl.h"
 
-#include "TimeLineParser.h"
 #include "HTGMainWindow.h"
-#include "HTGNewTweetWindow.h"
-#include "HTGAccountSettingsWindow.h"
-#include "HTGAboutWindow.h"
 
 status_t getSettingsPath(BPath &path);
 struct twitter_settings retrieveSettings();
@@ -34,7 +30,6 @@ int main()
 	theWindow->Show();
 	
 	HaikuApp.Run();
-	
     return 0;
 }
 
