@@ -49,6 +49,7 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime) 
 	tabView->AddTab(publicTimeLine);
 		
 	/*Fire a REFRESH message every 'refreshTime' minute*/
+	std::cout << refreshTime << std::endl;
 	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
 
