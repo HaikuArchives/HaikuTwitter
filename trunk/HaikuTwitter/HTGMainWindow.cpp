@@ -6,7 +6,7 @@
 
 #include "HTGMainWindow.h"
 
-HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime) : BWindow(BRect(300, 300, 615, 900), "HaikuTwitter (Alpha)", B_TITLED_WINDOW, B_NOT_H_RESIZABLE) {	
+HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, BPoint position, int height) : BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter (Alpha)", B_TITLED_WINDOW, B_NOT_H_RESIZABLE) {	
 	this->username = username;
 	this->password = password;
 	this->refreshTime = refreshTime;
@@ -53,8 +53,56 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime) 
 }
 
 bool HTGMainWindow::QuitRequested() {
+	_retrieveSettings();
+	_saveSettings();
 	be_app->PostMessage(B_QUIT_REQUESTED);
 	return true;
+}
+
+status_t HTGMainWindow::_getSettingsPath(BPath &path) {
+	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status < B_OK)
+		return status;
+	
+	path.Append("HaikuTwitter_settings");
+	return B_OK;
+}
+
+void HTGMainWindow::_retrieveSettings() {
+	BPath path;
+	
+	if (_getSettingsPath(path) < B_OK)
+		return;
+		
+	BFile file(path.Path(), B_READ_ONLY);
+	if (file.InitCheck() < B_OK)
+		return;
+	file.ReadAt(0, &theSettings, sizeof(twitter_settings));
+	
+	if(theSettings.refreshTime < 1) {
+		sprintf(theSettings.username, "changeme");
+		sprintf(theSettings.password, "hackme");
+		theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
+		theSettings.position = BPoint(300, 300);
+		theSettings.height = 600;
+	}
+}
+
+status_t HTGMainWindow::_saveSettings() {	
+	theSettings.height = (int)this->Frame().bottom-this->Frame().top;
+	theSettings.position = BPoint(this->Frame().left, this->Frame().top);
+	
+	BPath path;
+	status_t status = _getSettingsPath(path);
+	if (status < B_OK)
+		return status;
+		
+	BFile file(path.Path(), B_READ_WRITE | B_CREATE_FILE);
+	if (status < B_OK)
+		return status;
+		
+	file.WriteAt(0, &theSettings, sizeof(twitter_settings));
+	std::cout << "Window position saved" << std::endl;
 }
 
 void HTGMainWindow::showAbout() {
