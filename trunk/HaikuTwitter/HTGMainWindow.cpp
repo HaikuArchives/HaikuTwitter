@@ -59,25 +59,29 @@ bool HTGMainWindow::QuitRequested() {
 }
 
 void HTGMainWindow::showAbout() {
-	std::string text("HaikuTwitter Alpha (rev ");
+	std::string text("HaikuTwitter Alpha (rev. ");
 	text.append(SVN_REV);
 	text.append(")\n");
 	text.append("\tWritten by Martin Hebnes Pedersen\n"
 				"\tCopyright 2010, All rights reserved.\n"
 				"\t\n"
 				"\thttp://martinhpedersen.mine.nu/\n"
-				"\t@martinhpedersen\n");
+				"\t@martinhpedersen\n"
+				"\t\n"
+				"\tDistributed under the terms of the MIT License.\n");
 				
 	BAlert *alert = new BAlert("about", text.c_str(), "OK");
 	BTextView *view = alert->TextView();
 	BFont font;
 
 	view->SetStylable(true);
-
+	
 	view->GetFont(&font);
+	font.SetSize(10);
+	view->SetFontAndColor(text.length()-48, text.length(), &font);
 	font.SetSize(18);
 	font.SetFace(B_BOLD_FACE);
-	view->SetFontAndColor(0, 15+strlen(SVN_REV), &font);
+	view->SetFontAndColor(0, 18, &font);
 
 	alert->Go();
 }
