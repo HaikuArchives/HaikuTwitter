@@ -59,9 +59,9 @@ bool HTGMainWindow::QuitRequested() {
 }
 
 void HTGMainWindow::showAbout() {
-	std::string text("HaikuTwitter r.");
+	std::string text("HaikuTwitter Alpha (rev ");
 	text.append(SVN_REV);
-	text.append("\n");
+	text.append(")\n");
 	text.append("\tWritten by Martin Hebnes Pedersen\n"
 				"\tCopyright 2010, All rights reserved.\n"
 				"\t\n"
