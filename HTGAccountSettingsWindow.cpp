@@ -92,6 +92,8 @@ void HTGAccountSettingsWindow::_retrieveSettings() {
 		sprintf(theSettings.username, "changeme");
 		sprintf(theSettings.password, "hackme");
 		theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
+		theSettings.position = BPoint(300, 300);
+		theSettings.height = 600;
 	}
 }
 

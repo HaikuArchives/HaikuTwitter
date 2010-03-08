@@ -24,10 +24,9 @@ int main()
 	struct twitter_settings theSettings = retrieveSettings();
     std::string username(theSettings.username);
     std::string password(theSettings.password);
-    int refreshTime = theSettings.refreshTime;
 	
 	/*Display timeline*/
-	HTGMainWindow *theWindow = new HTGMainWindow(username, password, refreshTime);
+	HTGMainWindow *theWindow = new HTGMainWindow(username, password, theSettings.refreshTime, theSettings.position, theSettings.height);
 	theWindow->Show();
 	
 	HaikuApp.Run();
@@ -50,6 +49,8 @@ struct twitter_settings retrieveSettings() {
 	sprintf(theSettings.username, "changeme");
 	sprintf(theSettings.password, "hackme");
 	theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
+	theSettings.position = BPoint(300, 300);
+	theSettings.height = 600;
 	
 	BPath path;
 	

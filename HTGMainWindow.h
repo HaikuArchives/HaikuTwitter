@@ -34,7 +34,7 @@ const int32 ABOUT = 'BOUT';
 
 class HTGMainWindow : public BWindow {
 public:
-	HTGMainWindow(string username, string password, int refreshTime);
+	HTGMainWindow(string username, string password, int refreshTime, BPoint position, int height);
 	virtual void MessageReceived(BMessage *msg);
 	bool QuitRequested();
 	~HTGMainWindow();
@@ -43,8 +43,12 @@ private:
 	string username;
 	string password;
 	int refreshTime;
+	twitter_settings theSettings;
 
 	void _SetupMenu();
+	status_t _getSettingsPath(BPath &path);
+	void _retrieveSettings();
+	status_t _saveSettings();
 	void showAbout();
 
 	BTabView *tabView;

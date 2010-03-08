@@ -30,6 +30,8 @@ struct twitter_settings {
 	char username[30];
 	char password[30];
 	int refreshTime;
+	BPoint position;
+	int height;
 };
 
 
