@@ -20,6 +20,7 @@
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
 #include "HTGNewTweetWindow.h"
+#include "HTGGoToUserWindow.h"
 #include "HTGAccountSettingsWindow.h"
 #include "HTGTweetItem.h"
 #include "HTGTimeLineView.h"
@@ -29,6 +30,7 @@ const int32 NEW_TWEET = 'NWTW';
 const int32 REFRESH = 'REFR';
 const int32 ACCOUNT_SETTINGS = 'ACC';
 const int32 GO_USER = 'GUSR';
+const int32 FIND_USER = 'FUSR';
 const int32 GO_SEARCH = 'SRCH';
 const int32 ABOUT = 'BOUT';
 
@@ -60,6 +62,7 @@ private:
 	HTGTimeLineView *mentionsTimeLine;
 	HTGTimeLineView *publicTimeLine;
 	
+	HTGGoToUserWindow *goToUserWindow;
 	HTGNewTweetWindow *newTweetWindow;
 	HTGTimeLineWindow *timeLineWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
