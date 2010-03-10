@@ -86,6 +86,7 @@ BList* HTGTweetTextView::getUrls() {
 	size_t pos = 0;
 	std::string theText(this->Text());
 	
+	/*Search for :// (URIs)*/
 	while(pos != std::string::npos) {
 		pos = theText.find("://", pos);
 		if(pos != std::string::npos) {
@@ -100,6 +101,25 @@ BList* HTGTweetTextView::getUrls() {
 			BMessage *theMessage = new BMessage(GO_TO_URL);
 			theMessage->AddString("url", theText.substr(start+1, end-start-1).c_str());
 			theList->AddItem(new BMenuItem(theText.substr(start+1, end-start-1).c_str(), theMessage));
+			pos = end;
+		}
+	}
+	
+	/*Search for www.*/
+	pos = 0;
+	while(pos != std::string::npos) {
+		pos = theText.find("www.", pos);
+		if(pos != std::string::npos) {
+			int start = pos;
+			int end = pos;
+			while(end < theText.length() && theText[end] != ' ') {
+				end++;
+			}
+			BMessage *theMessage = new BMessage(GO_TO_URL);
+			std::string httpString(theText.substr(start, end-start).c_str());
+			httpString.insert(0, "http://"); //Add the http:// prefix.
+			theMessage->AddString("url", httpString.c_str());
+			theList->AddItem(new BMenuItem(httpString.c_str(), theMessage));
 			pos = end;
 		}
 	}
