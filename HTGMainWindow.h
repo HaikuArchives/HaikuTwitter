@@ -22,6 +22,7 @@
 #include "HTGNewTweetWindow.h"
 #include "HTGGoToUserWindow.h"
 #include "HTGAccountSettingsWindow.h"
+#include "HTGInfoPopperSettingsWindow.h"
 #include "HTGTweetItem.h"
 #include "HTGTimeLineView.h"
 #include "HTGTimeLineWindow.h"
@@ -29,6 +30,7 @@
 const int32 NEW_TWEET = 'NWTW';
 const int32 REFRESH = 'REFR';
 const int32 ACCOUNT_SETTINGS = 'ACC';
+const int32 INFOPOPPER_SETTINGS = 'IPS';
 const int32 GO_USER = 'GUSR';
 const int32 FIND_USER = 'FUSR';
 const int32 GO_SEARCH = 'SRCH';
@@ -66,6 +68,7 @@ private:
 	HTGNewTweetWindow *newTweetWindow;
 	HTGTimeLineWindow *timeLineWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
+	HTGInfoPopperSettingsWindow *infopopperSettingsWindow;
 		
 	BMenuBar *fMenuBar;
 	BMenu *fTwitterMenu;

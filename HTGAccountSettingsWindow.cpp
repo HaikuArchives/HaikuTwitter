@@ -15,12 +15,14 @@ HTGAccountSettingsWindow::~HTGAccountSettingsWindow() {
 	_saveSettings();
 	
 	revertButton->RemoveSelf();
+	refreshView->RemoveSelf();
 	usernameView->RemoveSelf();
 	passwordView->RemoveSelf();
 	backgroundView->RemoveSelf();
 	delete revertButton;
 	delete usernameView;
 	delete passwordView;
+	delete refreshView;
 	delete backgroundView;
 }
 

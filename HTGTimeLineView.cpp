@@ -6,6 +6,15 @@
 
 #include "HTGTimeLineView.h"
 
+/*InfoPopper constants*/
+const int32 kNotify		= 1000;
+const int32 kInformationType	= 1001;
+const int32 kImportantType	= 1002;
+const int32 kErrorType		= 1003;
+const int32 kProgressType	= 1004;
+const int32 kAttributeIcon	= 1005;
+const int32 kContentsIcon	= 1006;
+
 HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, const char* requestInfo) : BScrollView("Loading...", new BView(BRect(0, 0, 300-4, 552), "ContainerView", B_FOLLOW_LEFT | B_FOLLOW_TOP, 0), B_FOLLOW_LEFT | B_FOLLOW_TOP, 0, false, true, B_FANCY_BORDER) {	
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
@@ -38,12 +47,23 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, const char
 	/*Set up listview*/
 	this->listView = new BListView(BRect(0, 0, 300-5, 72*20), "ListView");
 	
+	/*Prepare the list for unhandled tweets*/
+	unhandledList = new BList();
+	
 	/*Set up scrollview*/
 	containerView = new BView(Bounds(), "ContainerView", B_FOLLOW_LEFT | B_FOLLOW_TOP, 0);
 	containerView->AddChild(listView);
 	this->SetTarget(containerView);
 	
+	/*Load infopopper settings (if supported)*/
+	wantsNotifications = false; //Default should be false
+	#ifdef INFOPOPPER_SUPPORT
+	wantsNotifications = _retrieveInfoPopperBoolFromSettings();
+	#endif
+	
+	/*All done, ready to display tweets*/
 	waitingForUpdate = true;
+	updateTimeLine();
 }
 
 void HTGTimeLineView::AttachedToWindow() {
@@ -53,11 +73,12 @@ void HTGTimeLineView::AttachedToWindow() {
 }
 
 void HTGTimeLineView::updateTimeLine() {
-	/*Update timeline only if we can lock window looper*/
-	if(!listView->LockLooper())
+	bool looperLocked = listView->LockLooper();
+	/*Update timeline only if we can lock window looper -or we want notifications for this timeline*/
+	if(!looperLocked && !wantsNotifications)
 		waitingForUpdate = true;
 	else {
-		listView->UnlockLooper(); //Assume we can lock it later
+		if(looperLocked) listView->UnlockLooper(); //Assume we can lock it later
 		previousThread = spawn_thread(updateTimeLineThread, "UpdateThread", 10, this);
 		resume_thread(previousThread);
 		waitingForUpdate = false;
@@ -134,12 +155,18 @@ status_t updateTimeLineThread(void *data) {
 		mostRecentTweet = mostRecentItem->getTweetPtr();
 		currentTweet = timeLineParser->getTweets()[0];
 	
-		/*If we are up to date, don't do anything more*/
+		/*If we are up to date, clean up and return*/
 		if(!(*mostRecentTweet < *currentTweet)) {
 			delete timeLineParser;
 			timeLineParser = NULL;
 			return B_OK;
 		}
+	}
+	
+	/*Check to see if there is some unhandled tweets*/
+	if(!super->unhandledList->IsEmpty()) {
+		mostRecentItem = (HTGTweetItem *)super->unhandledList->FirstItem();
+		mostRecentTweet = mostRecentItem->getTweetPtr();
 	}
 		
 	BList *newList = new BList();
@@ -154,6 +181,10 @@ status_t updateTimeLineThread(void *data) {
 			HTTweet *copiedTweet = new HTTweet(currentTweet);
 			copiedTweet->downloadBitmap();
 			newList->AddItem(new HTGTweetItem(copiedTweet));
+			
+			if(!initialLoad && super->wantsNotifications) { //New tweet arrived, send notification
+				super->sendNotificationFor(copiedTweet);
+			}
 		}
 		else
 			break;
@@ -161,13 +192,19 @@ status_t updateTimeLineThread(void *data) {
 	
 	/*Try to lock listView*/
 	if(!listView->LockLooper()) {
-		/*Not active view: Cleanup and return*/
+		/*Not active view: Copy tweetptrs to unhandledList and return*/
+		super->unhandledList->AddList(newList, 0); //Add new tweets to the top
 		super->waitingForUpdate = true;
 		delete timeLineParser;
 		timeLineParser = NULL;
-		delete newList;
+		if(newList->IsEmpty())
+			delete newList;
 		return B_OK;
 	}
+	
+	/*Add the unhandled tweets to newList*/
+	newList->AddList(super->unhandledList);
+	super->unhandledList->MakeEmpty();
 	
 	HTGTweetItem *currentItem;
 	while(!listView->IsEmpty()) {
@@ -191,6 +228,96 @@ status_t updateTimeLineThread(void *data) {
 	delete newList;
 	
 	return B_OK;
+}
+
+void HTGTimeLineView::sendNotificationFor(HTTweet *theTweet) {	
+	std::string title("New tweet from ");
+	title.append(theTweet->getScreenName());
+	std::cout << title << std::endl;
+	
+	#ifdef INFOPOPPER_SUPPORT
+	
+	IPConnection *conn = new IPConnection;
+	IPMessage *msg = new IPMessage(InfoPopper::Information);
+
+	//Prepare the message
+	msg->Application("HaikuTwitter");
+	msg->Title(title.c_str());
+	msg->Content(theTweet->getText().c_str());
+
+	// Icon maybe in the future
+	/*if (strlen(fIconFile->Text()) > 0) {
+		entry_ref ref;
+
+		if (get_ref_for_path(fIconFile->Text(), &ref) == B_OK) {
+			if (fSelectedIconType == InfoPopper::Attribute) {
+				msg->MainIcon(ref);
+				msg->MainIconType(fSelectedIconType);
+			}
+			if (fSelectedIconType == InfoPopper::Contents) {
+				msg->OverlayIcon(ref);
+				msg->OverlayIconType(fSelectedIconType);
+			}
+		}
+	}*/
+
+	//Send the notification
+	conn->Send(msg);
+
+	delete msg;
+	delete conn;
+		
+	#endif
+}
+
+bool HTGTimeLineView::_retrieveInfoPopperBoolFromSettings() {
+	BPath path;
+	infopopper_settings theSettings;
+	
+	if (HTGInfoPopperSettingsWindow::_getSettingsPath(path) < B_OK) {
+		theSettings = HTGInfoPopperSettingsWindow::_getDefaults();
+		switch(TYPE) {
+		case TIMELINE_FRIENDS:
+			return theSettings.friendsNotify;
+			break;
+		case TIMELINE_MENTIONS:
+			return theSettings.mentionsNotify;
+			break;
+		case TIMELINE_PUBLIC:
+			return theSettings.publicNotify;
+			break;
+		}
+	}
+		
+	BFile file(path.Path(), B_READ_ONLY);
+	if (file.InitCheck() < B_OK) {
+		theSettings = HTGInfoPopperSettingsWindow::_getDefaults();
+		switch(TYPE) {
+		case TIMELINE_FRIENDS:
+			return theSettings.friendsNotify;
+			break;
+		case TIMELINE_MENTIONS:
+			return theSettings.mentionsNotify;
+			break;
+		case TIMELINE_PUBLIC:
+			return theSettings.publicNotify;
+			break;
+		}
+	}
+	
+	file.ReadAt(0, &theSettings, sizeof(infopopper_settings));
+	switch(TYPE) {
+		case TIMELINE_FRIENDS:
+			return theSettings.friendsNotify;
+			break;
+		case TIMELINE_MENTIONS:
+			return theSettings.mentionsNotify;
+			break;
+		case TIMELINE_PUBLIC:
+			return theSettings.publicNotify;
+			break;
+		}
+	
 }
 
 HTGTimeLineView::~HTGTimeLineView() {

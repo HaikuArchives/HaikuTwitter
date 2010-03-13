@@ -1,6 +1,69 @@
+# Path to Xerces-C sources
+XERCESC_PATH = xercesc/src
+
+# Uncomment this if you want InfoPopper support
+# INFOPOPPER = -linfopopper -DINFOPOPPER_SUPPORT
+
+### Nothing below this should be changed ###
+
 APP = HaikuTwitter
-INCS = xercesc/src
+CC = c++
+LIBS = -L ${XERCESC_PATH}/.libs/ -lbe -ltranslation -lcurl -lxerces-c
 SVNDEV = -D'SVN_REV="$(shell svnversion -n .)"'
 
-${APP} :: ${APP}.cpp twitcurl/twitcurl.cpp TimeLineParser.cpp HTGTweetTextView.cpp HTGTextView.cpp HTGTimeLineView.cpp HTGGoToUserWindow.cpp HTTweet.cpp HTGMainWindow.cpp HTGNewTweetWindow.cpp HTGTweetItem.cpp HTGAccountSettingsWindow.cpp HTGTimeLineWindow.cpp
-	c++ -static $(SVNDEV) -L /boot/common/lib/ -lbe -lcurl -ltranslation -L ${INCS}/.libs/ -lxerces-c -I${INCS} ${APP}.cpp twitcurl/twitcurl.cpp TimeLineParser.cpp HTGGoToUserWindow.cpp HTGTweetTextView.cpp HTGAccountSettingsWindow.cpp HTGTweetItem.cpp HTTweet.cpp HTGTimeLineWindow.cpp HTGTimeLineView.cpp HTGTextView.cpp HTGMainWindow.cpp HTGNewTweetWindow.cpp -o ${APP}
+CFLAGS = $(SVNDEV) ${INFOPOPPER} -I${XERCESC_PATH}
+
+all: ${APP}
+
+${APP}: HaikuTwitter.o twitcurl.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
+	${CC} ${LIBS} HaikuTwitter.o twitcurl.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o -o ${APP}
+
+HaikuTwitter.o: HaikuTwitter.cpp
+	${CC} -c HaikuTwitter.cpp ${CFLAGS}
+
+twitcurl.o: twitcurl/twitcurl.cpp
+	${CC} -c twitcurl/twitcurl.cpp ${CFLAGS}
+
+TimeLineParser.o: TimeLineParser.cpp
+	${CC} -c TimeLineParser.cpp ${CFLAGS}
+	
+HTGTweetTextView.o: HTGTweetTextView.cpp
+	${CC} -c HTGTweetTextView.cpp ${CFLAGS}
+	
+HTGInfoPopperSettingsWindow.o: HTGInfoPopperSettingsWindow.cpp
+	${CC} -c HTGInfoPopperSettingsWindow.cpp ${CFLAGS}
+
+HTGTextView.o: HTGTextView.cpp
+	${CC} -c HTGTextView.cpp ${CFLAGS}
+
+HTGTimeLineView.o: HTGTimeLineView.cpp
+	${CC} -c HTGTimeLineView.cpp ${CFLAGS}
+	
+HTGGoToUserWindow.o: HTGGoToUserWindow.cpp
+	${CC} -c HTGGoToUserWindow.cpp ${CFLAGS}
+	
+HTTweet.o: HTTweet.cpp
+	${CC} -c HTTweet.cpp ${CFLAGS}
+
+HTGMainWindow.o: HTGMainWindow.cpp
+	${CC} -c HTGMainWindow.cpp ${CFLAGS}
+	
+HTGNewTweetWindow.o: HTGNewTweetWindow.cpp
+	${CC} -c HTGNewTweetWindow.cpp ${CFLAGS}
+	
+HTGTweetItem.o: HTGTweetItem.cpp
+	${CC} -c HTGTweetItem.cpp ${CFLAGS}
+	
+HTGAccountSettingsWindow.o: HTGAccountSettingsWindow.cpp
+	${CC} -c HTGAccountSettingsWindow.cpp ${CFLAGS}
+	
+HTGTimeLineWindow.o: HTGTimeLineWindow.cpp
+	${CC} -c HTGTimeLineWindow.cpp ${CFLAGS}
+
+clean:
+	rm -rf *.o
+
+install:
+	mkdir -p /boot/apps/HaikuTwitter
+	cp HaikuTwitter /boot/apps/HaikuTwitter/
+	cp ${XERCESC_PATH}/.libs/*.so /boot/common/lib/

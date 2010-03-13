@@ -157,6 +157,9 @@ void HTGMainWindow::_SetupMenu() {
 	/*Make Settings Menu*/
 	fSettingsMenu = new BMenu("Settings");
 	fSettingsMenu->AddItem(new BMenuItem("Account...", new BMessage(ACCOUNT_SETTINGS)));
+	#ifdef INFOPOPPER_SUPPORT
+	fSettingsMenu->AddItem(new BMenuItem("InfoPopper...", new BMessage(INFOPOPPER_SETTINGS)));
+	#endif
 	fMenuBar->AddItem(fSettingsMenu);
 	
 	AddChild(fMenuBar);
@@ -190,6 +193,10 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 		case ACCOUNT_SETTINGS:
 			accountSettingsWindow = new HTGAccountSettingsWindow();
 			accountSettingsWindow->Show();
+			break;
+		case INFOPOPPER_SETTINGS:
+			infopopperSettingsWindow = new HTGInfoPopperSettingsWindow();
+			infopopperSettingsWindow->Show();
 			break;
 		case ABOUT:
 			showAbout();

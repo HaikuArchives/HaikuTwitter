@@ -3,17 +3,23 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
-
 #include "ListView.h"
 #include "ScrollView.h"
 #include "TabView.h"
 
 #include <string>
 
+#ifdef INFOPOPPER_SUPPORT
+#include <infopopper/InfoPopper.h>
+#include <infopopper/IPMessage.h>
+#include <infopopper/IPConnection.h>
+#endif
+
 #include "TimeLineParser.h"
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
 #include "HTGTweetItem.h"
+#include "HTGInfoPopperSettingsWindow.h"
 
 #ifndef HTG_TIMELINEVIEW_H
 #define HTG_TIMELINEVIEW_H
@@ -35,8 +41,12 @@ public:
 	~HTGTimeLineView();
 	
 //private:
+	void sendNotificationFor(HTTweet *theTweet);
+	bool _retrieveInfoPopperBoolFromSettings();
 	bool waitingForUpdate;
+	bool wantsNotifications;
 	BListView *listView;
+	BList *unhandledList;
 	BView *containerView;
 	
 	thread_id previousThread;
