@@ -8,10 +8,10 @@ XERCESC_PATH = xercesc/src
 
 APP = HaikuTwitter
 CC = c++
-LIBS = -L ${XERCESC_PATH}/.libs/ -lbe -ltranslation -lcurl -lxerces-c
+LIBS = -L ${XERCESC_PATH}/.libs/ -lbe -ltranslation -lcurl -lxerces-c ${INFOPOPPER}
 SVNDEV = -D'SVN_REV="$(shell svnversion -n .)"'
 
-CFLAGS = $(SVNDEV) ${INFOPOPPER} -I${XERCESC_PATH}
+CFLAGS = $(SVNDEV) -I${XERCESC_PATH}
 
 all: ${APP}
 
