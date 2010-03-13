@@ -148,9 +148,9 @@ status_t updateTimeLineThread(void *data) {
 	HTTweet *mostRecentTweet;
 	HTTweet *currentTweet;
 	
-	bool initialLoad = (listView->FirstItem() == NULL);
+	bool initialLoad = (listView->FirstItem() == NULL && super->unhandledList->FirstItem() == NULL);
 	
-	if(!initialLoad) {
+	if(!initialLoad && listView->FirstItem() != NULL) {
 		mostRecentItem = (HTGTweetItem *)listView->FirstItem();
 		mostRecentTweet = mostRecentItem->getTweetPtr();
 		currentTweet = timeLineParser->getTweets()[0];
