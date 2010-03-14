@@ -317,7 +317,7 @@ bool HTGTimeLineView::_retrieveInfoPopperBoolFromSettings() {
 			return theSettings.publicNotify;
 			break;
 		}
-	
+	return false; //Just in case nothing get's picked up... no compile error/warning without this though
 }
 
 HTGTimeLineView::~HTGTimeLineView() {
