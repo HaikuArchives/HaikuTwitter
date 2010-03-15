@@ -1,6 +1,3 @@
-# Path to Xerces-C sources
-XERCESC_PATH = xercesc/src
-
 # Uncomment these two lines to enable InfoPopper support
 # LIBS = -linfopopper
 # INFOPOPPER = -DINFOPOPPER_SUPPORT
@@ -9,10 +6,10 @@ XERCESC_PATH = xercesc/src
 
 APP = HaikuTwitter
 CC = c++
-LIBS += -L ${XERCESC_PATH}/.libs/ -L /boot/common/lib/ -lbe -ltranslation -lcurl -lxerces-c
+LIBS += -L /boot/common/lib/ -lbe -ltranslation -lcurl -lxerces-c
 SVNDEV = -D'SVN_REV="$(shell svnversion -n .)"'
 
-CFLAGS = $(SVNDEV) -I${XERCESC_PATH} ${INFOPOPPER}
+CFLAGS = $(SVNDEV) ${INFOPOPPER}
 
 all: ${APP}
 
