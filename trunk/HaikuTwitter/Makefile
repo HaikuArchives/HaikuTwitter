@@ -64,4 +64,4 @@ clean:
 install:
 	mkdir -p /boot/apps/HaikuTwitter
 	cp HaikuTwitter /boot/apps/HaikuTwitter/
-	cp ${XERCESC_PATH}/.libs/*.so /boot/common/lib/
+	ln -s /boot/apps/HaikuTwitter/HaikuTwitter /boot/home/be/Applications/HaikuTwitter
