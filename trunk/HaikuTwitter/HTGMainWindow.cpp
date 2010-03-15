@@ -47,7 +47,7 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	twitCurl *publicTwitObj = new twitCurl();
 	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC);
 	tabView->AddTab(publicTimeLine);
-		
+	std::cout << refreshTime << std::endl;
 	/*Fire a REFRESH message every 'refreshTime' minute*/
 	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
