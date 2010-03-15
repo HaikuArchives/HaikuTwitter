@@ -43,7 +43,7 @@ status_t getSettingsPath(BPath &path) {
 }
 
 struct twitter_settings retrieveSettings() {
-	struct twitter_settings theSettings;
+	twitter_settings theSettings;
 	
 	/*Set the defaults, just in case anything bad happens*/
 	sprintf(theSettings.username, "changeme");
@@ -63,7 +63,7 @@ struct twitter_settings retrieveSettings() {
 
 	file.ReadAt(0, &theSettings, sizeof(twitter_settings));
 	
-	if(theSettings.refreshTime < 0 || theSettings.refreshTime > 10000) {
+	if(theSettings.refreshTime <= 0 || theSettings.refreshTime > 10000) {
 		std::cout << "Bad refreshtime, reverting to defaults." << std::endl;
 		theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
 	}

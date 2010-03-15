@@ -80,22 +80,27 @@ void HTGAccountSettingsWindow::MessageReceived(BMessage *msg) {
 }
 
 void HTGAccountSettingsWindow::_retrieveSettings() {
+	/*Set the defaults, just in case anything bad happens*/
+	sprintf(theSettings.username, "changeme");
+	sprintf(theSettings.password, "hackme");
+	theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
+	theSettings.position = BPoint(300, 300);
+	theSettings.height = 600;
+	
 	BPath path;
 	
 	if (_getSettingsPath(path) < B_OK)
-		return;
+		return;	
 		
 	BFile file(path.Path(), B_READ_ONLY);
 	if (file.InitCheck() < B_OK)
 		return;
+
 	file.ReadAt(0, &theSettings, sizeof(twitter_settings));
 	
-	if(theSettings.refreshTime < 1) {
-		sprintf(theSettings.username, "changeme");
-		sprintf(theSettings.password, "hackme");
+	if(theSettings.refreshTime < 0 || theSettings.refreshTime > 10000) {
+		std::cout << "Bad refreshtime, reverting to defaults." << std::endl;
 		theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
-		theSettings.position = BPoint(300, 300);
-		theSettings.height = 600;
 	}
 }
 
