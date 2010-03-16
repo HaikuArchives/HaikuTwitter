@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-#include "TimeLineParser.h"
+#include "SearchParser.h"
 
 using namespace xercesc;
 using namespace std;
@@ -28,7 +28,7 @@ enum {
  *  The xerces-C DOM parser infrastructure is initialized.
  */
 
-TimeLineParser::TimeLineParser()
+SearchParser::SearchParser()
 {
    try
    {
@@ -44,15 +44,16 @@ TimeLineParser::TimeLineParser()
 
    // Tags and attributes used in XML file.
    // Can't call transcode till after Xerces Initialize()
-   TAG_root        = XMLString::transcode("statuses");
-   TAG_status = XMLString::transcode("status");
-   TAG_text = XMLString::transcode("text");
-   TAG_user = XMLString::transcode("user");
-   TAG_username = XMLString::transcode("screen_name");
-   TAG_image = XMLString::transcode("profile_image_url");
-   TAG_date = XMLString::transcode("created_at");
+   TAG_root        = XMLString::transcode("feed");
+   TAG_status = XMLString::transcode("entry");
+   TAG_text = XMLString::transcode("title");
+   TAG_user = XMLString::transcode("name");
+   TAG_username = XMLString::transcode("uri"); //Using the <uri> instead of <author> get us around some encoding bugs:)
+   TAG_image = XMLString::transcode("link");
+   TAG_date = XMLString::transcode("published");
    TAG_id = XMLString::transcode("id");
    TAG_error = XMLString::transcode("error");
+   ATTR_href = XMLString::transcode("href");
 
    m_ConfigFileParser = new XercesDOMParser;
    tweetPtr = NULL;
@@ -65,7 +66,7 @@ TimeLineParser::TimeLineParser()
  *  framework.
  */
 
-TimeLineParser::~TimeLineParser()
+SearchParser::~SearchParser()
 {
    delete m_ConfigFileParser;
    XMLString::release( &TAG_root );
@@ -95,11 +96,11 @@ TimeLineParser::~TimeLineParser()
    delete tweetPtr;
 }
 
-int TimeLineParser::count() {
+int SearchParser::count() {
 	return numberOfEntries;
 }
 
-HTTweet** TimeLineParser::getTweets() {
+HTTweet** SearchParser::getTweets() {
 	
 	return tweetPtr;
 }
@@ -113,7 +114,7 @@ HTTweet** TimeLineParser::getTweets() {
  *  @param in configFile The text string name of the HLA configuration file.
  */
 
-void TimeLineParser::readData(const char *xmlData)
+void SearchParser::readData(const char *xmlData)
         throw( std::runtime_error )
 {
    // Configure DOM parser.
@@ -183,13 +184,13 @@ void TimeLineParser::readData(const char *xmlData)
             	}
          	}
 		}
-				
+		
       // Parse XML file for tags of interest: "text"
 		statusNodes = elementRoot->getElementsByTagName(TAG_text);
-		const XMLSize_t nodeCount = statusNodes->getLength();
+		XMLSize_t nodeCount = statusNodes->getLength();
 		tweetPtr = new HTTweet*[nodeCount];
 		
-		for(XMLSize_t i = 0; i < nodeCount; i++) {
+		for(XMLSize_t i = 1; i < nodeCount; i++) { //We skip first item (item 0), not interested in atom main title
 			DOMNode* currentNode = statusNodes->item(i);
          	if( currentNode->getNodeType() &&  // true is not NULL
             	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
@@ -211,13 +212,15 @@ void TimeLineParser::readData(const char *xmlData)
             		delete t;
             		            		
             		string textString((char *)utf8String);
-            		textString.erase(textString.length()-3, 3); //Last three chars is garbage!
+            		textString.erase(textString.length()-5, 5); //Last three chars is garbage!
             		tweetPtr[numberOfEntries] = new HTTweet();
             		tweetPtr[numberOfEntries]->setText(textString);
             		numberOfEntries++;
             	}
          	}
 		}
+
+		nodeCount--; //Because we skipped item(0)
 		
 		// Parse XML file for tags of interest: "id"
 		statusNodes = elementRoot->getElementsByTagName(TAG_id);
@@ -236,7 +239,7 @@ void TimeLineParser::readData(const char *xmlData)
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
-            		/*Remove last character, holds ugly symbol.*/
+            		//Remove last character, holds ugly symbol.
             		//rawString[strlen(rawString)-5] = '\0';
             		
             		tweetPtr[i]->setId(atoi(rawString));
@@ -244,7 +247,7 @@ void TimeLineParser::readData(const char *xmlData)
             	}
          	}
 		}
-		
+
 		// Parse XML file for tags of interest: "screen_name"
 		statusNodes = elementRoot->getElementsByTagName(TAG_username);
 		
@@ -262,20 +265,30 @@ void TimeLineParser::readData(const char *xmlData)
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
-            		/*Remove last character, holds ugly symbol.*/
-            		rawString[strlen(rawString)-5] = '\0';
             		
-            		string textString(rawString);
+            		/*Remove last 11 or 9 characters, junk.*/
+            		if(i < nodeCount-1)
+            			rawString[strlen(rawString)-11] = '\0';
+            		else
+            			rawString[strlen(rawString)-9] = '\0';
+            		
+            		string textString(rawString+19); //Skip "http://twitter.com/" and we've got the username
+            		
             		tweetPtr[i]->setScreenName(textString);
             		delete rawString;
             	}
          	}
 		}
-		
-		// Parse XML file for tags of interest: "profile_image_url"
+
+		// Parse XML file for tags of interest: "link"
 		statusNodes = elementRoot->getElementsByTagName(TAG_image);
+		//Result will give us 5 links in header that we don't care about.
+		//If there is more than 14 entries, we will get a link to the next page, so skip that too.
+		int skipCount = 5;
+		if(nodeCount > 14)
+			skipCount++;
 		
-		for(XMLSize_t i = 0; i < nodeCount; i++) {
+		for(XMLSize_t i = skipCount; i < (nodeCount*2)+skipCount; i+=2) {
 			DOMNode* currentNode = statusNodes->item(i);
          	if( currentNode->getNodeType() &&  // true is not NULL
             	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
@@ -285,24 +298,20 @@ void TimeLineParser::readData(const char *xmlData)
                 	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
             	if( XMLString::equals(currentElement->getTagName(), TAG_image))
             	{
-            		DOMText* textNode
-            				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
-            		
-            		char *rawString = XMLString::transcode(textNode->getWholeText());
-            		/*Remove last character, holds ugly symbol.*/
-            		rawString[strlen(rawString)-5] = '\0';
+            		const XMLCh* href = currentElement->getAttribute(ATTR_href);
+            		char *rawString = XMLString::transcode(href);
             		
             		string textString(rawString);
-            		tweetPtr[i]->setProfileImageUrl(textString);
+            		tweetPtr[(i-skipCount)/2]->setProfileImageUrl(textString);
             		delete rawString;
             	}
          	}
 		}
 		
-		// Parse XML file for tags of interest: "created_at"
+		// Parse XML file for tags of interest: "published"
 		statusNodes = elementRoot->getElementsByTagName(TAG_date);
 		
-		for(XMLSize_t i = 0; i < nodeCount*2; i+=2) {
+		for(XMLSize_t i = 0; i < nodeCount; i++) {
 			DOMNode* currentNode = statusNodes->item(i);
          	if( currentNode->getNodeType() &&  // true is not NULL
             	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
@@ -316,11 +325,11 @@ void TimeLineParser::readData(const char *xmlData)
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
-            		/*Remove last character, holds ugly symbol.*/
+            		//Remove last character, holds ugly symbol.
             		rawString[strlen(rawString)-3] = '\0';
             		
             		string textString(rawString);
-            		tweetPtr[i/2]->setDate(textString);
+            		tweetPtr[i]->setPublishedDate(textString);
             		delete rawString;
             	}
          	}

@@ -188,7 +188,8 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			timeLineWindow->Show();
 			break;
 		case GO_SEARCH:
-			std::cout << "Search not implemented yet..." << std::endl;
+			timeLineWindow = new HTGTimeLineWindow(this, username, password, refreshTime, TIMELINE_SEARCH, msg->FindString(text_label, (int32)0));
+			timeLineWindow->Show();
 			break;
 		case ACCOUNT_SETTINGS:
 			accountSettingsWindow = new HTGAccountSettingsWindow();

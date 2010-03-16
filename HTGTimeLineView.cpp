@@ -89,7 +89,6 @@ std::string& htmlFormatedString(const char *orig) {
 	std::string newString(orig);
 	if(orig[0] == '#') {
 		newString = std::string(orig+1);
-		newString.insert(0, "%23");
 	}
 	std::string *returnPtr = new std::string(newString);
 	return *returnPtr;
@@ -109,10 +108,11 @@ status_t updateTimeLineThread(void *data) {
 	BListView *listView = super->listView;
 	BView *containerView;
 	char *tabName;
-		
-	TimeLineParser *timeLineParser = new TimeLineParser();
-	twitCurl *twitObj = super->twitObj;
+	
 	int32 TYPE = super->TYPE;
+	twitCurl *twitObj = super->twitObj;
+	TimeLineParser *timeLineParser = new TimeLineParser();
+	SearchParser *searchParser = new SearchParser();
 	
 	switch(TYPE) {
 		case TIMELINE_HOME:
@@ -139,10 +139,16 @@ status_t updateTimeLineThread(void *data) {
 	std::string replyMsg(" ");
 	twitObj->getLastWebResponse(replyMsg);
 	if(replyMsg.length() < 100)  { //Length of data is less than 100 characters. Clearly,
-		replyMsg = "error";				//something is wrong... abort.
+		replyMsg = "error";			//something is wrong... abort.
 	}
-		
-	timeLineParser->readData(replyMsg.c_str());
+	
+	if(TYPE == TIMELINE_SEARCH) {
+			searchParser->readData(replyMsg.c_str());
+			timeLineParser = (TimeLineParser *)searchParser; //I'm not so sure this is a good way to go,
+															//so don't tell anyone;-)
+	}
+	else
+		timeLineParser->readData(replyMsg.c_str());
 	
 	HTGTweetItem *mostRecentItem;
 	HTTweet *mostRecentTweet;
@@ -226,7 +232,7 @@ status_t updateTimeLineThread(void *data) {
 	delete timeLineParser;
 	timeLineParser = NULL;
 	delete newList;
-	
+
 	return B_OK;
 }
 

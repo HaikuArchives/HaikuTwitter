@@ -16,6 +16,7 @@
 #endif
 
 #include "TimeLineParser.h"
+#include "SearchParser.h"
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
 #include "HTGTweetItem.h"

@@ -78,6 +78,20 @@ void HTTweet::setDate(string &dateString) {
 	date.year = cString[29]-48 + (cString[28]-48)*10;
 }
 
+void HTTweet::setPublishedDate(string &dateString) {
+	this->rawDate = dateString;
+	const char *cString = dateString.c_str();
+	
+	// The number 1 is represented by ASCII code 49.
+	// We substract every char by 48 to make it int.
+	date.day = cString[9]-48 + (cString[8]-48)*10;
+	date.month = cString[6]-48 + (cString[5]-48)*10;
+	date.hour = cString[12]-48 + (cString[11]-48)*10;;
+	date.minute = cString[15]-48 + (cString[14]-48)*10;
+	date.second = cString[18]-48 + (cString[17]-48)*10;
+	date.year = cString[3]-48 + (cString[2]-48)*10;
+}
+
 struct DateStruct HTTweet::getDate() const {
 	return date;
 }
