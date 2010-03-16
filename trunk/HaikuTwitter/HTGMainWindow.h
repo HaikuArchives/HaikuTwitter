@@ -21,6 +21,7 @@
 #include "HTTweet.h"
 #include "HTGNewTweetWindow.h"
 #include "HTGGoToUserWindow.h"
+#include "HTGSearchForWindow.h"
 #include "HTGAccountSettingsWindow.h"
 #include "HTGInfoPopperSettingsWindow.h"
 #include "HTGTweetItem.h"
@@ -33,6 +34,7 @@ const int32 ACCOUNT_SETTINGS = 'ACC';
 const int32 INFOPOPPER_SETTINGS = 'IPS';
 const int32 GO_USER = 'GUSR';
 const int32 FIND_USER = 'FUSR';
+const int32 SEARCH_FOR = 'SFOR';
 const int32 GO_SEARCH = 'SRCH';
 const int32 ABOUT = 'BOUT';
 
@@ -65,6 +67,7 @@ private:
 	HTGTimeLineView *publicTimeLine;
 	
 	HTGGoToUserWindow *goToUserWindow;
+	HTGSearchForWindow *searchForWindow;
 	HTGNewTweetWindow *newTweetWindow;
 	HTGTimeLineWindow *timeLineWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
