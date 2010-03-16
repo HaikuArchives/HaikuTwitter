@@ -187,7 +187,7 @@ char *HTGNewTweetWindow::shortenUrl(const char *longUrl) {
 	return returnString;
 }
 
-/*Callback function for cURL (userIcon download)*/
+/*Callback function for cURL*/
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
 	size_t realsize = size *nmemb;
 	BMallocIO *mallocIO = (BMallocIO *)data;

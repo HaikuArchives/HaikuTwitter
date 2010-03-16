@@ -13,8 +13,8 @@ CFLAGS = $(SVNDEV) ${INFOPOPPER}
 
 all: ${APP}
 
-${APP}: HaikuTwitter.o twitcurl.o SearchParser.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
-	${CC} ${LIBS} HaikuTwitter.o twitcurl.o SearchParser.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o -o ${APP}
+${APP}: HaikuTwitter.o twitcurl.o SearchParser.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
+	${CC} ${LIBS} HaikuTwitter.o twitcurl.o HTGSearchForWindow.o SearchParser.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o -o ${APP}
 
 HaikuTwitter.o: HaikuTwitter.cpp
 	${CC} -c HaikuTwitter.cpp ${CFLAGS}
@@ -60,6 +60,9 @@ HTGTimeLineWindow.o: HTGTimeLineWindow.cpp
 
 SearchParser.o: SearchParser.cpp
 	${CC} -c SearchParser.cpp ${CFLAGS}
+	
+HTGSearchForWindow.o: HTGSearchForWindow.cpp
+	${CC} -c HTGSearchForWindow.cpp ${CFLAGS}
 
 clean:
 	rm -rf *.o

@@ -140,7 +140,9 @@ void HTGMainWindow::_SetupMenu() {
 	/*Make Twitter Menu*/
 	fTwitterMenu = new BMenu("Twitter");
 	fTwitterMenu->AddItem(new BMenuItem("New tweet...", new BMessage(NEW_TWEET), 'N'));
+	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("Go to user...", new BMessage(FIND_USER), 'G'));
+	fTwitterMenu->AddItem(new BMenuItem("Search for...", new BMessage(SEARCH_FOR), 'F'));
 	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("Refresh", new BMessage(REFRESH), 'R'));
 	fTwitterMenu->AddSeparatorItem();
@@ -182,6 +184,10 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 		case FIND_USER:
 			goToUserWindow = new HTGGoToUserWindow(this);
 			goToUserWindow->Show();
+			break;
+		case SEARCH_FOR:
+			searchForWindow = new HTGSearchForWindow(this);
+			searchForWindow->Show();
 			break;
 		case GO_USER:
 			timeLineWindow = new HTGTimeLineWindow(this, username, password, refreshTime, TIMELINE_USER, msg->FindString(text_label, (int32)0));
