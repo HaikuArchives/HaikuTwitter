@@ -28,6 +28,7 @@ void HTGTimeLineWindow::MessageReceived(BMessage *msg) {
 			break;
 		default:
 			parent->MessageReceived(msg);
+			break;
 	}
 }
 

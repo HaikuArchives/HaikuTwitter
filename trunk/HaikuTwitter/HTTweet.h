@@ -56,6 +56,7 @@ public:
 	void setText(string&);
 	void setProfileImageUrl(string&);
 	void setDate(string&);
+	void setPublishedDate(string&);
 	void setId(int);
 	void setBitmap(BBitmap *);
 	void waitUntilDownloadComplete();

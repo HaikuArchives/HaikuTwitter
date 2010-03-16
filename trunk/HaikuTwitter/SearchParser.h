@@ -1,8 +1,8 @@
-#ifndef TIMELINE_PARSER_HPP
-#define TIMELINE_PARSER_HPP
+#ifndef SEARCH_PARSER_HPP
+#define SEARCH_PARSER_HPP
 /**
  *  @file
- *  Class "TimeLineParser" provides the functions to read the XML data.
+ *  Class "SearchParser" provides the functions to read the XML data.
  *  @version 1.0
  */
 #include <xercesc/dom/DOM.hpp>
@@ -29,11 +29,11 @@
 
 using namespace std;
 
-class TimeLineParser
+class SearchParser
 {
 public:
-	TimeLineParser();
-  	virtual~TimeLineParser();
+	SearchParser();
+  	virtual~SearchParser();
 	void readData(const char *) throw(std::runtime_error);
 	
 	HTTweet** getTweets();
@@ -50,6 +50,7 @@ private:
 	XMLCh* TAG_root;
 
 	XMLCh* TAG_status;
+	XMLCh* ATTR_href;
 	XMLCh* TAG_text;
 	XMLCh* TAG_username;
 	XMLCh* TAG_user;
