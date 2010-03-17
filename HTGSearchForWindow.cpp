@@ -6,7 +6,7 @@
 
 #include "HTGSearchForWindow.h"
 
-HTGSearchForWindow::HTGSearchForWindow(BWindow *delegate) : BWindow(BRect(100, 100, 360, 160), "Go to user...", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGSearchForWindow::HTGSearchForWindow(BWindow *delegate) : BWindow(BRect(100, 100, 360, 160), "Search for...", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 	this->delegate = delegate;
 	
 	/*Add a grey view*/
