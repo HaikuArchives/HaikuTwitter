@@ -1,2 +1,0 @@
-#!/bin/bash
-LIBRARY_PATH=xercesc/src/.libs:$LIBRARY_PATH ./HaikuTwitter
