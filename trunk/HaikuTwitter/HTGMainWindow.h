@@ -13,9 +13,9 @@
 #include "MenuBar.h"
 #include "Menu.h"
 #include "MenuItem.h"
-#include "TabView.h"
 #include "MessageRunner.h"
 
+#include "SmartTabView.h"
 #include "TimeLineParser.h"
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
@@ -57,7 +57,7 @@ private:
 	status_t _saveSettings();
 	void showAbout();
 
-	BTabView *tabView;
+	SmartTabView *tabView;
 	
 	twitCurl *newTweetObj;
 	
@@ -72,7 +72,7 @@ private:
 	HTGTimeLineWindow *timeLineWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
 	HTGInfoPopperSettingsWindow *infopopperSettingsWindow;
-		
+			
 	BMenuBar *fMenuBar;
 	BMenu *fTwitterMenu;
 	BMenu *fEditMenu;

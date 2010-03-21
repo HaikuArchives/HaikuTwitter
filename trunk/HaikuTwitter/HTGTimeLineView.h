@@ -34,9 +34,9 @@ const int32 TIMELINE_SEARCH = 'TSCH';
 
 status_t updateTimeLineThread(void *data);
 
-class HTGTimeLineView : public BScrollView {
+class HTGTimeLineView : public BView {
 public:
-	HTGTimeLineView(twitCurl *, const int32, const char * requestInfo = " ");
+	HTGTimeLineView(twitCurl *, const int32, BRect, const char * requestInfo = " ");
 	void updateTimeLine();
 	void AttachedToWindow();
 	~HTGTimeLineView();
@@ -48,7 +48,7 @@ public:
 	bool wantsNotifications;
 	BListView *listView;
 	BList *unhandledList;
-	BView *containerView;
+	BScrollView *theScrollView;
 	
 	thread_id previousThread;
 	

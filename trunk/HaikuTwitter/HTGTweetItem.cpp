@@ -12,6 +12,10 @@ HTGTweetItem::HTGTweetItem(HTTweet *theTweet) : BListItem() {
 	SetHeight(72);
 }
 
+void HTGTweetItem::Update(BView *owner, const BFont* font) {
+	SetHeight(72);
+}
+
 void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	/*Set proper height*/
 	if(Height() < 72) {

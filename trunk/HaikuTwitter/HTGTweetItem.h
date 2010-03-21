@@ -20,6 +20,7 @@ public:
 	HTGTweetItem(HTTweet *);
 	HTTweet* getTweetPtr();
 	virtual void DrawItem(BView *owner, BRect frame, bool complete = false);
+	virtual void Update(BView *owner, const BFont* font);
 	virtual ~HTGTweetItem();
 private:
 	HTTweet *theTweet;

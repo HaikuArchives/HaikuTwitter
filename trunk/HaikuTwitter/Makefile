@@ -1,6 +1,6 @@
 # Uncomment these two lines to enable InfoPopper support
-# LIBS = -linfopopper
-# INFOPOPPER = -DINFOPOPPER_SUPPORT
+ LIBS = -linfopopper
+ INFOPOPPER = -DINFOPOPPER_SUPPORT
 
 ### Nothing below this should be changed ###
 
@@ -13,8 +13,8 @@ CFLAGS = $(SVNDEV) ${INFOPOPPER}
 
 all: ${APP}
 
-${APP}: HaikuTwitter.o twitcurl.o SearchParser.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
-	${CC} ${LIBS} HaikuTwitter.o twitcurl.o HTGSearchForWindow.o SearchParser.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o -o ${APP}
+${APP}: HaikuTwitter.o twitcurl.o SearchParser.o SmartTabView.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
+	${CC} ${LIBS} HaikuTwitter.o twitcurl.o HTGSearchForWindow.o SmartTabView.o SearchParser.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o -o ${APP}
 
 HaikuTwitter.o: HaikuTwitter.cpp
 	${CC} -c HaikuTwitter.cpp ${CFLAGS}
@@ -63,6 +63,9 @@ SearchParser.o: SearchParser.cpp
 	
 HTGSearchForWindow.o: HTGSearchForWindow.cpp
 	${CC} -c HTGSearchForWindow.cpp ${CFLAGS}
+
+SmartTabView.o: SmartTabView.cpp
+	${CC} -c SmartTabView.cpp ${CFLAGS}
 
 clean:
 	rm -rf *.o

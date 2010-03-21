@@ -19,33 +19,27 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	_SetupMenu();
 	
 	/*Set up tab view*/
-	tabView = new BTabView(BRect(0, 20, 315, 600), "TabView");
+	BRect tabViewRect(Bounds().left, fMenuBar->Bounds().bottom, Bounds().right, Bounds().bottom);
+	tabView = new SmartTabView(tabViewRect, "TabView");//, B_WIDTH_FROM_LABEL);
 	this->AddChild(tabView);
-	
-	/*Set up home timeline*/	//The parser does not support home timeline yet.
-	/*twitCurl *homeTwitObj = new twitCurl();
-	homeTwitObj->setTwitterUsername( username );
-    homeTwitObj->setTwitterPassword( password );
-	homeTimeLine = new HTGTimeLineView(homeTwitObj, TIMELINE_HOME);
-	tabView->AddTab(homeTimeLine);*/
 	
 	/*Set up friends timeline*/
 	twitCurl *timelineTwitObj = new twitCurl();
 	timelineTwitObj->setTwitterUsername( username );
     timelineTwitObj->setTwitterPassword( password );
-	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS);
+	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, Bounds());
 	tabView->AddTab(friendsTimeLine);
 	
 	/*Set up mentions timeline*/
 	twitCurl *mentionsTwitObj = new twitCurl();
 	mentionsTwitObj->setTwitterUsername( username );
     mentionsTwitObj->setTwitterPassword( password );
-	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS);
+	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds());
 	tabView->AddTab(mentionsTimeLine);
 	
 	/*Set up public timeline - Weird symbols on the public timeline, probably a language with non UTF-8 symbols*/
 	twitCurl *publicTwitObj = new twitCurl();
-	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC);
+	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds());
 	tabView->AddTab(publicTimeLine);
 
 	/*Fire a REFRESH message every 'refreshTime' minute*/
@@ -89,7 +83,7 @@ void HTGMainWindow::_retrieveSettings() {
 }
 
 status_t HTGMainWindow::_saveSettings() {	
-	theSettings.height = (int)this->Frame().bottom-this->Frame().top;
+	theSettings.height = this->Bounds().Height() -23;
 	theSettings.position = BPoint(this->Frame().left, this->Frame().top);
 	
 	BPath path;
