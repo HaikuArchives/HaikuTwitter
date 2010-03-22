@@ -206,7 +206,10 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 				timeLineWindow->Show();
 			}
 			else if (LockLooper()) {
-				tabView->AddTab(new HTGTimeLineView(new twitCurl(*newTweetObj), TIMELINE_USER, Bounds(), msg->FindString(text_label, (int32)0)));
+				newTabObj = new twitCurl();
+				newTabObj->setTwitterUsername( username );
+				newTabObj->setTwitterPassword( password );
+				tabView->AddTab(new HTGTimeLineView(newTabObj, TIMELINE_USER, Bounds(), msg->FindString(text_label, (int32)0)));
 				tabView->Select(tabView->CountTabs()-1); //Select the new tab
 				UnlockLooper();
 			}
@@ -217,7 +220,10 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 				timeLineWindow->Show();
 			}
 			else if (LockLooper()) {
-				tabView->AddTab(new HTGTimeLineView(new twitCurl(*newTweetObj), TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0)));
+				newTabObj = new twitCurl();
+				newTabObj->setTwitterUsername( username );
+				newTabObj->setTwitterPassword( password );
+				tabView->AddTab(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0)));
 				tabView->Select(tabView->CountTabs()-1); //Select the new tab
 				UnlockLooper();
 			}
