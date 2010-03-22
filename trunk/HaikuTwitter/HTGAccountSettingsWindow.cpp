@@ -86,6 +86,7 @@ void HTGAccountSettingsWindow::_retrieveSettings() {
 	theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
 	theSettings.position = BPoint(300, 300);
 	theSettings.height = 600;
+	theSettings.useTabs = true;
 	
 	BPath path;
 	

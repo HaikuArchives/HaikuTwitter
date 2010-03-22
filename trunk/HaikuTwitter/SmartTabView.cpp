@@ -68,7 +68,7 @@ SmartTabView::MouseDown(BPoint point)
 
 	if (CountTabs() > 1) {
 		int32 tabIndex = _ClickedTabIndex(point);
-		if (tabIndex >= 0) {
+		if (tabIndex >= 3) { //Modified (By Martin H. Pedersen for HaikuTwitter) so user don't close any hardcoded tabs.
 			int32 buttons;
 			Window()->CurrentMessage()->FindInt32("buttons", &buttons);
 			if ((buttons & B_SECONDARY_MOUSE_BUTTON) != 0) {
@@ -146,7 +146,7 @@ SmartTabView::RemoveAndDeleteTab(int32 index)
 	// Select another tab
 	if (index == Selection()) {
 		if (index > 0)
-			Select(index - 1);
+			Select(0); //Modified by Martin
 		else if (index < CountTabs())
 			Select(index + 1);
 	}

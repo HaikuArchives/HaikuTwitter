@@ -11,6 +11,8 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	this->password = password;
 	this->refreshTime = refreshTime;
 	
+	_retrieveSettings();
+	
 	newTweetObj = new twitCurl();
 	newTweetObj->setTwitterUsername( username );
 	newTweetObj->setTwitterPassword( password );
@@ -20,7 +22,7 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	
 	/*Set up tab view*/
 	BRect tabViewRect(Bounds().left, fMenuBar->Bounds().bottom, Bounds().right, Bounds().bottom);
-	tabView = new SmartTabView(tabViewRect, "TabView");//, B_WIDTH_FROM_LABEL);
+	tabView = new SmartTabView(tabViewRect, "TabView", B_WIDTH_FROM_LABEL);
 	this->AddChild(tabView);
 	
 	/*Set up friends timeline*/
@@ -63,28 +65,35 @@ status_t HTGMainWindow::_getSettingsPath(BPath &path) {
 }
 
 void HTGMainWindow::_retrieveSettings() {
+	/*Set the defaults, just in case anything bad happens*/
+	sprintf(theSettings.username, "changeme");
+	sprintf(theSettings.password, "hackme");
+	theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
+	theSettings.position = BPoint(300, 300);
+	theSettings.height = 600;
+	theSettings.useTabs = true;
+	
 	BPath path;
 	
 	if (_getSettingsPath(path) < B_OK)
-		return;
+		return;	
 		
 	BFile file(path.Path(), B_READ_ONLY);
 	if (file.InitCheck() < B_OK)
 		return;
+
 	file.ReadAt(0, &theSettings, sizeof(twitter_settings));
 	
-	if(theSettings.refreshTime < 1) {
-		sprintf(theSettings.username, "changeme");
-		sprintf(theSettings.password, "hackme");
+	if(theSettings.refreshTime < 0 || theSettings.refreshTime > 10000) {
+		std::cout << "Bad refreshtime, reverting to defaults." << std::endl;
 		theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
-		theSettings.position = BPoint(300, 300);
-		theSettings.height = 600;
 	}
 }
 
 status_t HTGMainWindow::_saveSettings() {	
 	theSettings.height = this->Bounds().Height() -23;
 	theSettings.position = BPoint(this->Frame().left, this->Frame().top);
+	theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
 	
 	BPath path;
 	status_t status = _getSettingsPath(path);
@@ -142,6 +151,7 @@ void HTGMainWindow::_SetupMenu() {
 	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("About HaikuTwitter...", new BMessage(ABOUT)));
 	fTwitterMenu->AddSeparatorItem();
+	fTwitterMenu->AddItem(new BMenuItem("Close active tab", new BMessage(CLOSE_TAB), 'W', B_SHIFT_KEY));
 	fTwitterMenu->AddItem(new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED), 'Q'));
 	fMenuBar->AddItem(fTwitterMenu);
 	
@@ -157,6 +167,10 @@ void HTGMainWindow::_SetupMenu() {
 	fSettingsMenu->AddItem(new BMenuItem("InfoPopper...", new BMessage(INFOPOPPER_SETTINGS)));
 	#endif
 	fMenuBar->AddItem(fSettingsMenu);
+	fSettingsMenu->AddSeparatorItem();
+	fOpenInTabsMenuItem = new BMenuItem("Use tabs", new BMessage(TOGGLE_TABS));
+	fSettingsMenu->AddItem(fOpenInTabsMenuItem);
+	fOpenInTabsMenuItem->SetMarked(theSettings.useTabs);
 	
 	AddChild(fMenuBar);
 }
@@ -164,13 +178,16 @@ void HTGMainWindow::_SetupMenu() {
 void HTGMainWindow::MessageReceived(BMessage *msg) {
 	const char* text_label = "text";
 	switch(msg->what) {
+		case TOGGLE_TABS:
+			fOpenInTabsMenuItem->SetMarked(!fOpenInTabsMenuItem->IsMarked());
+			theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
+			break;
 		case NEW_TWEET:
 			newTweetWindow = new HTGNewTweetWindow(newTweetObj);
 			newTweetWindow->SetText(msg->FindString(text_label, (int32)0)); //Set text (RT, reply, ie)
 			newTweetWindow->Show();
 			break;
 		case REFRESH:
-			//homeTimeLine->updateTimeLine(); //The parser does not support home timeline yet.
 			friendsTimeLine->updateTimeLine();
 			mentionsTimeLine->updateTimeLine();
 			publicTimeLine->updateTimeLine();
@@ -184,12 +201,30 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			searchForWindow->Show();
 			break;
 		case GO_USER:
-			timeLineWindow = new HTGTimeLineWindow(this, username, password, refreshTime, TIMELINE_USER, msg->FindString(text_label, (int32)0));
-			timeLineWindow->Show();
+			if(!fOpenInTabsMenuItem->IsMarked()) {
+				timeLineWindow = new HTGTimeLineWindow(this, username, password, refreshTime, TIMELINE_USER, msg->FindString(text_label, (int32)0));
+				timeLineWindow->Show();
+			}
+			else if (LockLooper()) {
+				tabView->AddTab(new HTGTimeLineView(new twitCurl(*newTweetObj), TIMELINE_USER, Bounds(), msg->FindString(text_label, (int32)0)));
+				tabView->Select(tabView->CountTabs()-1); //Select the new tab
+				UnlockLooper();
+			}
 			break;
 		case GO_SEARCH:
-			timeLineWindow = new HTGTimeLineWindow(this, username, password, refreshTime, TIMELINE_SEARCH, msg->FindString(text_label, (int32)0));
-			timeLineWindow->Show();
+			if(!fOpenInTabsMenuItem->IsMarked()) {
+				timeLineWindow = new HTGTimeLineWindow(this, username, password, refreshTime, TIMELINE_SEARCH, msg->FindString(text_label, (int32)0));
+				timeLineWindow->Show();
+			}
+			else if (LockLooper()) {
+				tabView->AddTab(new HTGTimeLineView(new twitCurl(*newTweetObj), TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0)));
+				tabView->Select(tabView->CountTabs()-1); //Select the new tab
+				UnlockLooper();
+			}
+			break;
+		case CLOSE_TAB:
+			if(tabView->Selection() >= 3) //Don't close hardcoded tabs
+				tabView->RemoveAndDeleteTab(tabView->Selection());
 			break;
 		case ACCOUNT_SETTINGS:
 			accountSettingsWindow = new HTGAccountSettingsWindow();
