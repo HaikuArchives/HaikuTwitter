@@ -37,6 +37,8 @@ const int32 FIND_USER = 'FUSR';
 const int32 SEARCH_FOR = 'SFOR';
 const int32 GO_SEARCH = 'SRCH';
 const int32 ABOUT = 'BOUT';
+const int32 CLOSE_TAB = 'CTAB';
+const int32 TOGGLE_TABS = 'TTAB';
 
 class HTGMainWindow : public BWindow {
 public:
@@ -72,10 +74,13 @@ private:
 	HTGTimeLineWindow *timeLineWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
 	HTGInfoPopperSettingsWindow *infopopperSettingsWindow;
+	
+	bool openInNewWindow;
 			
 	BMenuBar *fMenuBar;
 	BMenu *fTwitterMenu;
 	BMenu *fEditMenu;
 	BMenu *fSettingsMenu;
+	BMenuItem *fOpenInTabsMenuItem;
 };
 #endif

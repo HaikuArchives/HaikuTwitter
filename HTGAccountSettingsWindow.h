@@ -32,6 +32,7 @@ struct twitter_settings {
 	int refreshTime;
 	BPoint position;
 	int height;
+	bool useTabs;
 };
 
 
