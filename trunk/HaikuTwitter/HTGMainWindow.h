@@ -62,6 +62,7 @@ private:
 	SmartTabView *tabView;
 	
 	twitCurl *newTweetObj;
+	twitCurl *newTabObj;
 	
 	HTGTimeLineView *homeTimeLine;
 	HTGTimeLineView *friendsTimeLine;
