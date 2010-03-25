@@ -14,6 +14,7 @@
 #include <File.h>
 #include <Path.h>
 #include <TextControl.h>
+#include <CheckBox.h>
 #include <Button.h>
 #include <Message.h>
 #include <StringView.h>
@@ -34,6 +35,7 @@ struct twitter_settings {
 	int height;
 	bool useTabs;
 	bool enablePublic;
+	bool saveSearches;
 };
 
 
@@ -55,6 +57,7 @@ private:
 	BTextControl *passwordView;
 	BTextControl *usernameView;
 	BTextControl *refreshView;
+	BCheckBox *savedSearchesBox;
 	BView *backgroundView;
 	BStringView *informationView;
 	

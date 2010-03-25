@@ -44,7 +44,7 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 		_addPublicTimeLine();
 	
 	/*Add the saved searches as tabs - if tabs is enabled*/
-	if(fOpenInTabsMenuItem->IsMarked())
+	if(fOpenInTabsMenuItem->IsMarked() && theSettings.saveSearches)
 		_addSavedSearches();
 
 	/*Fire a REFRESH message every 'refreshTime' minute*/
@@ -153,6 +153,7 @@ void HTGMainWindow::_retrieveSettings() {
 	theSettings.height = 600;
 	theSettings.useTabs = true;
 	theSettings.enablePublic = false;
+	theSettings.saveSearches = false;
 	
 	BPath path;
 	
@@ -320,7 +321,8 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 				newTabObj->setTwitterPassword( password );
 				HTGTimeLineView *newTimeline = new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0));
 				tabView->AddTab(newTimeline); //Add the new timeline
-				newTimeline->savedSearchCreateSelf(); //Save the search on twitter
+				if(theSettings.saveSearches)
+					newTimeline->savedSearchCreateSelf(); //Save the search on twitter
 				tabView->Select(tabView->CountTabs()-1); //Select the new tab
 				UnlockLooper();
 			}
