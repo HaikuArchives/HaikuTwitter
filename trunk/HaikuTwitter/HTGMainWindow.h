@@ -39,6 +39,7 @@ const int32 GO_SEARCH = 'SRCH';
 const int32 ABOUT = 'BOUT';
 const int32 CLOSE_TAB = 'CTAB';
 const int32 TOGGLE_TABS = 'TTAB';
+const int32 TOGGLE_PUBLIC = 'TPUB';
 
 class HTGMainWindow : public BWindow {
 public:
@@ -54,6 +55,9 @@ private:
 	twitter_settings theSettings;
 
 	void _SetupMenu();
+	void _addPublicTimeLine();
+	void _removePublicTimeLine();
+	void _addSavedSearches();
 	status_t _getSettingsPath(BPath &path);
 	void _retrieveSettings();
 	status_t _saveSettings();
@@ -75,13 +79,12 @@ private:
 	HTGTimeLineWindow *timeLineWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
 	HTGInfoPopperSettingsWindow *infopopperSettingsWindow;
-	
-	bool openInNewWindow;
-			
+				
 	BMenuBar *fMenuBar;
 	BMenu *fTwitterMenu;
 	BMenu *fEditMenu;
 	BMenu *fSettingsMenu;
 	BMenuItem *fOpenInTabsMenuItem;
+	BMenuItem *fEnablePublicMenuItem;
 };
 #endif

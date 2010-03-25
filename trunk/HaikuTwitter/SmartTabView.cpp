@@ -26,6 +26,8 @@
 
 #include <stdio.h>
 
+#include "HTGTimeLineView.h"
+
 
 const static uint32 kCloseTab = 'ClTb';
 
@@ -50,7 +52,6 @@ SmartTabView::~SmartTabView()
 {
 }
 
-
 void
 SmartTabView::SetInsets(float left, float top, float right, float bottom)
 {
@@ -68,7 +69,7 @@ SmartTabView::MouseDown(BPoint point)
 
 	if (CountTabs() > 1) {
 		int32 tabIndex = _ClickedTabIndex(point);
-		if (tabIndex >= 3) { //Modified (By Martin H. Pedersen for HaikuTwitter) so user don't close any hardcoded tabs.
+		if (tabIndex >= 2) { //Modified (By Martin H. Pedersen for HaikuTwitter) so user don't close any hardcoded tabs.
 			int32 buttons;
 			Window()->CurrentMessage()->FindInt32("buttons", &buttons);
 			if ((buttons & B_SECONDARY_MOUSE_BUTTON) != 0) {
@@ -150,10 +151,23 @@ SmartTabView::RemoveAndDeleteTab(int32 index)
 		else if (index < CountTabs())
 			Select(index + 1);
 	}
-	delete RemoveTab(index);
+	BTab *theTab = RemoveTab(index);
+	
+	thread_id theThread = spawn_thread(SavedSearchDestroy, "DestroySearchThread", 10, theTab);
+	resume_thread(theThread);
 }
 
-
+status_t
+SavedSearchDestroy(void *data) 
+{
+	BTab *theTab = (BTab *)data;
+	HTGTimeLineView *theView = (HTGTimeLineView *)theTab->View();
+	
+	theView->savedSearchDestoySelf();
+	
+	delete theTab;
+	return B_OK;
+}
 void
 SmartTabView::AddTab(BView* target, BTab* tab)
 {

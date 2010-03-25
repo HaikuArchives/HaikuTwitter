@@ -39,13 +39,93 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds());
 	tabView->AddTab(mentionsTimeLine);
 	
-	/*Set up public timeline - Weird symbols on the public timeline, probably a language with non UTF-8 symbols*/
-	twitCurl *publicTwitObj = new twitCurl();
-	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds());
-	tabView->AddTab(publicTimeLine);
+	/*Set up public timeline - if enabled*/
+	if(fEnablePublicMenuItem->IsMarked())
+		_addPublicTimeLine();
+	
+	/*Add the saved searches as tabs - if tabs is enabled*/
+	if(fOpenInTabsMenuItem->IsMarked())
+		_addSavedSearches();
 
 	/*Fire a REFRESH message every 'refreshTime' minute*/
 	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
+}
+
+void HTGMainWindow::_addPublicTimeLine() {
+	twitCurl *publicTwitObj = new twitCurl();
+	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds());
+	tabView->AddTab(publicTimeLine);	
+}
+
+void HTGMainWindow::_removePublicTimeLine() {
+	for(int i = 2; i < tabView->CountTabs(); i++) {
+		if(tabView->TabAt(i)->View() == publicTimeLine)
+			tabView->RemoveAndDeleteTab(i);
+	}
+}
+
+void HTGMainWindow::_addSavedSearches() {
+	/*Configure twitter object*/
+	twitCurl *twitObj = new twitCurl();
+	twitObj->setTwitterUsername(username);
+	twitObj->setTwitterPassword(password);
+	
+	/*Download saved searches*/
+	twitObj->savedSearchGet();
+	std::string replyMsg(" ");
+	twitObj->getLastWebResponse(replyMsg);
+	
+	/*Setup BList to hold the new timeline views*/
+	BList *viewList = new BList();
+	
+	/*Parse saved searches for query*/
+	int pos = 0;
+	int i = 0;
+	const char *queryTag = "<query>"; 
+	while(pos != std::string::npos) {
+		pos = replyMsg.find(queryTag, pos);
+		if(pos != std::string::npos) {
+			int start = pos+strlen(queryTag);
+			int end = replyMsg.find("</query>", start);
+			std::string searchQuery(replyMsg.substr(start, end-start));
+			twitCurl *newTabObj = new twitCurl();
+			newTabObj->setTwitterUsername( username );
+			newTabObj->setTwitterPassword( password );
+			viewList->AddItem(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), searchQuery.c_str()));
+			pos = end;
+			i++;
+		}
+	}
+	
+	/*Parse saved searches for id*/
+	pos = 0;
+	const char *idTag = "<id>";
+	i = 0;
+	while(pos != std::string::npos) {
+		pos = replyMsg.find(idTag, pos);
+		if(pos != std::string::npos) {
+			int start = pos+strlen(idTag);
+			int end = replyMsg.find("</id>", start);
+			std::string searchID(replyMsg.substr(start, end-start));
+			HTGTimeLineView *theTimeline = (HTGTimeLineView *)viewList->ItemAt(i);
+			if(theTimeline != NULL)
+				theTimeline->setSearchID(atoi(searchID.c_str()));
+			pos = end;
+			i++;
+		}
+	}
+	
+	/*Add the timlines to tabView*/
+	while(!viewList->IsEmpty()) {
+		HTGTimeLineView *theTimeline = (HTGTimeLineView *)viewList->ItemAt(0);
+		if(theTimeline != NULL)
+			tabView->AddTab(theTimeline);
+		viewList->RemoveItem((int32)0);
+	}
+	
+	/*Clean up*/
+	delete twitObj;
+	delete viewList;
 }
 
 bool HTGMainWindow::QuitRequested() {
@@ -72,6 +152,7 @@ void HTGMainWindow::_retrieveSettings() {
 	theSettings.position = BPoint(300, 300);
 	theSettings.height = 600;
 	theSettings.useTabs = true;
+	theSettings.enablePublic = false;
 	
 	BPath path;
 	
@@ -94,6 +175,7 @@ status_t HTGMainWindow::_saveSettings() {
 	theSettings.height = this->Bounds().Height() -23;
 	theSettings.position = BPoint(this->Frame().left, this->Frame().top);
 	theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
+	theSettings.enablePublic = fEnablePublicMenuItem->IsMarked();
 	
 	BPath path;
 	status_t status = _getSettingsPath(path);
@@ -169,7 +251,10 @@ void HTGMainWindow::_SetupMenu() {
 	fMenuBar->AddItem(fSettingsMenu);
 	fSettingsMenu->AddSeparatorItem();
 	fOpenInTabsMenuItem = new BMenuItem("Use tabs", new BMessage(TOGGLE_TABS));
+	fEnablePublicMenuItem = new BMenuItem("Show public stream", new BMessage(TOGGLE_PUBLIC));
 	fSettingsMenu->AddItem(fOpenInTabsMenuItem);
+	fSettingsMenu->AddItem(fEnablePublicMenuItem);
+	fEnablePublicMenuItem->SetMarked(theSettings.enablePublic);
 	fOpenInTabsMenuItem->SetMarked(theSettings.useTabs);
 	
 	AddChild(fMenuBar);
@@ -182,15 +267,25 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			fOpenInTabsMenuItem->SetMarked(!fOpenInTabsMenuItem->IsMarked());
 			theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
 			break;
+		case TOGGLE_PUBLIC:
+			fEnablePublicMenuItem->SetMarked(!fEnablePublicMenuItem->IsMarked());
+			theSettings.enablePublic = fEnablePublicMenuItem->IsMarked();
+			if(fEnablePublicMenuItem->IsMarked())
+				_addPublicTimeLine();
+			else
+				_removePublicTimeLine();
+			break;
 		case NEW_TWEET:
 			newTweetWindow = new HTGNewTweetWindow(newTweetObj);
 			newTweetWindow->SetText(msg->FindString(text_label, (int32)0)); //Set text (RT, reply, ie)
 			newTweetWindow->Show();
 			break;
 		case REFRESH:
-			friendsTimeLine->updateTimeLine();
-			mentionsTimeLine->updateTimeLine();
-			publicTimeLine->updateTimeLine();
+			for(int i = 0; i < tabView->CountTabs(); i++) {
+				HTGTimeLineView *current = dynamic_cast<HTGTimeLineView*>(tabView->TabAt(i)->View());
+				if(current != NULL)
+					current->updateTimeLine();
+			}
 			break;
 		case FIND_USER:
 			goToUserWindow = new HTGGoToUserWindow(this);
@@ -223,13 +318,15 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 				newTabObj = new twitCurl();
 				newTabObj->setTwitterUsername( username );
 				newTabObj->setTwitterPassword( password );
-				tabView->AddTab(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0)));
+				HTGTimeLineView *newTimeline = new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0));
+				tabView->AddTab(newTimeline); //Add the new timeline
+				newTimeline->savedSearchCreateSelf(); //Save the search on twitter
 				tabView->Select(tabView->CountTabs()-1); //Select the new tab
 				UnlockLooper();
 			}
 			break;
 		case CLOSE_TAB:
-			if(tabView->Selection() >= 3) //Don't close hardcoded tabs
+			if(tabView->Selection() >= 2) //Don't close hardcoded tabs
 				tabView->RemoveAndDeleteTab(tabView->Selection());
 			break;
 		case ACCOUNT_SETTINGS:

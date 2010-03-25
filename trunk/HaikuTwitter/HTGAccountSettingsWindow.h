@@ -33,6 +33,7 @@ struct twitter_settings {
 	BPoint position;
 	int height;
 	bool useTabs;
+	bool enablePublic;
 };
 
 

@@ -8,6 +8,7 @@
 #include "TabView.h"
 
 #include <string>
+#include <sstream>
 
 #ifdef INFOPOPPER_SUPPORT
 #include <infopopper/InfoPopper.h>
@@ -43,6 +44,10 @@ public:
 	
 //private:
 	void sendNotificationFor(HTTweet *theTweet);
+	int32 getSearchID();
+	void setSearchID(int32 id);
+	void savedSearchDestoySelf();
+	void savedSearchCreateSelf();
 	bool _retrieveInfoPopperBoolFromSettings();
 	bool waitingForUpdate;
 	bool wantsNotifications;
@@ -52,6 +57,7 @@ public:
 	
 	thread_id previousThread;
 	
+	int32 searchID;
 	TimeLineParser *timeLineParser;
 	twitCurl *twitObj;
 	int32 TYPE;
