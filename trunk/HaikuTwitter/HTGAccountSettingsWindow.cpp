@@ -6,7 +6,7 @@
 
 #include "HTGAccountSettingsWindow.h"
 
-HTGAccountSettingsWindow::HTGAccountSettingsWindow() : BWindow(BRect(100, 100, 500, 210), "Account settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGAccountSettingsWindow::HTGAccountSettingsWindow() : BWindow(BRect(100, 100, 500, 230), "Account settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 	_retrieveSettings();
 	_setupWindow();
 }
@@ -42,7 +42,7 @@ void HTGAccountSettingsWindow::_setupWindow() {
 	this->AddChild(backgroundView);
 	
 	/*Add revertButton*/
-	revertButton = new BButton(BRect(3, 80, 100, -1), NULL, "Revert", new BMessage(REVERT));
+	revertButton = new BButton(BRect(3, 100, 120, -1), NULL, "Revert", new BMessage(REVERT));
 	backgroundView->AddChild(revertButton);
 	
 	/*Add the username field*/
@@ -62,6 +62,12 @@ void HTGAccountSettingsWindow::_setupWindow() {
 	refreshView = new BTextControl(BRect(5,55,250,25), "Refresh", "Refresh interval (in minutes)", refreshTime, new BMessage());
 	refreshView->SetDivider(refreshView->Divider() +70);
 	backgroundView->AddChild(refreshView);
+	
+	/*Add the saveSearches field*/
+	savedSearchesBox = new BCheckBox(BRect(5, 80, 300, 25), "SaveSearches Checkbox", "Synchronize tabs with my saved searches", new BMessage());
+	if(theSettings.saveSearches)
+		savedSearchesBox->SetValue(B_CONTROL_ON);
+	backgroundView->AddChild(savedSearchesBox);
 }
 
 void HTGAccountSettingsWindow::MessageReceived(BMessage *msg) {
@@ -88,6 +94,7 @@ void HTGAccountSettingsWindow::_retrieveSettings() {
 	theSettings.height = 600;
 	theSettings.useTabs = true;
 	theSettings.enablePublic = false;
+	theSettings.saveSearches = false;
 	
 	BPath path;
 	
@@ -107,7 +114,7 @@ void HTGAccountSettingsWindow::_retrieveSettings() {
 }
 
 status_t HTGAccountSettingsWindow::_saveSettings() {
-	if (strcmp(usernameView->Text(), theSettings.username) == 0 && (strcmp(passwordView->Text(), theSettings.password) == 0 || strlen(passwordView->Text()) <= 0) && theSettings.refreshTime == atoi(refreshView->Text()))
+	if (strcmp(usernameView->Text(), theSettings.username) == 0 && ((savedSearchesBox->Value() == B_CONTROL_ON) == theSettings.saveSearches) && (strcmp(passwordView->Text(), theSettings.password) == 0 || strlen(passwordView->Text()) <= 0) && theSettings.refreshTime == atoi(refreshView->Text()))
 		return B_OK;
 		
 	BAlert *theAlert = new BAlert("Please restart!", "You must restart HaikuTwitter for the changes to take place.", "Ok", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);	
@@ -117,6 +124,7 @@ status_t HTGAccountSettingsWindow::_saveSettings() {
 	if(strlen(passwordView->Text()) > 0)
 		sprintf(theSettings.password, passwordView->Text());
 	theSettings.refreshTime = atoi(refreshView->Text());
+	theSettings.saveSearches = (savedSearchesBox->Value() == B_CONTROL_ON);
 	
 	BPath path;
 	status_t status = _getSettingsPath(path);
