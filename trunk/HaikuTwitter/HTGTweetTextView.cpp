@@ -109,7 +109,9 @@ BList* HTGTweetTextView::getUrls() {
 	pos = 0;
 	while(pos != std::string::npos) {
 		pos = theText.find("www.", pos);
-		if(pos != std::string::npos) {
+		if(theText.find("://", pos-3, 3) != std::string::npos) //So we don't add URL's detected from the method above.
+			pos++;
+		else if (pos != std::string::npos) {
 			int start = pos;
 			int end = pos;
 			while(end < theText.length() && theText[end] != ' ') {
