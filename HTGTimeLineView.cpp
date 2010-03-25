@@ -19,6 +19,7 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
 	thread_id previousThread = B_NAME_NOT_FOUND;
+	searchID = 0;
 	
 	/*Set view name*/
 	switch(TYPE) {
@@ -65,6 +66,14 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	updateTimeLine();
 }
 
+void HTGTimeLineView::setSearchID(int32 id) {
+	searchID = id;
+}
+
+int32 HTGTimeLineView::getSearchID() {
+	return searchID;
+}
+
 void HTGTimeLineView::AttachedToWindow() {
 	BView::AttachedToWindow();
 	if(waitingForUpdate)
@@ -91,6 +100,35 @@ std::string& htmlFormatedString(const char *orig) {
 	}
 	std::string *returnPtr = new std::string(newString);
 	return *returnPtr;
+}
+
+void HTGTimeLineView::savedSearchDestoySelf() {
+	/*Destroy saved search on twitter*/
+	std::string id;
+	std::stringstream out;
+	out << this->getSearchID(); //Converting int to string
+	id = out.str();
+	if(this->getSearchID() > 0)
+		twitObj->savedSearchDestroy(id);
+}
+
+void HTGTimeLineView::savedSearchCreateSelf() {
+	/*Save search to twitter*/
+	std::string query(::htmlFormatedString(Name()));
+	twitObj->savedSearchCreate(query);
+	std::string replyMsg(" ");
+	twitObj->getLastWebResponse(replyMsg);
+
+	/*Parse result*/
+	int pos = 0;
+	const char *idTag = "<id>";
+	pos = replyMsg.find(idTag, pos);
+	if(pos != std::string::npos) {
+		int start = pos+strlen(idTag);
+		int end = replyMsg.find("</id>", start);
+		std::string searchID(replyMsg.substr(start, end-start));
+		setSearchID(atoi(searchID.c_str()));
+	}	
 }
 
 status_t updateTimeLineThread(void *data) {
@@ -134,7 +172,7 @@ status_t updateTimeLineThread(void *data) {
 			break;
 		default:
 			twitObj->timelinePublicGet();
-	}	
+	}
 	std::string replyMsg(" ");
 	twitObj->getLastWebResponse(replyMsg);
 	if(replyMsg.length() < 100)  { //Length of data is less than 100 characters. Clearly,

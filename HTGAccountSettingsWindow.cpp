@@ -87,6 +87,7 @@ void HTGAccountSettingsWindow::_retrieveSettings() {
 	theSettings.position = BPoint(300, 300);
 	theSettings.height = 600;
 	theSettings.useTabs = true;
+	theSettings.enablePublic = false;
 	
 	BPath path;
 	

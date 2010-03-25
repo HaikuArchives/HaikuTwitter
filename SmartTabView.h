@@ -4,6 +4,8 @@
  *
  *	Authors:
  *		Stefano Ceccherini (burton666@libero.it)
+ *	Modified:
+ *		Martin Hebnes Pedersen
  */
 #ifndef SMART_TAB_VIEW_H
 #define SMART_TAB_VIEW_H
@@ -11,10 +13,11 @@
 
 #include <TabView.h>
 
-
+class HTGTimeLineView;
 class BPopUpMenu;
 class BScrollView;
 
+status_t SavedSearchDestroy(void *data); //Thread function to destroy search on twitter
 
 class SmartTabView : public BTabView {
 public:
@@ -52,7 +55,7 @@ public:
 	virtual BRect				DrawTabs();
 
 			void				SetScrollView(BScrollView* scrollView);
-
+			
 private:
 			int32				_ClickedTabIndex(const BPoint& point);
 
