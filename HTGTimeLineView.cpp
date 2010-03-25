@@ -15,7 +15,7 @@ const int32 kProgressType	= 1004;
 const int32 kAttributeIcon	= 1005;
 const int32 kContentsIcon	= 1006;
 
-HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo) : BView(rect, "ContainerView", B_FOLLOW_LEFT | B_FOLLOW_TOP, 0) {	
+HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo) : BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS) {	
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
 	thread_id previousThread = B_NAME_NOT_FOUND;
@@ -45,13 +45,13 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	}
 	
 	/*Set up listview*/
-	this->listView = new BListView(BRect(0, 0, 300, Bounds().Height()-20), "ListView");
+	this->listView = new BListView(BRect(0, 0, 300, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	
 	/*Prepare the list for unhandled tweets*/
 	unhandledList = new BList();
 	
 	/*Set up scrollview*/
-	theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_LEFT | B_FOLLOW_TOP, 0, false, true);
+	theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
 	this->AddChild(theScrollView);
 		
 	/*Load infopopper settings (if supported)*/
