@@ -6,7 +6,7 @@
 
 #include "HTGMainWindow.h"
 
-HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, BPoint position, int height) : BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter (Alpha)", B_TITLED_WINDOW, B_NOT_H_RESIZABLE) {	
+HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, BPoint position, int height) : BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter (Alpha)", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE) {	
 	this->username = username;
 	this->password = password;
 	this->refreshTime = refreshTime;
@@ -22,7 +22,7 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	
 	/*Set up tab view*/
 	BRect tabViewRect(Bounds().left, fMenuBar->Bounds().bottom, Bounds().right, Bounds().bottom);
-	tabView = new SmartTabView(tabViewRect, "TabView", B_WIDTH_FROM_LABEL);
+	tabView = new SmartTabView(tabViewRect, "TabView", B_WIDTH_FROM_LABEL, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	this->AddChild(tabView);
 	
 	/*Set up friends timeline*/
