@@ -51,20 +51,14 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
 
-void HTGMainWindow::_addPublicTimeLine() {
-	twitCurl *publicTwitObj = new twitCurl();
-	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds());
-	tabView->AddTab(publicTimeLine);	
-}
-
-void HTGMainWindow::_removePublicTimeLine() {
-	for(int i = 2; i < tabView->CountTabs(); i++) {
-		if(tabView->TabAt(i)->View() == publicTimeLine)
-			tabView->RemoveAndDeleteTab(i);
-	}
-}
-
-void HTGMainWindow::_addSavedSearches() {
+status_t addSavedSearchesThreadFunction(void *data) 
+{
+	BList *args = (BList *)data;
+	std::string username = *(std::string *)args->ItemAt(0);
+	std::string password = *(std::string *)args->ItemAt(1);
+	SmartTabView *tabView = (SmartTabView *)args->ItemAt(2);
+	BRect rect = *(BRect *)args->ItemAt(3);
+	
 	/*Configure twitter object*/
 	twitCurl *twitObj = new twitCurl();
 	twitObj->setTwitterUsername(username);
@@ -91,7 +85,7 @@ void HTGMainWindow::_addSavedSearches() {
 			twitCurl *newTabObj = new twitCurl();
 			newTabObj->setTwitterUsername( username );
 			newTabObj->setTwitterPassword( password );
-			viewList->AddItem(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), searchQuery.c_str()));
+			viewList->AddItem(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, rect, searchQuery.c_str()));
 			pos = end;
 			i++;
 		}
@@ -115,17 +109,48 @@ void HTGMainWindow::_addSavedSearches() {
 		}
 	}
 	
-	/*Add the timlines to tabView*/
+	/*Add the timelines to tabView*/
 	while(!viewList->IsEmpty()) {
 		HTGTimeLineView *theTimeline = (HTGTimeLineView *)viewList->ItemAt(0);
-		if(theTimeline != NULL)
-			tabView->AddTab(theTimeline);
+		if(theTimeline != NULL) {
+			if(tabView->LockLooper()) {
+				tabView->AddTab(theTimeline);
+				tabView->UnlockLooper();
+			}
+		}
 		viewList->RemoveItem((int32)0);
 	}
 	
 	/*Clean up*/
 	delete twitObj;
 	delete viewList;
+	delete args;
+
+	return B_OK;
+}
+
+void HTGMainWindow::_addPublicTimeLine() {
+	twitCurl *publicTwitObj = new twitCurl();
+	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds());
+	tabView->AddTab(publicTimeLine);	
+}
+
+void HTGMainWindow::_removePublicTimeLine() {
+	for(int i = 2; i < tabView->CountTabs(); i++) {
+		if(tabView->TabAt(i)->View() == publicTimeLine)
+			tabView->RemoveAndDeleteTab(i);
+	}
+}
+
+void HTGMainWindow::_addSavedSearches() {
+	BList *threadArgs = new BList();
+	threadArgs->AddItem(&username);
+	threadArgs->AddItem(&password);
+	threadArgs->AddItem(tabView);
+	threadArgs->AddItem(new BRect(Bounds()));
+	
+	thread_id theThread = spawn_thread(addSavedSearchesThreadFunction, "UpdateSearches", 10, threadArgs);
+	resume_thread(theThread);
 }
 
 bool HTGMainWindow::QuitRequested() {
