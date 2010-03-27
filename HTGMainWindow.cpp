@@ -282,13 +282,90 @@ void HTGMainWindow::_SetupMenu() {
 	fSettingsMenu->AddItem(fEnablePublicMenuItem);
 	fEnablePublicMenuItem->SetMarked(theSettings.enablePublic);
 	fOpenInTabsMenuItem->SetMarked(theSettings.useTabs);
+	fSettingsMenu->AddSeparatorItem();
+	fAutoStartMenuItem = new BMenuItem("Auto start at login", new BMessage(TOGGLE_AUTOSTART));
+	fAutoStartMenuItem->SetMarked(_isAutoStarted());
+	fSettingsMenu->AddItem(fAutoStartMenuItem);
 	
 	AddChild(fMenuBar);
+}
+
+/*This function checks for a file named HaikuTwitter in the users launch-folder, 
+ * it does not check if it's a valid symlink or even an executable.
+ */
+bool HTGMainWindow::_isAutoStarted() {
+	BPath path;
+	status_t status = find_directory(B_USER_CONFIG_DIRECTORY, &path);
+	if (status < B_OK) {
+		_displayError("Unable to locate user's config directory.");
+		return false;
+	}
+	
+	path.Append("boot/launch/HaikuTwitter");
+	
+	BFile file(path.Path(), B_READ_ONLY);
+	if (file.InitCheck() < B_OK)
+		return false;
+	else
+		return true;
+}
+
+void HTGMainWindow::_setAutoStarted(bool autostarted) {
+	BPath launchPath;
+	BPath installPath;
+	
+	status_t status = find_directory(B_USER_CONFIG_DIRECTORY, &launchPath);
+	if (status < B_OK) {
+		_displayError("Unable to locate user's config directory.");
+		return;
+	}
+	status = find_directory(B_APPS_DIRECTORY, &installPath);
+	if (status < B_OK) {
+		_displayError("Unable to locate the default applications directory.");
+		return;
+	}
+	
+	launchPath.Append("boot/launch/");
+	installPath.Append("HaikuTwitter/");
+	
+	BDirectory launchDir(launchPath.Path());
+	BDirectory installDir(installPath.Path());
+	
+	if (launchDir.Contains("HaikuTwitter", B_SYMLINK_NODE) && !autostarted) {//Delete symlink
+		BEntry *entry = new BEntry();
+		launchDir.FindEntry("HaikuTwitter", entry, false);
+		if(entry->Remove() < B_OK)
+			_displayError("Unable to delete symbolic link.");
+		delete entry;
+	}
+	
+	if (!installDir.Contains("HaikuTwitter", B_FILE_NODE)) {//HaikuTwitter not installed in default location
+		std::string errorMsg("Executable not found in default location (");
+		errorMsg.append(installPath.Path());
+		errorMsg.append(").\n\nCould not create symbolic link.");
+		_displayError(errorMsg.c_str());
+	}
+	
+	if (!launchDir.Contains("HaikuTwitter", B_SYMLINK_NODE) && autostarted) {//Create symlink
+		installPath.Append("HaikuTwitter");
+		if(launchDir.CreateSymLink("HaikuTwitter", installPath.Path(), NULL) < B_OK)
+			_displayError("Unable to create symbolic link.");
+	}
+}
+
+void HTGMainWindow::_displayError(const char *error) {
+		BAlert *alert = new BAlert("error", error, "OK");
+		BTextView *view = alert->TextView();
+		alert->Go();
 }
 
 void HTGMainWindow::MessageReceived(BMessage *msg) {
 	const char* text_label = "text";
 	switch(msg->what) {
+		case TOGGLE_AUTOSTART:
+			_setAutoStarted(!fAutoStartMenuItem->IsMarked());
+			fAutoStartMenuItem->SetMarked(_isAutoStarted());
+			break;
 		case TOGGLE_TABS:
 			fOpenInTabsMenuItem->SetMarked(!fOpenInTabsMenuItem->IsMarked());
 			theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();

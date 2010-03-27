@@ -14,6 +14,10 @@
 #include "Menu.h"
 #include "MenuItem.h"
 #include "MessageRunner.h"
+#include "File.h"
+#include "Path.h"
+#include "FindDirectory.h"
+#include "Directory.h"
 
 #include "SmartTabView.h"
 #include "TimeLineParser.h"
@@ -40,6 +44,7 @@ const int32 ABOUT = 'BOUT';
 const int32 CLOSE_TAB = 'CTAB';
 const int32 TOGGLE_TABS = 'TTAB';
 const int32 TOGGLE_PUBLIC = 'TPUB';
+const int32 TOGGLE_AUTOSTART = 'ASTT';
 
 status_t addSavedSearchesThreadFunction(void *data);
 
@@ -55,7 +60,11 @@ private:
 	string password;
 	int refreshTime;
 	twitter_settings theSettings;
-
+	
+	
+	void _displayError(const char *error);
+	bool _isAutoStarted();
+	void _setAutoStarted(bool autostarted);
 	void _SetupMenu();
 	void _addPublicTimeLine();
 	void _removePublicTimeLine();
@@ -88,5 +97,6 @@ private:
 	BMenu *fSettingsMenu;
 	BMenuItem *fOpenInTabsMenuItem;
 	BMenuItem *fEnablePublicMenuItem;
+	BMenuItem *fAutoStartMenuItem;
 };
 #endif
