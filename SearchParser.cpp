@@ -272,7 +272,7 @@ void SearchParser::readData(const char *xmlData)
             		else
             			rawString[strlen(rawString)-9] = '\0';
             		
-            		string textString(rawString+19); //Skip "http://twitter.com/" and we've got the username
+            		string textString(rawString+19); //Skip "http://twitter.com/"... and we've got the username:)
             		
             		tweetPtr[i]->setScreenName(textString);
             		delete rawString;
@@ -283,10 +283,7 @@ void SearchParser::readData(const char *xmlData)
 		// Parse XML file for tags of interest: "link"
 		statusNodes = elementRoot->getElementsByTagName(TAG_image);
 		//Result will give us 5 links in header that we don't care about.
-		//If there is more than 14 entries, we will get a link to the next page, so skip that too.
 		int skipCount = 5;
-		if(nodeCount > 14)
-			skipCount++;
 		
 		for(XMLSize_t i = skipCount; i < (nodeCount*2)+skipCount; i+=2) {
 			DOMNode* currentNode = statusNodes->item(i);
@@ -302,7 +299,12 @@ void SearchParser::readData(const char *xmlData)
             		char *rawString = XMLString::transcode(href);
             		
             		string textString(rawString);
-            		tweetPtr[(i-skipCount)/2]->setProfileImageUrl(textString);
+            		if(textString.find("statuses", 0) != std::string::npos) { //There was an extra link the header
+            			i--; //Step back
+            			skipCount++; //Skip the extra header link.
+            		}
+            		else
+            			tweetPtr[(i-skipCount)/2]->setProfileImageUrl(textString);
             		delete rawString;
             	}
          	}
