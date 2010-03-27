@@ -41,6 +41,8 @@ const int32 CLOSE_TAB = 'CTAB';
 const int32 TOGGLE_TABS = 'TTAB';
 const int32 TOGGLE_PUBLIC = 'TPUB';
 
+status_t addSavedSearchesThreadFunction(void *data);
+
 class HTGMainWindow : public BWindow {
 public:
 	HTGMainWindow(string username, string password, int refreshTime, BPoint position, int height);
