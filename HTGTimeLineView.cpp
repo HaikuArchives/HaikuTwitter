@@ -180,12 +180,27 @@ status_t updateTimeLineThread(void *data) {
 	}
 	
 	if(TYPE == TIMELINE_SEARCH) {
-			searchParser->readData(replyMsg.c_str());
+			try {
+				searchParser->readData(replyMsg.c_str());
+			} catch( xercesc::XMLException& e ) {
+				std::cout << "Error while parsing data." << std::endl;
+				delete timeLineParser;
+				timeLineParser = NULL;
+				return B_OK;
+			}
 			timeLineParser = (TimeLineParser *)searchParser; //I'm not so sure this is a good way to go,
 															//so don't tell anyone;-)
 	}
-	else
-		timeLineParser->readData(replyMsg.c_str());
+	else {
+		try {
+			timeLineParser->readData(replyMsg.c_str());
+		} catch( xercesc::XMLException& e ) {
+				std::cout << "Error while parsing data." << std::endl;
+				delete timeLineParser;
+				timeLineParser = NULL;
+				return B_OK;
+		}
+	}
 	
 	HTGTweetItem *mostRecentItem;
 	HTTweet *mostRecentTweet;
