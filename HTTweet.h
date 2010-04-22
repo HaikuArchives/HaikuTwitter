@@ -14,6 +14,9 @@
 #include <File.h>
 #include <BitmapStream.h>
 #include <TranslatorRoster.h>
+#include <Application.h>
+#include <Resources.h>
+#include <Roster.h>
 
 #include <ctime>
 #include "curl/curl.h"
