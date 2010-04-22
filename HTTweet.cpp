@@ -67,6 +67,11 @@ void HTTweet::setText(string &text) {
 }
 
 void HTTweet::setDate(string &dateString) {
+	if(dateString.length() < 29) {
+		std::cout << "HTTweet::setPublishedDate(string &): Got invalid date string" << std::endl;
+		return;
+	}
+	
 	this->rawDate = dateString;
 	const char *cString = dateString.c_str();
 	date.month = stringToMonth(cString);
@@ -81,6 +86,11 @@ void HTTweet::setDate(string &dateString) {
 }
 
 void HTTweet::setPublishedDate(string &dateString) {
+	if(dateString.length() < 17) {
+		std::cout << "HTTweet::setPublishedDate(string &): Got invalid date string" << std::endl;
+		return;
+	}
+	
 	this->rawDate = dateString;
 	const char *cString = dateString.c_str();
 	
