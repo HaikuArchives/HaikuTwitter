@@ -213,8 +213,14 @@ status_t updateTimeLineThread(void *data) {
 		mostRecentTweet = mostRecentItem->getTweetPtr();
 		currentTweet = timeLineParser->getTweets()[0];
 	
-		/*If we are up to date, clean up and return*/
+		/*If we are up to date: redraw, clean up and return*/
 		if(!(*mostRecentTweet < *currentTweet)) {
+			if(listView->LockLooper()) {
+				for(int i = 0; i < listView->CountItems(); i++) {
+					listView->InvalidateItem(i); //Update date
+				}
+				listView->UnlockLooper();
+			}
 			delete timeLineParser;
 			timeLineParser = NULL;
 			return B_OK;

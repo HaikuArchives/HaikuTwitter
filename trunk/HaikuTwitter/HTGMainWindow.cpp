@@ -6,7 +6,7 @@
 
 #include "HTGMainWindow.h"
 
-HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, BPoint position, int height) : BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter (Alpha)", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE) {	
+HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, BPoint position, int height) : BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE) {	
 	this->username = username;
 	this->password = password;
 	this->refreshTime = refreshTime;
