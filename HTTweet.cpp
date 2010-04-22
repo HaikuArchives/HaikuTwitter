@@ -87,7 +87,7 @@ void HTTweet::setPublishedDate(string &dateString) {
 	// The number 1 is represented by ASCII code 49.
 	// We substract every char by 48 to make it int.
 	date.day = cString[9]-48 + (cString[8]-48)*10;
-	date.month = cString[6]-48 + (cString[5]-48)*10;
+	date.month = (cString[6]-48 + (cString[5]-48)*10) -1; //tm_mon (0-11)
 	date.hour = cString[12]-48 + (cString[11]-48)*10;;
 	date.minute = cString[15]-48 + (cString[14]-48)*10;
 	date.second = cString[18]-48 + (cString[17]-48)*10;
@@ -133,7 +133,7 @@ const string HTTweet::getRelativeDate() {
 		sprintf(tempString, "%i minutes ago", diffMin);
 	else
 		sprintf(tempString, "Moments ago");
-	
+		
 	return std::string(tempString);
 }
 
