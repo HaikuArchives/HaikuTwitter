@@ -217,7 +217,7 @@ status_t HTGMainWindow::_saveSettings() {
 }
 
 void HTGMainWindow::showAbout() {
-	std::string text("HaikuTwitter Alpha (rev. ");
+	std::string text("HaikuTwitter Beta (rev. ");
 	text.append(SVN_REV);
 	text.append(")\n");
 	text.append("\tWritten by Martin Hebnes Pedersen\n"

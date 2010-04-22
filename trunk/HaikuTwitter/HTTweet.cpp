@@ -296,14 +296,5 @@ static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *da
 }
 
 BBitmap* defaultBitmap() {
-	BFile file("./default_image.png", B_READ_ONLY);
-	BTranslatorRoster *roster = BTranslatorRoster::Default();
-	BBitmapStream stream;
-	BBitmap *result = NULL;
-	if (roster->Translate(&file, NULL, NULL, &stream, B_TRANSLATOR_BITMAP) < B_OK) {
-		return NULL;
-		std::cout <<"ok" <<std::endl;
-	}
-	stream.DetachBitmap(&result);
-	return result;
+	return BTranslationUtils::GetBitmap("twitter_icon");
 }

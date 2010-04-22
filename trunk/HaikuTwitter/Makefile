@@ -5,8 +5,8 @@
 ### Nothing below this should be changed ###
 
 APP = HaikuTwitter
-CC = c++
-LIBS += -L /boot/common/lib/ -lbe -ltranslation -lcurl -lxerces-c
+CC = gcc
+LIBS += -L /boot/common/lib/ -lbe -ltranslation -lcurl -lxerces-c -lstdc++
 SVNDEV = -D'SVN_REV="$(shell svnversion -n .)"'
 CFLAGS = $(SVNDEV) ${INFOPOPPER}
 BDIR = bin
@@ -19,7 +19,9 @@ OBJ =  $(patsubst %,$(ODIR)/%, $(_OBJ))
 
 ${APP}: ${OBJ}
 	${CC} ${LIBS} $^ -o ${BDIR}/${APP}
-
+	rc -o ${ODIR}/${APP}.rsrc ${APP}.rdef
+	xres -o ${BDIR}/${APP} ${ODIR}/${APP}.rsrc
+	
 ${ODIR}/twitcurl.o: twitcurl/twitcurl.cpp
 	${CC} -c -o $@ $< ${CFLAGS}
 
@@ -29,6 +31,7 @@ ${ODIR}/%.o: %.cpp
 clean:
 	rm -rf ${ODIR}/*.o
 	rm -rf ${BDIR}/${APP}
+	rm -rf ${ODIR}/${APP}.rsrc
 
 install:
 	mkdir -p /boot/apps/${APP}

@@ -18,7 +18,7 @@ struct twitter_settings retrieveSettings();
 
 int main()
 {   
-	BApplication HaikuApp("application/HaikuTwitter");
+	BApplication HaikuApp("application/x-vnd.HaikuTwitter");
 	
 	/*Get configuration*/
 	struct twitter_settings theSettings = retrieveSettings();
