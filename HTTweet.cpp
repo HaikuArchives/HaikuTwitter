@@ -8,10 +8,12 @@
 
 HTTweet::HTTweet() {
 	imageBitmap = NULL;
-	date.day = -1;
-	date.day = -1;
-	date.day = -1;
-	date.day = -1;
+	date.day = 1;
+	date.month = 1;
+	date.year = 1970;
+	date.hour = 0;
+	date.minute = 0;
+	date.second = 0;
 	id = -1;
 	bitmapDownloadInProgress = false;
 }
