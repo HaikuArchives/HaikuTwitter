@@ -18,7 +18,7 @@ _OBJ = HaikuTwitter.o twitcurl.o SearchParser.o SmartTabView.o HTGSearchForWindo
 OBJ =  $(patsubst %,$(ODIR)/%, $(_OBJ))
 
 ${APP}: ${OBJ}
-	${CC} ${LIBS} $@ $^ -o ${BDIR}/${APP}
+	${CC} ${LIBS} $^ -o ${BDIR}/${APP}
 
 ${ODIR}/twitcurl.o: twitcurl/twitcurl.cpp
 	${CC} -c -o $@ $< ${CFLAGS}
