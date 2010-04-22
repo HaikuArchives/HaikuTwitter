@@ -101,7 +101,7 @@ void HTGNewTweetWindow::updateCounter() {
 	char counterString[32];
 	int symbolsLeft =  NUMBER_OF_ALLOWED_CHARS;
 	
-	/*Have to check every character for a character with 2 byte representation*
+	/*Have to check every character for a character with 2 byte representation
 	 *Twitter count them as one character... and yeah, this is an UGLY FIX;p
 	 *It's really late, so I'm not that interested in testing this for every char.
 	 *Btw, I assume that two-byte chars is marked as negative.
@@ -157,7 +157,7 @@ char *HTGNewTweetWindow::shortenUrl(const char *longUrl) {
 	
 	/*get the data*/
 	if(curl_easy_perform(curl_handle) < 0)
-		std::cout << "libcURL: Download of bitmap failed." << std::endl;
+		std::cout << "libcURL: Unable to retrieve result from bit.ly" << std::endl;
 	
 	/*cleanup curl stuff*/
 	curl_easy_cleanup(curl_handle);
