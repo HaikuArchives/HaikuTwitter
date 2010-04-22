@@ -8,69 +8,29 @@ APP = HaikuTwitter
 CC = c++
 LIBS += -L /boot/common/lib/ -lbe -ltranslation -lcurl -lxerces-c
 SVNDEV = -D'SVN_REV="$(shell svnversion -n .)"'
-
 CFLAGS = $(SVNDEV) ${INFOPOPPER}
+BDIR = bin
+ODIR = ${BDIR}/obj
 
 all: ${APP}
 
-${APP}: HaikuTwitter.o twitcurl.o SearchParser.o SmartTabView.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
-	${CC} ${LIBS} HaikuTwitter.o twitcurl.o HTGSearchForWindow.o SmartTabView.o SearchParser.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o -o ${APP}
+_OBJ = HaikuTwitter.o twitcurl.o SearchParser.o SmartTabView.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
+OBJ =  $(patsubst %,$(ODIR)/%, $(_OBJ))
 
-HaikuTwitter.o: HaikuTwitter.cpp
-	${CC} -c HaikuTwitter.cpp ${CFLAGS}
+${APP}: ${OBJ}
+	${CC} ${LIBS} $@ $^ -o ${BDIR}/${APP}
 
-twitcurl.o: twitcurl/twitcurl.cpp
-	${CC} -c twitcurl/twitcurl.cpp ${CFLAGS}
+${ODIR}/twitcurl.o: twitcurl/twitcurl.cpp
+	${CC} -c -o $@ $< ${CFLAGS}
 
-TimeLineParser.o: TimeLineParser.cpp
-	${CC} -c TimeLineParser.cpp ${CFLAGS}
+${ODIR}/%.o: %.cpp
+	${CC} -c -o $@ $< ${CFLAGS}
 	
-HTGTweetTextView.o: HTGTweetTextView.cpp
-	${CC} -c HTGTweetTextView.cpp ${CFLAGS}
-	
-HTGInfoPopperSettingsWindow.o: HTGInfoPopperSettingsWindow.cpp
-	${CC} -c HTGInfoPopperSettingsWindow.cpp ${CFLAGS}
-
-HTGTextView.o: HTGTextView.cpp
-	${CC} -c HTGTextView.cpp ${CFLAGS}
-
-HTGTimeLineView.o: HTGTimeLineView.cpp
-	${CC} -c HTGTimeLineView.cpp ${CFLAGS}
-	
-HTGGoToUserWindow.o: HTGGoToUserWindow.cpp
-	${CC} -c HTGGoToUserWindow.cpp ${CFLAGS}
-	
-HTTweet.o: HTTweet.cpp
-	${CC} -c HTTweet.cpp ${CFLAGS}
-
-HTGMainWindow.o: HTGMainWindow.cpp
-	${CC} -c HTGMainWindow.cpp ${CFLAGS}
-	
-HTGNewTweetWindow.o: HTGNewTweetWindow.cpp
-	${CC} -c HTGNewTweetWindow.cpp ${CFLAGS}
-	
-HTGTweetItem.o: HTGTweetItem.cpp
-	${CC} -c HTGTweetItem.cpp ${CFLAGS}
-	
-HTGAccountSettingsWindow.o: HTGAccountSettingsWindow.cpp
-	${CC} -c HTGAccountSettingsWindow.cpp ${CFLAGS}
-	
-HTGTimeLineWindow.o: HTGTimeLineWindow.cpp
-	${CC} -c HTGTimeLineWindow.cpp ${CFLAGS}
-
-SearchParser.o: SearchParser.cpp
-	${CC} -c SearchParser.cpp ${CFLAGS}
-	
-HTGSearchForWindow.o: HTGSearchForWindow.cpp
-	${CC} -c HTGSearchForWindow.cpp ${CFLAGS}
-
-SmartTabView.o: SmartTabView.cpp
-	${CC} -c SmartTabView.cpp ${CFLAGS}
-
 clean:
-	rm -rf *.o
+	rm -rf ${ODIR}/*.o
+	rm -rf ${BDIR}/${APP}
 
 install:
-	mkdir -p /boot/apps/HaikuTwitter
-	cp HaikuTwitter /boot/apps/HaikuTwitter/
-	ln -s /boot/apps/HaikuTwitter/HaikuTwitter /boot/home/be/Applications/HaikuTwitter
+	mkdir -p /boot/apps/${APP}
+	cp ${BDIR}/HaikuTwitter /boot/apps/${APP}/
+	ln -s -f /boot/apps/${APP}/${APP} /boot/home/config/be/Applications/${APP}
