@@ -226,7 +226,9 @@ void HTGMainWindow::showAbout() {
 				"\thttp://martinhpedersen.mine.nu/\n"
 				"\t@martinhpedersen\n"
 				"\t\n"
-				"\tDistributed under the terms of the MIT License.\n");
+				"\tIcon by Michele Frau.\n"
+				"\t\n"
+				"\tDistributed under the terms of\n\tthe MIT License.\n");
 				
 	BAlert *alert = new BAlert("about", text.c_str(), "OK");
 	BTextView *view = alert->TextView();
