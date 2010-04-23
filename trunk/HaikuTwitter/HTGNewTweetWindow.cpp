@@ -43,7 +43,7 @@ void HTGNewTweetWindow::SetText(const char *text) {
 
 void HTGNewTweetWindow::postTweet() {
 	std::string replyMsg( "" );
-	std::string postMsg(message->Text());
+	std::string postMsg = urlEncode(message->Text());
 	if( twitObj->statusUpdate(postMsg) )  {
 		printf( "Status update: OK\n" );
 	}
@@ -52,6 +52,19 @@ void HTGNewTweetWindow::postTweet() {
 		printf( "\ntwitterClient:: twitCurl::updateStatus error:\n%s\n", replyMsg.c_str() );
 		BAlert *theAlert = new BAlert("Oops, sorry!", replyMsg.c_str(), "Ok", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_STOP_ALERT); 	
 	}
+}
+
+std::string HTGNewTweetWindow::urlEncode(const char* input) {
+	std::string output(input);
+	
+	for(int i = 0; i < output.length(); i++) {
+		if(output[i] == '&')
+			output.replace(i, 1, "%26");
+		if(output[i] == '+')
+			output.replace(i, 1, "%2B");
+	}
+	
+	return output;
 }
 
 void HTGNewTweetWindow::MessageReceived(BMessage *msg) {
