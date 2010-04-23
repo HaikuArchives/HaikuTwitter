@@ -36,4 +36,5 @@ clean:
 install:
 	mkdir -p /boot/apps/${APP}
 	cp ${BDIR}/HaikuTwitter /boot/apps/${APP}/
+	cp LICENSE /boot/apps//${APP}/LICENSE.txt
 	ln -s -f /boot/apps/${APP}/${APP} /boot/home/config/be/Applications/${APP}

@@ -56,7 +56,9 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	/*Draw userIcon*/
 	if(theTweet->isDownloadingBitmap())
 		theTweet->waitUntilDownloadComplete();
+	owner->SetDrawingMode(B_OP_ALPHA);
 	owner->DrawBitmapAsync(theTweet->getBitmap(), BRect(frame.left+12, frame.top+12, frame.left+48+12, frame.bottom-12));
+	owner->SetDrawingMode(B_OP_OVER);
 }
 
 HTTweet* HTGTweetItem::getTweetPtr() {

@@ -296,5 +296,5 @@ static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *da
 }
 
 BBitmap* defaultBitmap() {
-	return BTranslationUtils::GetBitmap("twitter_icon");
+	return BTranslationUtils::GetBitmap(B_VECTOR_ICON_TYPE, "twitter_icon");
 }
