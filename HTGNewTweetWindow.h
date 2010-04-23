@@ -39,6 +39,7 @@ private:
 	void updateCounter();
 	void shortenAllUrls();
 	char *shortenUrl(const char *longUrl);
+	std::string urlEncode(const char* input);
 	
 	twitCurl *twitObj;
 	HTGTextView *message;
