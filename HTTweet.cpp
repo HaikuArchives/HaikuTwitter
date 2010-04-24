@@ -67,9 +67,9 @@ void HTTweet::setText(string &text) {
 }
 
 void HTTweet::setDate(string &dateString) {
-	if(dateString.length() < 29) {
-		std::cout << "HTTweet::setPublishedDate(string &): Got invalid date string" << std::endl;
-		return;
+	if(dateString.length() < 29) { //29
+		std::cout << "HTTweet::setDate(string &): Got invalid date string" << std::endl;
+		dateString = std::string("Wed Jan 01 00:00:00 +0000 1970");
 	}
 	
 	this->rawDate = dateString;
@@ -86,9 +86,9 @@ void HTTweet::setDate(string &dateString) {
 }
 
 void HTTweet::setPublishedDate(string &dateString) {
-	if(dateString.length() < 17) {
+	if(dateString.length() < 17) { //17
 		std::cout << "HTTweet::setPublishedDate(string &): Got invalid date string" << std::endl;
-		return;
+		dateString = std::string("1970-01-01T00:00:00Z");
 	}
 	
 	this->rawDate = dateString;
