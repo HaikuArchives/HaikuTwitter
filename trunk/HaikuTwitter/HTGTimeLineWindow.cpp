@@ -14,7 +14,7 @@ HTGTimeLineWindow::HTGTimeLineWindow(BWindow *parent, string username, string pa
 	twitCurl *timelineTwitObj = new twitCurl();
 	timelineTwitObj->setTwitterUsername( username );
     timelineTwitObj->setTwitterPassword( password );
-	theTimeLine = new HTGTimeLineView(timelineTwitObj, TYPE, BRect(0, 0, 325, 560), requestInfo);
+	theTimeLine = new HTGTimeLineView(timelineTwitObj, TYPE, Bounds(), requestInfo);
 	this->AddChild(theTimeLine);
 		
 	/*Fire a REFRESH message every 'refreshTime' minute*/
