@@ -1,5 +1,6 @@
 #include "twitcurl.h"
-
+#include <oauth/oauth.h>
+#include "../oauthSecrets.h"
 /*++
 * @method: twitCurl::twitCurl
 *
@@ -12,6 +13,8 @@
 *--*/
 twitCurl::twitCurl():
 m_curlHandle( NULL ),
+oauthAccessKey( "" ),
+oauthAccessSecret( "" ),
 m_twitterUsername( "" ),
 m_twitterPassword( "" ),
 m_callbackData( "" ),
@@ -99,6 +102,71 @@ std::string& twitCurl::getTwitterPassword()
 {
     return m_twitterPassword;
 }
+
+/*++
+* @method: twitCurl::setAccessKey
+*
+* @description: method to set accesskey for oauth
+*
+* @input: Access key
+*
+* @output: none
+*
+*--*/
+void twitCurl::setAccessKey( std::string& accessKey ) {
+	if( accessKey.length() ) {
+		oauthAccessKey = accessKey;
+		m_curlLoginParamsSet = false;
+	}
+}
+
+/*++
+* @method: twitCurl::setAccessSecret
+*
+* @description: method to set accessSecret for oauth
+*
+* @input: Access secret
+*
+* @output: none
+*
+*--*/
+void twitCurl::setAccessSecret( std::string& accessSecret ) {
+	if( accessSecret.length() ) {
+		oauthAccessSecret = accessSecret;
+		m_curlLoginParamsSet = false;
+	}
+}
+
+/*++
+* @method: twitCurl::getAccessSecret
+*
+* @description: method to get stored access secret
+*
+* @input: none
+*
+* @output: oauth access secret
+*
+*--*/
+std::string& twitCurl::getAccessSecret()
+{
+    return oauthAccessSecret;
+}
+
+/*++
+* @method: twitCurl::getAccessKey
+*
+* @description: method to get stored access key
+*
+* @input: none
+*
+* @output: oauth access key
+*
+*--*/
+std::string& twitCurl::getAccessKey()
+{
+    return oauthAccessKey;
+}
+
 
 /*++
 * @method: twitCurl::setTwitterUsername
@@ -1502,15 +1570,28 @@ void twitCurl::prepareStandardParams()
 *
 *--*/
 bool twitCurl::performGet( const std::string& getUrl )
-{
+{	
+	char *req_url_signed = NULL;
+	const char *t_key = NULL;
+	const char *t_secret = NULL;
+	
+	if(oauthAccessKey.length() > 1)
+		t_key = oauthAccessKey.c_str();
+	if(oauthAccessSecret.length() > 1)
+		t_secret = oauthAccessSecret.c_str();
+	
+	/*Sign the url*/
+    req_url_signed = oauth_sign_url2(getUrl.c_str(), NULL, OA_HMAC, NULL, CONSUMER_KEY, CONSUMER_SECRET, t_key, t_secret);
+	
     /* Set http request and url */
+
     curl_easy_setopt( m_curlHandle, CURLOPT_HTTPGET, 1 );
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, getUrl.c_str() );
+    curl_easy_setopt( m_curlHandle, CURLOPT_URL, req_url_signed );
 
     /* Send http request */
     if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
     {
-        return true;
+        return true; 
     }
     return false;
 }
@@ -1557,21 +1638,176 @@ bool twitCurl::performDelete( const std::string& deleteUrl )
 *
 *--*/
 bool twitCurl::performPost( const std::string& postUrl, std::string dataStr )
-{
+{	
+	char *postarg = NULL;
+	char *req_url_signed = NULL;
+	char url_with_dataStr[500] = "";
+	
+	/*Sign the url and data*/
+  	sprintf(url_with_dataStr, "%s?%s", postUrl.c_str(), dataStr.c_str());
+    req_url_signed = oauth_sign_url2(url_with_dataStr, &postarg, OA_HMAC, NULL, CONSUMER_KEY, CONSUMER_SECRET, oauthAccessKey.c_str(), oauthAccessSecret.c_str());
+	
     /* Set http request, url and data */
     curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, postUrl.c_str() );
-    if( dataStr.length() )
+    if( postarg != NULL )
     {
-        curl_easy_setopt( m_curlHandle, CURLOPT_COPYPOSTFIELDS, dataStr.c_str() );
+        curl_easy_setopt( m_curlHandle, CURLOPT_COPYPOSTFIELDS, postarg );
     }
 
     /* Send http request */
     if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
     {
+    	free(postarg);
         return true;
     }
+    
     return false;
+}
+
+/*++
+* @method: twitCurl::oauthGetAuthorizeUrl
+*
+* @description: method to request authorize url from twitter.
+*
+* @input: none
+*
+* @output: authorization url
+*
+* @remaks: none
+*
+*--*/
+std::string twitCurl::oauthGetAuthorizeUrl() {
+	char *req_url = NULL;
+	char *postarg = NULL;
+	char *t_key = NULL;
+	char *t_secret = NULL;
+	
+    if( isCurlInit() )
+    {
+        /* Prepare standard params */
+        prepareStandardParams();
+	
+		// HTTP GET
+		printf("Request token..\n");
+		oauthAccessKey = std::string(""); //Invalidate, will get new after authorization
+		oauthAccessSecret = std::string(""); //Invalidate, will get new after authorization
+	
+		performGet(twitterDefaults::TWITCURL_OAUTH_REQUEST_TOKEN_URL.c_str());
+	
+		std::string reply("");
+		getLastWebResponse(reply);
+	
+		if (req_url) free(req_url);
+		if (postarg) free(postarg);
+		if (!reply.length()) {printf("Unable to get autorization url from twitter. Is the oauth key/secret valid?\n");return std::string(""); }
+		if (oauthParseReply(reply.c_str(), &t_key, &t_secret)) {printf("Unable to parse data from oauth system at twitter\n"); return std::string(""); }
+	
+		/* Compile url string */
+		std::string url(t_key);
+		url.insert(0, "?oauth_token=");
+		url.insert(0, twitterDefaults::TWITCURL_OAUTH_AUTHORIZE_URL);
+		
+		/* Set temporary access key/secret */
+		oauthAccessKey = std::string(t_key);
+		oauthAccessSecret = std::string(t_secret);
+		
+		return url;
+	}
+	
+	return std::string("");
+}
+
+/*++
+* @method: twitCurl::oauthAuthorize
+*
+* @description: method to authorize with twitter, and get/store access key/secret.
+*
+* @input: PIN for authorization
+*
+* @output: bool for success
+*
+* @remaks: none
+*
+*--*/
+bool twitCurl::oauthAuthorize(std::string oauth_verify) {
+	char *req_url = NULL;
+	char *postarg = NULL;
+	char *t_key = NULL;
+	char *t_secret = NULL;
+	
+    if( isCurlInit() )
+    {
+        /* Prepare standard params */
+        prepareStandardParams();
+	
+		/* Compile url for cURL */
+		std::string urlWithData(oauth_verify);
+		urlWithData.insert(0, "?oauth_verifier=");
+		urlWithData.insert(0, twitterDefaults::TWITCURL_OAUTH_ACCESS_TOKEN_URL);
+		
+		// HTTP GET
+		printf("Access token..\n");
+		
+		performGet(urlWithData.c_str());
+	
+		std::string reply("");
+		getLastWebResponse(reply);
+	
+		if (req_url) free(req_url);
+		if (postarg) free(postarg);
+		if(t_key) free(t_key);
+  		if(t_secret) free(t_secret);
+		if (!reply.length()) {printf("Unable to get autorization url from twitter. Is the oauth key/secret valid?\n");return false; }
+		if (oauthParseReply(reply.c_str(), &t_key, &t_secret)) {printf("Unable to parse data from oauth system at twitter\n"); return false; }
+		
+		/* Set final access key/secret */
+		oauthAccessKey = std::string(t_key);
+		oauthAccessSecret = std::string(t_secret);
+		
+		return true;
+	}
+	
+	return false;
+}
+
+/*++
+* @method: twitCurl::oauthParseReply
+*
+* @description: method to parse reply from oauth. this is an internal method.
+*               twitcurl users should not use this method.
+*
+* @input: reply - reply data,
+*         token - buffer for oauth key
+*         secret - buffer for oauth secret
+*
+* @output: none
+*
+* @remaks: internal method
+*
+*--*/
+bool twitCurl::oauthParseReply(const char *reply, char **token, char **secret) {
+	int rc;
+	bool ok=true;
+	char **rv = NULL;
+	rc = oauth_split_post_paramters(reply, &rv, 1);
+	qsort(rv, rc, sizeof(char *), oauth_cmpstringp);
+	if( rc==3 
+		&& !strncmp(rv[1],"oauth_token=",11)
+		&& !strncmp(rv[2],"oauth_token_secret=",18) ) {
+		ok=false;
+		if (token)  *token =strdup(&(rv[1][12]));
+		if (secret) *secret=strdup(&(rv[2][19]));
+		}
+	else if( rc>3 
+		&& !strncmp(rv[0],"oauth_token=",11)
+		&& !strncmp(rv[1],"oauth_token_secret=",18) ) {
+		ok=false;
+		if (token)  *token =strdup(&(rv[0][12]));
+		if (secret) *secret=strdup(&(rv[1][19]));
+	}
+	if(rv) free(rv);
+	return ok;
 }
 
 /*++

@@ -6,7 +6,7 @@
 
 APP = HaikuTwitter
 CC = gcc
-LIBS += -L /boot/common/lib/ -lbe -ltranslation -lcurl -lxerces-c -lstdc++
+LIBS += -L/boot/common/lib/ -lbe -ltranslation -lcurl -lxerces-c -lstdc++ -lcrypto
 SVNDEV = -D'SVN_REV="$(shell svnversion -n .)"'
 CFLAGS = $(SVNDEV) ${INFOPOPPER}
 BDIR = bin
@@ -14,7 +14,7 @@ ODIR = ${BDIR}/obj
 
 all: ${APP}
 
-_OBJ = HaikuTwitter.o twitcurl.o SearchParser.o SmartTabView.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
+_OBJ = HaikuTwitter.o oauth.o oauth_http.o xmalloc.o twitcurl.o SearchParser.o SmartTabView.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
 OBJ =  $(patsubst %,$(ODIR)/%, $(_OBJ))
 
 ${APP}: ${OBJ}
@@ -23,6 +23,9 @@ ${APP}: ${OBJ}
 	xres -o ${BDIR}/${APP} ${ODIR}/${APP}.rsrc
 	
 ${ODIR}/twitcurl.o: twitcurl/twitcurl.cpp
+	${CC} -c -o $@ $< ${CFLAGS}
+	
+${ODIR}/%.o: oauth/%.c
 	${CC} -c -o $@ $< ${CFLAGS}
 
 ${ODIR}/%.o: %.cpp
