@@ -1,5 +1,5 @@
 #include "twitcurl.h"
-#include <oauth/oauth.h>
+#include "../oauth/oauth.h"
 #include "../oauthSecrets.h"
 /*++
 * @method: twitCurl::twitCurl
