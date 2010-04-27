@@ -50,14 +50,14 @@ status_t addSavedSearchesThreadFunction(void *data);
 
 class HTGMainWindow : public BWindow {
 public:
-	HTGMainWindow(string username, string password, int refreshTime, BPoint position, int height);
+	HTGMainWindow(string key, string secret, int refreshTime, BPoint position, int height);
 	virtual void MessageReceived(BMessage *msg);
 	bool QuitRequested();
 	~HTGMainWindow();
 	
 private:
-	string username;
-	string password;
+	string key;
+	string secret;
 	int refreshTime;
 	twitter_settings theSettings;
 	
