@@ -26,6 +26,7 @@
 using namespace std;
 
 const int32 REVERT = 'RVRT';
+const int32 RESET_AUTH = 'RATH';
 
 struct twitter_settings {
 	char username[30];

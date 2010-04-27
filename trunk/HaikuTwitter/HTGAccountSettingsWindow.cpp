@@ -48,13 +48,15 @@ void HTGAccountSettingsWindow::_setupWindow() {
 	/*Add the username field*/
 	usernameView = new BTextControl(BRect(5,5,250,25), "Username", "Username", theSettings.username, new BMessage());
 	usernameView->SetDivider(usernameView->Divider() -25);
-	backgroundView->AddChild(usernameView);
 	
 	/*Add the password field*/
 	passwordView = new BTextControl(BRect(5,30,250,25), "Password", "Password", theSettings.password, new BMessage());
 	passwordView->TextView()->HideTyping(true);
 	passwordView->SetDivider(passwordView->Divider() -25);
-	backgroundView->AddChild(passwordView);
+
+	/*Reset authorization*/
+	BButton *resetOAuthButton = new BButton(BRect(130, 100, 320, -1), NULL, "Log in as different user", new BMessage(RESET_AUTH));
+	backgroundView->AddChild(resetOAuthButton);
 	
 	/*Add the refresh field*/
 	char refreshTime[32];
@@ -79,6 +81,9 @@ void HTGAccountSettingsWindow::MessageReceived(BMessage *msg) {
 			char refreshTime[32];
 			sprintf(refreshTime, "%i", theSettings.refreshTime);
 			refreshView->SetText(refreshTime);
+			break;
+		case RESET_AUTH:
+			std::cout << "Not implemented yet, please delete /boot/home/config/settings/HaikuTwitter_oauth manually." << std::endl;
 			break;
 		default:
 			BWindow::MessageReceived(msg);
