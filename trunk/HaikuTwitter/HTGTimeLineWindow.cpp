@@ -6,14 +6,14 @@
 
 #include "HTGTimeLineWindow.h"
 
-HTGTimeLineWindow::HTGTimeLineWindow(BWindow *parent, string username, string password, int refreshTime, const int32 TYPE, const char* requestInfo) : BWindow(BRect(300, 300, 615, 840), requestInfo, B_TITLED_WINDOW, B_NOT_H_RESIZABLE) {	
+HTGTimeLineWindow::HTGTimeLineWindow(BWindow *parent, string key, string secret, int refreshTime, const int32 TYPE, const char* requestInfo) : BWindow(BRect(300, 300, 615, 840), requestInfo, B_TITLED_WINDOW, B_NOT_H_RESIZABLE) {	
 	/*Set parent window (used for handeling messages)*/
 	this->parent = parent;
 	
 	/*Set up timeline*/
 	twitCurl *timelineTwitObj = new twitCurl();
-	timelineTwitObj->setTwitterUsername( username );
-    timelineTwitObj->setTwitterPassword( password );
+	timelineTwitObj->setAccessKey( key );
+	timelineTwitObj->setAccessSecret( secret );
 	theTimeLine = new HTGTimeLineView(timelineTwitObj, TYPE, Bounds(), requestInfo);
 	this->AddChild(theTimeLine);
 		

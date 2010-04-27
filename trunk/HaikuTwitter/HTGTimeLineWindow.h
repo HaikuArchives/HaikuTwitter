@@ -24,7 +24,7 @@ static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *da
 
 class HTGTimeLineWindow : public BWindow {
 public:
-	HTGTimeLineWindow(BWindow *parent, string username, string password, int refreshTime, const int32 TYPE, const char* requestInfo);
+	HTGTimeLineWindow(BWindow *parent, string key, string secret, int refreshTime, const int32 TYPE, const char* requestInfo);
 	void MessageReceived(BMessage *msg);
 	~HTGTimeLineWindow();
 	

@@ -6,16 +6,16 @@
 
 #include "HTGMainWindow.h"
 
-HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, BPoint position, int height) : BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE) {	
-	this->username = username;
-	this->password = password;
+HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint position, int height) : BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE) {	
+	this->key = key;
+	this->secret = secret;
 	this->refreshTime = refreshTime;
 	
 	_retrieveSettings();
 	
 	newTweetObj = new twitCurl();
-	//newTweetObj->setTwitterUsername( username );
-	//newTweetObj->setTwitterPassword( password );
+	newTweetObj->setAccessKey( key );
+	newTweetObj->setAccessSecret( secret );
 	
 	/*Set up the menu bar*/
 	_SetupMenu();
@@ -27,15 +27,15 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	
 	/*Set up friends timeline*/
 	twitCurl *timelineTwitObj = new twitCurl();
-	//timelineTwitObj->setTwitterUsername( username );
-    //timelineTwitObj->setTwitterPassword( password );
+	timelineTwitObj->setAccessKey( key );
+	timelineTwitObj->setAccessSecret( secret );
 	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, Bounds());
 	tabView->AddTab(friendsTimeLine);
 	
 	/*Set up mentions timeline*/
 	twitCurl *mentionsTwitObj = new twitCurl();
-	//mentionsTwitObj->setTwitterUsername( username );
-    //mentionsTwitObj->setTwitterPassword( password );
+	mentionsTwitObj->setAccessKey( key );
+	mentionsTwitObj->setAccessSecret( secret );
 	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds());
 	tabView->AddTab(mentionsTimeLine);
 	
@@ -54,15 +54,15 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 status_t addSavedSearchesThreadFunction(void *data) 
 {
 	BList *args = (BList *)data;
-	std::string username = *(std::string *)args->ItemAt(0);
-	std::string password = *(std::string *)args->ItemAt(1);
+	std::string key = *(std::string *)args->ItemAt(0);
+	std::string secret = *(std::string *)args->ItemAt(1);
 	SmartTabView *tabView = (SmartTabView *)args->ItemAt(2);
 	BRect rect = *(BRect *)args->ItemAt(3);
 	
 	/*Configure twitter object*/
 	twitCurl *twitObj = new twitCurl();
-	//twitObj->setTwitterUsername(username);
-	//twitObj->setTwitterPassword(password);
+	twitObj->setAccessKey( key );
+	twitObj->setAccessSecret( secret );
 	
 	/*Download saved searches*/
 	twitObj->savedSearchGet();
@@ -83,8 +83,8 @@ status_t addSavedSearchesThreadFunction(void *data)
 			int end = replyMsg.find("</query>", start);
 			std::string searchQuery(replyMsg.substr(start, end-start));
 			twitCurl *newTabObj = new twitCurl();
-			newTabObj->setTwitterUsername( username );
-			newTabObj->setTwitterPassword( password );
+			newTabObj->setAccessKey( key );
+			newTabObj->setAccessSecret( secret );
 			viewList->AddItem(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, rect, searchQuery.c_str()));
 			pos = end;
 			i++;
@@ -144,8 +144,8 @@ void HTGMainWindow::_removePublicTimeLine() {
 
 void HTGMainWindow::_addSavedSearches() {
 	BList *threadArgs = new BList();
-	threadArgs->AddItem(&username);
-	threadArgs->AddItem(&password);
+	threadArgs->AddItem(&key);
+	threadArgs->AddItem(&secret);
 	threadArgs->AddItem(tabView);
 	threadArgs->AddItem(new BRect(Bounds()));
 	
@@ -402,13 +402,13 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			break;
 		case GO_USER:
 			if(!fOpenInTabsMenuItem->IsMarked()) {
-				timeLineWindow = new HTGTimeLineWindow(this, username, password, refreshTime, TIMELINE_USER, msg->FindString(text_label, (int32)0));
+				timeLineWindow = new HTGTimeLineWindow(this, key, secret, refreshTime, TIMELINE_USER, msg->FindString(text_label, (int32)0));
 				timeLineWindow->Show();
 			}
 			else if (LockLooper()) {
 				newTabObj = new twitCurl();
-				newTabObj->setTwitterUsername( username );
-				newTabObj->setTwitterPassword( password );
+				newTabObj->setAccessKey( key );
+				newTabObj->setAccessSecret( secret );
 				tabView->AddTab(new HTGTimeLineView(newTabObj, TIMELINE_USER, Bounds(), msg->FindString(text_label, (int32)0)));
 				tabView->Select(tabView->CountTabs()-1); //Select the new tab
 				UnlockLooper();
@@ -416,13 +416,13 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			break;
 		case GO_SEARCH:
 			if(!fOpenInTabsMenuItem->IsMarked()) {
-				timeLineWindow = new HTGTimeLineWindow(this, username, password, refreshTime, TIMELINE_SEARCH, msg->FindString(text_label, (int32)0));
+				timeLineWindow = new HTGTimeLineWindow(this, key, secret, refreshTime, TIMELINE_SEARCH, msg->FindString(text_label, (int32)0));
 				timeLineWindow->Show();
 			}
 			else if (LockLooper()) {
 				newTabObj = new twitCurl();
-				newTabObj->setTwitterUsername( username );
-				newTabObj->setTwitterPassword( password );
+				newTabObj->setAccessKey( key );
+				newTabObj->setAccessSecret( secret );
 				HTGTimeLineView *newTimeline = new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0));
 				tabView->AddTab(newTimeline); //Add the new timeline
 				if(theSettings.saveSearches)
