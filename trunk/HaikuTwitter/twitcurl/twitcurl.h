@@ -1,9 +1,13 @@
 #ifndef _TWITCURL_H_
 #define _TWITCURL_H_
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include <cstring>
 #include <string>
-#include "curl/curl.h"
+#include <curl/curl.h>
 
 /* Default values used in twitcurl */
 namespace twitCurlDefaults
@@ -83,6 +87,11 @@ namespace twitterDefaults
     const std::string TWITCURL_SAVEDSEARCHCREATE_URL = "http://twitter.com/saved_searches/create.xml";
     const std::string TWITCURL_SAVEDSEARCHDESTROY_URL = "http://twitter.com/saved_searches/destroy/";
     
+    /* OAuth URLs */
+    const std::string TWITCURL_OAUTH_REQUEST_TOKEN_URL = "http://api.twitter.com/oauth/request_token";
+  	const std::string TWITCURL_OAUTH_ACCESS_TOKEN_URL = "http://api.twitter.com/oauth/access_token";
+  	const std::string TWITCURL_OAUTH_AUTHORIZE_URL = "https://twitter.com/oauth/authorize";
+    
 };
 
 /* twitCurl class */
@@ -92,11 +101,17 @@ public:
     twitCurl();
     ~twitCurl();
 
-    /* Twitter login APIs, set once and forget */
+    /* Twitter login APIs: Deprecated after OAuth implementation */
     std::string& getTwitterUsername();
     std::string& getTwitterPassword();
     void setTwitterUsername( std::string& userName );
     void setTwitterPassword( std::string& passWord );
+    
+    /* OAuth access tokens */
+    std::string& getAccessKey();
+    std::string& getAccessSecret();
+    void setAccessKey( std::string& accessKey );
+    void setAccessSecret( std::string& accessSecret );
 
     /* Twitter search APIs */
     bool search( std::string& query );
@@ -170,6 +185,10 @@ public:
     void setProxyServerPort( std::string& proxyServerPort );
     void setProxyUserName( std::string& proxyUserName );
     void setProxyPassword( std::string& proxyPassword );
+    
+    /* OAuth methods */
+    std::string oauthGetAuthorizeUrl();
+    bool oauthAuthorize(std::string oauth_verify);
 
 private:
     /* cURL data */
@@ -201,6 +220,13 @@ private:
     bool performGet( const std::string& getUrl );
     bool performDelete( const std::string& deleteUrl );
     bool performPost( const std::string& postUrl, std::string dataStr = "" );
+    
+    /* OAuth data */
+    std::string oauthAccessKey;
+    std::string oauthAccessSecret;
+    
+    /* OAuth methods */
+    bool oauthParseReply(const char *reply, char **token, char** secret);
 };
 
 

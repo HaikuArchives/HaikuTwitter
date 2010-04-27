@@ -14,8 +14,8 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	_retrieveSettings();
 	
 	newTweetObj = new twitCurl();
-	newTweetObj->setTwitterUsername( username );
-	newTweetObj->setTwitterPassword( password );
+	//newTweetObj->setTwitterUsername( username );
+	//newTweetObj->setTwitterPassword( password );
 	
 	/*Set up the menu bar*/
 	_SetupMenu();
@@ -27,15 +27,15 @@ HTGMainWindow::HTGMainWindow(string username, string password, int refreshTime, 
 	
 	/*Set up friends timeline*/
 	twitCurl *timelineTwitObj = new twitCurl();
-	timelineTwitObj->setTwitterUsername( username );
-    timelineTwitObj->setTwitterPassword( password );
+	//timelineTwitObj->setTwitterUsername( username );
+    //timelineTwitObj->setTwitterPassword( password );
 	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, Bounds());
 	tabView->AddTab(friendsTimeLine);
 	
 	/*Set up mentions timeline*/
 	twitCurl *mentionsTwitObj = new twitCurl();
-	mentionsTwitObj->setTwitterUsername( username );
-    mentionsTwitObj->setTwitterPassword( password );
+	//mentionsTwitObj->setTwitterUsername( username );
+    //mentionsTwitObj->setTwitterPassword( password );
 	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds());
 	tabView->AddTab(mentionsTimeLine);
 	
@@ -61,8 +61,8 @@ status_t addSavedSearchesThreadFunction(void *data)
 	
 	/*Configure twitter object*/
 	twitCurl *twitObj = new twitCurl();
-	twitObj->setTwitterUsername(username);
-	twitObj->setTwitterPassword(password);
+	//twitObj->setTwitterUsername(username);
+	//twitObj->setTwitterPassword(password);
 	
 	/*Download saved searches*/
 	twitObj->savedSearchGet();
