@@ -98,12 +98,16 @@ void HTGAuthorizeWindow::MessageReceived(BMessage *msg) {
 	switch(msg->what) {
 		case GO_TO_AUTH_URL: {
 			goButton->MakeFocus();
-			openUrl(twitObj->oauthGetAuthorizeUrl());
+			std::string url(twitObj->oauthGetAuthorizeUrl());
+			if(url.length() < 10)
+				HTGErrorHandling::displayError("Error while requesting authorization URL from Twitter.\nPlease try again!");
+			else
+				openUrl(url);
 			break;
 		}
 		case GO_AUTH: {
 			if(!twitObj->oauthAuthorize(query->Text()))
-				std::cout << "Error while authorizing application." << std::endl;
+				HTGErrorHandling::displayError("Could not confirm your PIN.\nPlease try again from the top!");
 			else {
 				storeTokens(twitObj->getAccessKey(), twitObj->getAccessSecret());
 				HTGMainWindow *theWindow = new HTGMainWindow(oauth.key, oauth.secret, refreshTime, position, height);

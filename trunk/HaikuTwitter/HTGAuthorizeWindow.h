@@ -20,6 +20,7 @@
 
 #include "twitcurl/twitcurl.h"
 #include "HTGMainWindow.h"
+#include "HTGErrorHandling.h"
 
 #ifndef HTG_AUTHORIZEWINDOW_H
 #define HTG_AUTHORIZEWINDOW_H

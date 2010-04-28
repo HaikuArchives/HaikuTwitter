@@ -18,7 +18,12 @@
 #include <Button.h>
 #include <Message.h>
 #include <StringView.h>
+#include <Entry.h>
 #include <FindDirectory.h>
+#include <Directory.h>
+
+#include "HTGErrorHandling.h"
+#include "HTGAuthorizeWindow.h"
 
 #ifndef HTG_ACCOUNT_SETTINGS_WINDOW
 #define HTG_ACCOUNT_SETTINGS_WINDOW
@@ -43,17 +48,19 @@ struct twitter_settings {
 
 class HTGAccountSettingsWindow : public BWindow {
 public:
-	HTGAccountSettingsWindow();
+	HTGAccountSettingsWindow(BWindow *parent);
 	~HTGAccountSettingsWindow();
 	
 private:
 	status_t _getSettingsPath(BPath &path);
+	void _invalidateOAuth();
 	void _retrieveSettings();
 	status_t _saveSettings();
 	void _setupWindow();
 	void MessageReceived(BMessage *msg);
 	twitter_settings theSettings;
 	
+	BWindow *parent;
 	BButton *revertButton;
 	BTextControl *passwordView;
 	BTextControl *usernameView;
