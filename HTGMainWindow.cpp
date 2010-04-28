@@ -299,7 +299,7 @@ bool HTGMainWindow::_isAutoStarted() {
 	BPath path;
 	status_t status = find_directory(B_USER_CONFIG_DIRECTORY, &path);
 	if (status < B_OK) {
-		_displayError("Unable to locate user's config directory.");
+		HTGErrorHandling::displayError("Unable to locate user's config directory.");
 		return false;
 	}
 	
@@ -318,12 +318,12 @@ void HTGMainWindow::_setAutoStarted(bool autostarted) {
 	
 	status_t status = find_directory(B_USER_CONFIG_DIRECTORY, &launchPath);
 	if (status < B_OK) {
-		_displayError("Unable to locate user's config directory.");
+		HTGErrorHandling::displayError("Unable to locate user's config directory.");
 		return;
 	}
 	status = find_directory(B_APPS_DIRECTORY, &installPath);
 	if (status < B_OK) {
-		_displayError("Unable to locate the default applications directory.");
+		HTGErrorHandling::displayError("Unable to locate the default applications directory.");
 		return;
 	}
 	
@@ -337,7 +337,7 @@ void HTGMainWindow::_setAutoStarted(bool autostarted) {
 		BEntry *entry = new BEntry();
 		launchDir.FindEntry("HaikuTwitter", entry, false);
 		if(entry->Remove() < B_OK)
-			_displayError("Unable to delete symbolic link.");
+			HTGErrorHandling::displayError("Unable to delete symbolic link.");
 		delete entry;
 	}
 	
@@ -345,20 +345,14 @@ void HTGMainWindow::_setAutoStarted(bool autostarted) {
 		std::string errorMsg("Executable not found in default location (");
 		errorMsg.append(installPath.Path());
 		errorMsg.append(").\n\nCould not create symbolic link.");
-		_displayError(errorMsg.c_str());
+		HTGErrorHandling::displayError(errorMsg.c_str());
 	}
 	
 	if (!launchDir.Contains("HaikuTwitter", B_SYMLINK_NODE) && autostarted) {//Create symlink
 		installPath.Append("HaikuTwitter");
 		if(launchDir.CreateSymLink("HaikuTwitter", installPath.Path(), NULL) < B_OK)
-			_displayError("Unable to create symbolic link.");
+			HTGErrorHandling::displayError("Unable to create symbolic link.");
 	}
-}
-
-void HTGMainWindow::_displayError(const char *error) {
-		BAlert *alert = new BAlert("error", error, "OK");
-		BTextView *view = alert->TextView();
-		alert->Go();
 }
 
 void HTGMainWindow::MessageReceived(BMessage *msg) {
@@ -436,7 +430,7 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 				tabView->RemoveAndDeleteTab(tabView->Selection());
 			break;
 		case ACCOUNT_SETTINGS:
-			accountSettingsWindow = new HTGAccountSettingsWindow();
+			accountSettingsWindow = new HTGAccountSettingsWindow(this);
 			accountSettingsWindow->Show();
 			break;
 		case INFOPOPPER_SETTINGS:

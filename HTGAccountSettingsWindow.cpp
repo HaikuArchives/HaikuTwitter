@@ -6,7 +6,8 @@
 
 #include "HTGAccountSettingsWindow.h"
 
-HTGAccountSettingsWindow::HTGAccountSettingsWindow() : BWindow(BRect(100, 100, 500, 230), "Account settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGAccountSettingsWindow::HTGAccountSettingsWindow(BWindow *parent) : BWindow(BRect(100, 100, 500, 230), "Account settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+	this->parent = parent;
 	_retrieveSettings();
 	_setupWindow();
 }
@@ -82,11 +83,37 @@ void HTGAccountSettingsWindow::MessageReceived(BMessage *msg) {
 			sprintf(refreshTime, "%i", theSettings.refreshTime);
 			refreshView->SetText(refreshTime);
 			break;
-		case RESET_AUTH:
-			std::cout << "Not implemented yet, please delete /boot/home/config/settings/HaikuTwitter_oauth manually." << std::endl;
+		case RESET_AUTH: {
+			_invalidateOAuth();
+			BAlert *theAlert = new BAlert("Please restart!", "You must restart HaikuTwitter for the changes to take place.", "Ok", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);	
+			int32 button_index = theAlert->Go();
+			this->Close();
 			break;
+		}
 		default:
 			BWindow::MessageReceived(msg);
+	}
+}
+
+void HTGAccountSettingsWindow::_invalidateOAuth() {
+	BPath settingsPath;
+	
+	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &settingsPath);
+	if (status < B_OK) {
+		HTGErrorHandling::displayError("Unable to locate settings path.");
+		return;
+	}
+	
+	//settingsPath.Append("boot/launch/");
+	
+	BDirectory settingsDir(settingsPath.Path());
+	
+	if (settingsDir.Contains("HaikuTwitter_oauth")) {//Delete symlink
+		BEntry *entry = new BEntry();
+		settingsDir.FindEntry("HaikuTwitter_oauth", entry, false);
+		if(entry->Remove() < B_OK)
+			HTGErrorHandling::displayError("Unable to delete HaikuTwitter_oauth in settings directory.\n Please delete it manually.");
+		delete entry;
 	}
 }
 

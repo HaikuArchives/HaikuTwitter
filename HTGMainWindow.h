@@ -31,6 +31,7 @@
 #include "HTGTweetItem.h"
 #include "HTGTimeLineView.h"
 #include "HTGTimeLineWindow.h"
+#include "HTGErrorHandling.h"
 
 const int32 NEW_TWEET = 'NWTW';
 const int32 REFRESH = 'REFR';
@@ -62,7 +63,6 @@ private:
 	twitter_settings theSettings;
 	
 	
-	void _displayError(const char *error);
 	bool _isAutoStarted();
 	void _setAutoStarted(bool autostarted);
 	void _SetupMenu();
