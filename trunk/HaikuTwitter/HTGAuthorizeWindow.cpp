@@ -45,8 +45,6 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	
 	/*Set up text control*/
 	query = new BTextControl(BRect(100,165,260,185), "Enter PIN", "Enter PIN:", NULL, NULL);
-	theView->AddChild(query);
-	query->WindowActivated(true);
 	
 	goButton = new BButton(BRect(130, 230, 230, 270), NULL, "Let's tweet!", new BMessage(GO_AUTH));
 	theView->AddChild(goButton);
@@ -104,6 +102,8 @@ void HTGAuthorizeWindow::MessageReceived(BMessage *msg) {
 				HTGErrorHandling::displayError("Error while requesting authorization URL.\nPlease try again!\n\nPlease note that system time must be set correctly.\n");
 			else
 				openUrl(url);
+				theView->AddChild(query);
+				query->WindowActivated(true);
 			break;
 		}
 		case GO_AUTH: {
