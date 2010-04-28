@@ -62,6 +62,8 @@ std::string HTGNewTweetWindow::urlEncode(const char* input) {
 			output.replace(i, 1, "%26");
 		if(output[i] == '+')
 			output.replace(i, 1, "%2B");
+		if(output[i] == '@')
+			output.replace(i, 1, "%40");
 	}
 	
 	return output;
