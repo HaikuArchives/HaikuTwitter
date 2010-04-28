@@ -101,7 +101,7 @@ void HTGAuthorizeWindow::MessageReceived(BMessage *msg) {
 			goButton->MakeFocus();
 			std::string url(twitObj->oauthGetAuthorizeUrl());
 			if(url.length() < 10)
-				HTGErrorHandling::displayError("Error while requesting authorization URL from Twitter.\nPlease try again!");
+				HTGErrorHandling::displayError("Error while requesting authorization URL.\nPlease try again!\n\nPlease note that system time must be set correctly.\n");
 			else
 				openUrl(url);
 			break;
