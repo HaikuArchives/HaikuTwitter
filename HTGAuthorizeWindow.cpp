@@ -6,7 +6,7 @@
 
 #include "HTGAuthorizeWindow.h"
 
-HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int height) : BWindow(BRect(200, 200, 565, 475), "Authorize with twitter.com", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int height) : BWindow(BRect(200, 200, 565, 405), "Authorize with twitter.com", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 	CenterOnScreen();
 	
 	/*These will be used to open the main window*/
@@ -39,19 +39,16 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	headerText->SetViewColor(theView->ViewColor());
 	theView->AddChild(headerText);
 	
-	BButton *openButton = new BButton(BRect(100, 120, 260, 150), NULL, "Log in to twitter.com", new BMessage(GO_TO_AUTH_URL));
+	openButton = new BButton(BRect(100, 120, 260, 150), NULL, "Log in to twitter.com", new BMessage(GO_TO_AUTH_URL));
 	theView->AddChild(openButton);
 	
 	
 	/*Set up text control*/
-	query = new BTextControl(BRect(100,165,260,185), "Enter PIN", "Enter PIN:", NULL, NULL);
+	query = new BTextControl(BRect(100,120,260,150), "Enter PIN", "Enter PIN:", NULL, NULL);
 	
-	goButton = new BButton(BRect(130, 230, 230, 270), NULL, "Let's tweet!", new BMessage(GO_AUTH));
-	theView->AddChild(goButton);
+	/*Set up go button*/
+	goButton = new BButton(BRect(130, 170, 230, 200), NULL, "Let's tweet!", new BMessage(GO_AUTH));
 	
-	/*Set up buttons*/
-	/*goButton = new BButton(BRect(170, 30, 247, 55), NULL, "Go", new BMessage(GO_TO_AUTH_URL));
-	theView->AddChild(goButton);*/
 	
 	query->MakeFocus();
 	openButton->MakeDefault(true);
@@ -100,15 +97,22 @@ void HTGAuthorizeWindow::MessageReceived(BMessage *msg) {
 			std::string url(twitObj->oauthGetAuthorizeUrl());
 			if(url.length() < 10)
 				HTGErrorHandling::displayError("Error while requesting authorization URL.\nPlease try again!\n\nPlease note that system time must be set correctly.\n");
-			else
+			else {
 				openUrl(url);
+				openButton->RemoveSelf();
 				theView->AddChild(query);
+				theView->AddChild(goButton);
 				query->WindowActivated(true);
+			}
 			break;
 		}
 		case GO_AUTH: {
-			if(!twitObj->oauthAuthorize(query->Text()))
+			if(!twitObj->oauthAuthorize(query->Text())) {
+				query->RemoveSelf();
+				goButton->RemoveSelf();
+				theView->AddChild(openButton);
 				HTGErrorHandling::displayError("Could not confirm your PIN.\nPlease try again from the top!");
+			}
 			else {
 				storeTokens(twitObj->getAccessKey(), twitObj->getAccessSecret());
 				HTGMainWindow *theWindow = new HTGMainWindow(oauth.key, oauth.secret, refreshTime, position, height);

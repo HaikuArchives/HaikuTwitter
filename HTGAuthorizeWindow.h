@@ -50,6 +50,7 @@ private:
 	twitCurl *twitObj;
 	BTextControl *query;
 	BButton *goButton;
+	BButton *openButton;
 	BView *theView;
 	BWindow *delegate;
 };
