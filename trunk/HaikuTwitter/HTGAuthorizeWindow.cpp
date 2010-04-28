@@ -6,7 +6,9 @@
 
 #include "HTGAuthorizeWindow.h"
 
-HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int height) : BWindow(BRect(200, 200, 580, 400), "Authorize with twitter.com", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int height) : BWindow(BRect(200, 200, 565, 475), "Authorize with twitter.com", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+	CenterOnScreen();
+	
 	/*These will be used to open the main window*/
 	this->refreshTime = refreshTime;
 	this->position = position;
@@ -20,11 +22,14 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	//theView->SetViewColor(128, 128, 128);
 	this->AddChild(theView);
 	
-	/* Draw picture */
-	//Not implemented yet
+	/* Add logo */
+	HTGLogoView *logoView = new HTGLogoView();
+	logoView->MoveTo(BPoint(155, 10));
+	logoView->ResizeTo(logoView->MinSize());
+	theView->AddChild(logoView);
 	
 	/*Set up header text*/
-	BTextView *headerText = new BTextView(BRect(70, 20, 400, 50), "Heading", BRect(0, 0, 400, 50), B_FOLLOW_TOP, B_WILL_DRAW);
+	BTextView *headerText = new BTextView(BRect(60, logoView->Bounds().Height()+5, 390, logoView->Bounds().Height()+5+30), "Heading", BRect(0, 0, 390, 50), B_FOLLOW_TOP, B_WILL_DRAW);
 	headerText->SetText("Welcome to HaikuTwitter!");
 	BFont headerFont;
 	theView->GetFont(&headerFont);
@@ -34,20 +39,16 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	headerText->SetViewColor(theView->ViewColor());
 	theView->AddChild(headerText);
 	
-	/*Set up "step one info"*/
-	//BStringView *stepOneView = new BStringView(BRect(0, 0, 200 , 200), "StepOneText", "Hei");
-	//theView->AddChild(stepOneView);
-	
-	BButton *openButton = new BButton(BRect(100, 80, 260, 110), NULL, "Log in to twitter.com", new BMessage(GO_TO_AUTH_URL));
+	BButton *openButton = new BButton(BRect(100, 120, 260, 150), NULL, "Log in to twitter.com", new BMessage(GO_TO_AUTH_URL));
 	theView->AddChild(openButton);
 	
 	
 	/*Set up text control*/
-	query = new BTextControl(BRect(100,125,260,145), "Enter PIN", "Enter PIN:", NULL, NULL);
+	query = new BTextControl(BRect(100,165,260,185), "Enter PIN", "Enter PIN:", NULL, NULL);
 	theView->AddChild(query);
 	query->WindowActivated(true);
 	
-	goButton = new BButton(BRect(130, 170, 230, 200), NULL, "Let's tweet!", new BMessage(GO_AUTH));
+	goButton = new BButton(BRect(130, 230, 230, 270), NULL, "Let's tweet!", new BMessage(GO_AUTH));
 	theView->AddChild(goButton);
 	
 	/*Set up buttons*/

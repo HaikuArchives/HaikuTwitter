@@ -8,8 +8,6 @@
 #include "TextControl.h"
 #include "Button.h"
 #include "StringView.h"
-#include "TranslationUtils.h"
-#include "Bitmap.h"
 #include "View.h"
 #include <Entry.h>
 #include <File.h>
@@ -21,6 +19,7 @@
 #include "twitcurl/twitcurl.h"
 #include "HTGMainWindow.h"
 #include "HTGErrorHandling.h"
+#include "HTGLogoView.h"
 
 #ifndef HTG_AUTHORIZEWINDOW_H
 #define HTG_AUTHORIZEWINDOW_H
