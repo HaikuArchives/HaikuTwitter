@@ -1295,7 +1295,7 @@ bool twitCurl::savedSearchCreate( std::string& query )
 *
 * @input: searchId - search id of item to be deleted
 *
-* @output: true if DELETE is success, otherwise false. This does not check http
+* @output: true if POST is success, otherwise false. This does not check http
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
@@ -1314,7 +1314,7 @@ bool twitCurl::savedSearchDestroy( std::string& searchId )
         buildUrl.append( twitCurlDefaults::TWITCURL_EXTENSIONFORMAT.c_str() );
 
         /* Perform DELETE */
-        retVal = performDelete( buildUrl );
+        retVal = performPost( buildUrl );
     }
     return retVal;
 }
@@ -1611,9 +1611,21 @@ bool twitCurl::performGet( const std::string& getUrl )
 *--*/
 bool twitCurl::performDelete( const std::string& deleteUrl )
 {
+	char *req_url_signed = NULL;
+	const char *t_key = NULL;
+	const char *t_secret = NULL;
+	
+	if(oauthAccessKey.length() > 1)
+		t_key = oauthAccessKey.c_str();
+	if(oauthAccessSecret.length() > 1)
+		t_secret = oauthAccessSecret.c_str();	
+	
+	/*Sign the url*/
+    req_url_signed = oauth_sign_url2(deleteUrl.c_str(), NULL, OA_HMAC, NULL, CONSUMER_KEY, CONSUMER_SECRET, t_key, t_secret);
+	printf(req_url_signed);
     /* Set http request and url */
     curl_easy_setopt( m_curlHandle, CURLOPT_CUSTOMREQUEST, "DELETE" );
-    curl_easy_setopt( m_curlHandle, CURLOPT_URL, deleteUrl.c_str() );
+    curl_easy_setopt( m_curlHandle, CURLOPT_URL, req_url_signed );
 
     /* Send http request */
     if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
