@@ -6,7 +6,7 @@
 
 #include "HTGAccountSettingsWindow.h"
 
-HTGAccountSettingsWindow::HTGAccountSettingsWindow(BWindow *parent) : BWindow(BRect(100, 100, 500, 230), "Account settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGAccountSettingsWindow::HTGAccountSettingsWindow(BWindow *parent) : BWindow(BRect(100, 100, 500, 180), "Account settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 	this->parent = parent;
 	_retrieveSettings();
 	_setupWindow();
@@ -42,10 +42,6 @@ void HTGAccountSettingsWindow::_setupWindow() {
 	backgroundView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	this->AddChild(backgroundView);
 	
-	/*Add revertButton*/
-	revertButton = new BButton(BRect(3, 100, 120, -1), NULL, "Revert", new BMessage(REVERT));
-	backgroundView->AddChild(revertButton);
-	
 	/*Add the username field*/
 	usernameView = new BTextControl(BRect(5,5,250,25), "Username", "Username", theSettings.username, new BMessage());
 	usernameView->SetDivider(usernameView->Divider() -25);
@@ -54,23 +50,27 @@ void HTGAccountSettingsWindow::_setupWindow() {
 	passwordView = new BTextControl(BRect(5,30,250,25), "Password", "Password", theSettings.password, new BMessage());
 	passwordView->TextView()->HideTyping(true);
 	passwordView->SetDivider(passwordView->Divider() -25);
-
-	/*Reset authorization*/
-	BButton *resetOAuthButton = new BButton(BRect(130, 100, 320, -1), NULL, "Log in as different user", new BMessage(RESET_AUTH));
-	backgroundView->AddChild(resetOAuthButton);
 	
 	/*Add the refresh field*/
 	char refreshTime[32];
 	sprintf(refreshTime, "%i", theSettings.refreshTime);
-	refreshView = new BTextControl(BRect(5,55,250,25), "Refresh", "Refresh interval (in minutes)", refreshTime, new BMessage());
+	refreshView = new BTextControl(BRect(5,5,250,25), "Refresh", "Refresh interval (in minutes)", refreshTime, new BMessage());
 	refreshView->SetDivider(refreshView->Divider() +70);
 	backgroundView->AddChild(refreshView);
 	
 	/*Add the saveSearches field*/
-	savedSearchesBox = new BCheckBox(BRect(5, 80, 300, 25), "SaveSearches Checkbox", "Synchronize tabs with my saved searches", new BMessage());
+	savedSearchesBox = new BCheckBox(BRect(5, 30, 300, 25), "SaveSearches Checkbox", "Synchronize tabs with my saved searches", new BMessage());
 	if(theSettings.saveSearches)
 		savedSearchesBox->SetValue(B_CONTROL_ON);
 	backgroundView->AddChild(savedSearchesBox);
+
+	/*Reset authorization*/
+	BButton *resetOAuthButton = new BButton(BRect(130, 50, 320, -1), NULL, "Log in as different user", new BMessage(RESET_AUTH));
+	backgroundView->AddChild(resetOAuthButton);
+	
+	/*Add revertButton*/
+	revertButton = new BButton(BRect(3, 50, 120, -1), NULL, "Revert", new BMessage(REVERT));
+	backgroundView->AddChild(revertButton);
 }
 
 void HTGAccountSettingsWindow::MessageReceived(BMessage *msg) {
