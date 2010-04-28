@@ -1584,13 +1584,13 @@ bool twitCurl::performGet( const std::string& getUrl )
     req_url_signed = oauth_sign_url2(getUrl.c_str(), NULL, OA_HMAC, NULL, CONSUMER_KEY, CONSUMER_SECRET, t_key, t_secret);
 	
     /* Set http request and url */
-
     curl_easy_setopt( m_curlHandle, CURLOPT_HTTPGET, 1 );
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, req_url_signed );
 
     /* Send http request */
     if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
     {
+    	free(req_url_signed);
         return true; 
     }
     return false;
@@ -1659,6 +1659,7 @@ bool twitCurl::performPost( const std::string& postUrl, std::string dataStr )
     if( CURLE_OK == curl_easy_perform( m_curlHandle ) )
     {
     	free(postarg);
+    	free(req_url_signed);
         return true;
     }
     
