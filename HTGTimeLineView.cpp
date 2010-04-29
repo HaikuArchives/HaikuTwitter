@@ -202,9 +202,9 @@ status_t updateTimeLineThread(void *data) {
 		}
 	}
 	
-	HTGTweetItem *mostRecentItem;
-	HTTweet *mostRecentTweet;
-	HTTweet *currentTweet;
+	HTGTweetItem *mostRecentItem = NULL;
+	HTTweet *mostRecentTweet = NULL;
+	HTTweet *currentTweet = NULL;
 	
 	bool initialLoad = (listView->FirstItem() == NULL && super->unhandledList->FirstItem() == NULL);
 	
@@ -238,8 +238,12 @@ status_t updateTimeLineThread(void *data) {
 	for (int i = 0; i < timeLineParser->count(); i++) {
 		currentTweet = timeLineParser->getTweets()[i];
 		bool addItem = initialLoad;
-		if(!initialLoad)
-			addItem = (*mostRecentTweet < *currentTweet);
+		if(!initialLoad) {
+			if(mostRecentTweet != NULL)
+				addItem = (*mostRecentTweet < *currentTweet);
+			else
+				addItem = true;
+		}
 		if(addItem) {
 			/*Make a copy, download bitmap and add it to newList*/
 			HTTweet *copiedTweet = new HTTweet(currentTweet);

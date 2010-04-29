@@ -23,13 +23,13 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	this->AddChild(theView);
 	
 	/* Add logo */
-	HTGLogoView *logoView = new HTGLogoView();
+	logoView = new HTGLogoView();
 	logoView->MoveTo(BPoint(155, 10));
 	logoView->ResizeTo(logoView->MinSize());
 	theView->AddChild(logoView);
 	
 	/*Set up header text*/
-	BTextView *headerText = new BTextView(BRect(60, logoView->Bounds().Height()+5, 390, logoView->Bounds().Height()+5+30), "Heading", BRect(0, 0, 390, 50), B_FOLLOW_TOP, B_WILL_DRAW);
+	headerText = new BTextView(BRect(60, logoView->Bounds().Height()+5, 390, logoView->Bounds().Height()+5+30), "Heading", BRect(0, 0, 390, 50), B_FOLLOW_TOP, B_WILL_DRAW);
 	headerText->SetText("Welcome to HaikuTwitter!");
 	BFont headerFont;
 	theView->GetFont(&headerFont);
@@ -54,13 +54,27 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	openButton->MakeDefault(true);
 }
 
-void HTGAuthorizeWindow::openUrl(std::string url) {
-	entry_ref ref;
-	if (get_ref_for_path("/bin/open", &ref))
-		return;
-		
-	const char* args[] = { "/bin/open", url.c_str(), NULL };
-	be_roster->Launch(&ref, 2, args);
+void HTGAuthorizeWindow::openUrl(std::string url) {	
+	char* args[] = { (char *)url.c_str(), NULL };
+	const char* mime = "application/x-vnd.Be.URL.http";
+	
+	int32 launched = be_roster->Launch(mime, 1, args);
+	if(launched != B_OK && launched != B_ALREADY_RUNNING) {
+		copyToClipboard(url.c_str());
+		HTGErrorHandling::displayError("Unable to launch your web browser...\nAn url has been copied to your clipboard.\n\n Please paste this link into your web browser and follow the directions.\n");
+	}
+}
+
+void HTGAuthorizeWindow::copyToClipboard(const char* theString) {
+	BMessage *clip = (BMessage *)NULL;
+	if (be_clipboard->Lock()) {
+		be_clipboard->Clear();
+		if (clip = be_clipboard->Data()) {
+			clip->AddData("text/plain", B_MIME_TYPE, theString, strlen(theString));
+			be_clipboard->Commit();
+		}
+	be_clipboard->Unlock();
+	}
 }
 
 void HTGAuthorizeWindow::storeTokens(std::string key, std::string secret) {
@@ -131,6 +145,12 @@ HTGAuthorizeWindow::~HTGAuthorizeWindow() {
 	
 	goButton->RemoveSelf();
 	delete goButton;
+	
+	openButton->RemoveSelf();
+	delete openButton;
+	
+	logoView->RemoveSelf();
+	delete logoView;
 	
 	theView->RemoveSelf();
 	delete theView;

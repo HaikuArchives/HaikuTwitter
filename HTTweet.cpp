@@ -9,7 +9,7 @@
 HTTweet::HTTweet() {
 	imageBitmap = NULL;
 	date.day = 1;
-	date.month = 1;
+	date.month = 0;
 	date.year = 1970;
 	date.hour = 0;
 	date.minute = 0;
