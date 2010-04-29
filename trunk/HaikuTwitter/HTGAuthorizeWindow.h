@@ -15,6 +15,7 @@
 #include <Roster.h>
 #include <iostream>
 #include <FindDirectory.h>
+#include <Clipboard.h>
 
 #include "twitcurl/twitcurl.h"
 #include "HTGMainWindow.h"
@@ -42,6 +43,7 @@ private:
 	status_t _getSettingsPath(BPath &path);
 	void openUrl(std::string url);
 	void storeTokens(std::string key, std::string secret);
+	void copyToClipboard(const char* theString);
 	int refreshTime;
 	BPoint position;
 	int height;
@@ -49,6 +51,8 @@ private:
 	oauth_settings oauth;
 	twitCurl *twitObj;
 	BTextControl *query;
+	HTGLogoView *logoView;
+	BTextView *headerText;
 	BButton *goButton;
 	BButton *openButton;
 	BView *theView;
