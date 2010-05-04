@@ -19,6 +19,7 @@ HTTweet::HTTweet() {
 }
 
 HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString) {
+	HTTweet::HTTweet();
 	this->screenName = screenName;
 	this->text = text;
 	this->profileImageUrl = profileImageUrl;
@@ -30,6 +31,7 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 }
 
 HTTweet::HTTweet(HTTweet *originalTweet) {
+	HTTweet::HTTweet();
 	this->screenName = originalTweet->getScreenName();
 	this->text = originalTweet->getText();
 	this->profileImageUrl = originalTweet->getProfileImageUrl();
@@ -205,7 +207,8 @@ const int HTTweet::stringToMonth(const char *date) {
 		return 10;
 	if(strncmp(date+4, "Dec", 3) == 0)
 		return 11;
-	return -1;
+	std::cout << "HTTweet::stringToMonth: Failed" << std::endl;
+	return 0;
 }
 
 void HTTweet::setProfileImageUrl(string &profileImageUrl) {
