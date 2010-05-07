@@ -1714,7 +1714,11 @@ std::string twitCurl::oauthGetAuthorizeUrl() {
 		if (req_url) free(req_url);
 		if (postarg) free(postarg);
 		if (!reply.length()) {printf("Unable to get autorization url from twitter. Is the oauth key/secret valid?\n");return std::string(""); }
-		if (oauthParseReply(reply.c_str(), &t_key, &t_secret)) {printf("Unable to parse data from oauth system at twitter\n"); return std::string(""); }
+		if (oauthParseReply(reply.c_str(), &t_key, &t_secret)) {
+			printf("Unable to parse data from twitter. Content:\n");
+			printf(reply.c_str());
+			return std::string(""); 
+		}
 	
 		/* Compile url string */
 		std::string url(t_key);
@@ -1772,7 +1776,11 @@ bool twitCurl::oauthAuthorize(std::string oauth_verify) {
 		if(t_key) free(t_key);
   		if(t_secret) free(t_secret);
 		if (!reply.length()) {printf("Unable to get autorization url from twitter. Is the oauth key/secret valid?\n");return false; }
-		if (oauthParseReply(reply.c_str(), &t_key, &t_secret)) {printf("Unable to parse data from oauth system at twitter\n"); return false; }
+		if (oauthParseReply(reply.c_str(), &t_key, &t_secret)) {
+			printf("Unable to parse data from twitter. Content:\n");
+			printf(reply.c_str()); 
+			return false; 
+		}
 		
 		/* Set final access key/secret */
 		oauthAccessKey = std::string(t_key);
