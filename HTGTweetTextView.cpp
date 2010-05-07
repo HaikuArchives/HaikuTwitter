@@ -92,9 +92,12 @@ BList* HTGTweetTextView::getUrls() {
 		if(pos != std::string::npos) {
 			int start = pos;
 			int end = pos;
-			while(start >= 0 && theText[start] != ' ') {
+			while(start >= 0 && theText[start] != ' ' && theText[start] != '\n' && theText[start] > 0) {
 				start--;
+				std::cout << (int)theText[start] << std::endl;
 			}
+			printf("\n");
+			std::cout << (int)'\n' << std::endl;
 			while(end < theText.length() && theText[end] != ' ') {
 				end++;
 			}
@@ -139,7 +142,7 @@ BList* HTGTweetTextView::getTags() {
 		if(pos != std::string::npos) {
 			int start = pos;
 			int end = pos;
-			while(end < theText.length() && theText[end] != ' ') {
+			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n') {
 				end++;
 			}
 			if(end == theText.length()-2) //For some reason, we have to do this.
