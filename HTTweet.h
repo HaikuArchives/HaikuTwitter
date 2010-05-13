@@ -51,6 +51,7 @@ public:
 	const string getProfileImageUrl();
 	const string getRelativeDate();
 	const string getRawDate();
+	const string getSourceName();
 	BBitmap* getBitmap();
 	BBitmap getBitmapCopy();
 	struct DateStruct getDate() const;
@@ -61,6 +62,7 @@ public:
 	void setDate(string&);
 	void setPublishedDate(string&);
 	void setId(const char*);
+	void setSourceName(string&);
 	void setBitmap(BBitmap *);
 	void waitUntilDownloadComplete();
 	bool isDownloadingBitmap();
@@ -77,6 +79,7 @@ private:
 	string text;
 	string profileImageUrl;
 	string rawDate;
+	string sourceName;
 	struct DateStruct date;
 	string id;
 };

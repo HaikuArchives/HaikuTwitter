@@ -52,6 +52,7 @@ private:
 	XMLCh* TAG_status;
 	XMLCh* TAG_text;
 	XMLCh* TAG_username;
+	XMLCh* TAG_source;
 	XMLCh* TAG_user;
 	XMLCh* TAG_image;
 	XMLCh* TAG_date;

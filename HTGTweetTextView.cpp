@@ -98,10 +98,7 @@ BList* HTGTweetTextView::getUrls() {
 			int end = pos;
 			while(start >= 0 && theText[start] != ' ' && theText[start] != '\n' && theText[start] > 0) {
 				start--;
-				std::cout << (int)theText[start] << std::endl;
 			}
-			printf("\n");
-			std::cout << (int)'\n' << std::endl;
 			while(end < theText.length() && theText[end] != ' ') {
 				end++;
 			}

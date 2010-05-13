@@ -8,7 +8,7 @@
 
 HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj) : BWindow(BRect(100, 100, 500, 200), "New tweet...", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 	this->twitObj = twitObj;
-	this->tweetId = "";
+	this->tweetId = string("");
 	
 	/*Add a grey view*/
 	theView = new BView(Bounds(), "BackgroundView", B_NOT_RESIZABLE, B_WILL_DRAW);
@@ -42,14 +42,15 @@ void HTGNewTweetWindow::SetText(const char *text) {
 	this->MessageReceived(new BMessage('UPDT')); //Update counter
 }
 
-void HTGNewTweetWindow::setTweetId(const char* tweetId) {
-	this->tweetId = tweetId;
+void HTGNewTweetWindow::setTweetId(const char* tweetId) {	
+	if(tweetId != NULL)
+		this->tweetId = string(tweetId);
 }
 
 void HTGNewTweetWindow::postTweet() {
 	std::string replyMsg( "" );
 	std::string postMsg = urlEncode(message->Text());
-	if( twitObj->statusUpdate(postMsg, tweetId) )  {
+	if( twitObj->statusUpdate(postMsg, tweetId.c_str()) )  {
 		printf( "Status update: OK\n" );
 	}
 	else {
