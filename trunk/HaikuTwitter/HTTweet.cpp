@@ -15,6 +15,7 @@ HTTweet::HTTweet() {
 	date.minute = 0;
 	date.second = 0;
 	id = string("");
+	sourceName = string("");
 	bitmapDownloadInProgress = false;
 }
 
@@ -27,6 +28,7 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 	this->rawDate = dateString;
 	imageBitmap = NULL;
 	id = string("");
+	sourceName = string("");
 	bitmapDownloadInProgress = false;
 }
 
@@ -39,7 +41,8 @@ HTTweet::HTTweet(HTTweet *originalTweet) {
 		if(originalTweet->imageBitmap->IsValid()) //Not interested in corrupted data.
 			this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
 	this->date = originalTweet->getDate();
-	this->id = originalTweet->getId();
+	this->id = string(originalTweet->getId());
+	this->sourceName = originalTweet->getSourceName();
 	this->rawDate = originalTweet->getRawDate();
 	bitmapDownloadInProgress = false;
 }
@@ -52,6 +55,10 @@ const string HTTweet::getScreenName() {
 	return screenName;	
 }
 
+const string HTTweet::getSourceName() {
+	return sourceName;
+}
+
 const string HTTweet::getText() {
 	return text;	
 }
@@ -62,6 +69,10 @@ const string HTTweet::getProfileImageUrl() {
 
 void HTTweet::setScreenName(string &screenName) {
 	this->screenName = screenName;
+}
+
+void HTTweet::setSourceName(string &sourceName) {
+	this->sourceName = sourceName;
 }
 
 void HTTweet::setText(string &text) {

@@ -52,6 +52,7 @@ SearchParser::SearchParser()
    TAG_image = XMLString::transcode("link");
    TAG_date = XMLString::transcode("published");
    TAG_id = XMLString::transcode("id");
+   TAG_source = XMLString::transcode("source");
    TAG_error = XMLString::transcode("error");
    ATTR_href = XMLString::transcode("href");
 
@@ -77,6 +78,7 @@ SearchParser::~SearchParser()
    XMLString::release( &TAG_image);
    XMLString::release( &TAG_date );
    XMLString::release( &TAG_id );
+   XMLString::release( &TAG_source );
    XMLString::release( &TAG_error );
    try
    {

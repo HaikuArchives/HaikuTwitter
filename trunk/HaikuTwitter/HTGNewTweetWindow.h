@@ -41,7 +41,7 @@ private:
 	void shortenAllUrls();
 	char *shortenUrl(const char *longUrl);
 	std::string urlEncode(const char* input);
-	const char* tweetId;
+	std::string tweetId;
 	
 	twitCurl *twitObj;
 	HTGTextView *message;

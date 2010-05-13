@@ -8,6 +8,7 @@
 #include <Bitmap.h>
 #include <View.h>
 #include <Window.h>
+#include <Font.h>
 
 #include "HTTweet.h"
 #include "HTGTweetTextView.h"
@@ -25,5 +26,6 @@ public:
 private:
 	HTTweet *theTweet;
 	HTGTweetTextView *textView;
+	int calculateSize(BView *owner);
 };
 #endif
