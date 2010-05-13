@@ -131,6 +131,8 @@ status_t addSavedSearchesThreadFunction(void *data)
 
 void HTGMainWindow::_addPublicTimeLine() {
 	twitCurl *publicTwitObj = new twitCurl();
+	publicTwitObj->setAccessKey( key );
+	publicTwitObj->setAccessSecret( secret );
 	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds());
 	tabView->AddTab(publicTimeLine);	
 }
