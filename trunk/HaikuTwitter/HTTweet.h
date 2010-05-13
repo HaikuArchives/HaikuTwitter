@@ -60,11 +60,11 @@ public:
 	void setProfileImageUrl(string&);
 	void setDate(string&);
 	void setPublishedDate(string&);
-	void setId(int);
+	void setId(const char*);
 	void setBitmap(BBitmap *);
 	void waitUntilDownloadComplete();
 	bool isDownloadingBitmap();
-	int getId();
+	const char* getId();
 	
 	/*This must be public (threads)*/
 	bool bitmapDownloadInProgress;
@@ -78,6 +78,6 @@ private:
 	string profileImageUrl;
 	string rawDate;
 	struct DateStruct date;
-	int id;
+	string id;
 };
 #endif

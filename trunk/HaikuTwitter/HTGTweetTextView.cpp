@@ -7,11 +7,15 @@
 #include "HTGTweetTextView.h"
 
 HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, uint32 resizingMode, uint32 flags) : BTextView(frame, name, textRect, resizingMode, flags) {
-		
+		tweetId = "";
 }
 	
 HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, const BFont* font, const rgb_color* color, uint32 resizingMode, uint32 flags) : BTextView(frame, name, textRect, font, color, resizingMode, flags) {
-		
+		tweetId = "";
+}
+
+void HTGTweetTextView::setTweetId(const char* tweetId) {
+	this->tweetId = tweetId;
 }
 
 void HTGTweetTextView::MouseDown(BPoint point) {	
@@ -187,6 +191,7 @@ void HTGTweetTextView::sendReplyMsgToParent() {
 	theString.insert(0, this->Name());
 	theString.insert(0, "@");
 	replyMsg->AddString("text", theString.c_str());
+	replyMsg->AddString("reply_to_id", tweetId);
 	BTextView::MessageReceived(replyMsg);
 }
 
