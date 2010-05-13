@@ -7,6 +7,7 @@
 
 #include <cstring>
 #include <string>
+#include <sstream>
 #include <curl/curl.h>
 
 /* Default values used in twitcurl */
@@ -19,6 +20,7 @@ namespace twitCurlDefaults
 
     /* Miscellaneous data used to build twitter URLs*/
     const std::string TWITCURL_STATUSSTRING = "status=";
+    const std::string TWITCURL_REPLYTOID = "in_reply_to_status_id=";
     const std::string TWITCURL_TEXTSTRING = "text=";
     const std::string TWITCURL_QUERYSTRING = "query=";  
     const std::string TWITCURL_SEARCHQUERYSTRING = "?q=";      
@@ -117,7 +119,7 @@ public:
     bool search( std::string& query );
 
     /* Twitter status APIs */
-    bool statusUpdate( std::string& newStatus  );
+    bool statusUpdate( std::string& newStatus, const char* replyTo = ""  );
     bool statusShowById( std::string& statusId );
     bool statusDestroyById( std::string& statusId );
 

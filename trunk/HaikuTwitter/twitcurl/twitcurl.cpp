@@ -394,22 +394,27 @@ bool twitCurl::search( std::string& query )
 *
 * @description: method to update new status message in twitter profile
 *
-* @input: newStatus
+* @input: newStatus, in_reply_to id
 *
 * @output: true if POST is success, otherwise false. This does not check http
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::statusUpdate( std::string& newStatus )
+bool twitCurl::statusUpdate( std::string& newStatus, const char* replyTo )
 {
     bool retVal = false;
     if( isCurlInit() && newStatus.length() )
     {
         /* Prepare new status message */
         std::string newStatusMsg( "" );
-        newStatusMsg = twitCurlDefaults::TWITCURL_STATUSSTRING;
+        if( strlen(replyTo)  > 1 ) {
+        	newStatusMsg.append(twitCurlDefaults::TWITCURL_REPLYTOID);
+        	newStatusMsg.append(replyTo);
+        	newStatusMsg.append("&");
+        }
+        newStatusMsg.append( twitCurlDefaults::TWITCURL_STATUSSTRING );
         newStatusMsg.append( newStatus.c_str() );
-
+        
         /* Prepare standard params */
         prepareStandardParams();
 
@@ -1658,7 +1663,7 @@ bool twitCurl::performPost( const std::string& postUrl, std::string dataStr )
 	/*Sign the url and data*/
   	sprintf(url_with_dataStr, "%s?%s", postUrl.c_str(), dataStr.c_str());
     req_url_signed = oauth_sign_url2(url_with_dataStr, &postarg, OA_HMAC, NULL, CONSUMER_KEY, CONSUMER_SECRET, oauthAccessKey.c_str(), oauthAccessSecret.c_str());
-	
+		
     /* Set http request, url and data */
     curl_easy_setopt( m_curlHandle, CURLOPT_POST, 1 );
     curl_easy_setopt( m_curlHandle, CURLOPT_URL, postUrl.c_str() );
