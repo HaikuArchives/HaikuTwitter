@@ -223,9 +223,9 @@ void SearchParser::readData(const char *xmlData)
 		nodeCount--; //Because we skipped item(0)
 		
 		// Parse XML file for tags of interest: "id"
-		statusNodes = elementRoot->getElementsByTagName(TAG_id);
+		/*statusNodes = elementRoot->getElementsByTagName(TAG_id);
 		
-		for(XMLSize_t i = 0; i < nodeCount; i++) {
+		for(XMLSize_t i = 0; i < nodeCount*2; i+=2) {
 			DOMNode* currentNode = statusNodes->item(i);
          	if( currentNode->getNodeType() &&  // true is not NULL
             	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
@@ -238,15 +238,11 @@ void SearchParser::readData(const char *xmlData)
             		DOMText* textNode
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
-            		char *rawString = XMLString::transcode(textNode->getWholeText());
-            		//Remove last character, holds ugly symbol.
-            		//rawString[strlen(rawString)-5] = '\0';
-            		
-            		tweetPtr[i]->setId(atoi(rawString));
-            		delete rawString;
+            		string rawString(XMLString::transcode(textNode->getWholeText()));
+            		tweetPtr[i/2]->setId(rawString.c_str());
             	}
          	}
-		}
+		}*/
 
 		// Parse XML file for tags of interest: "screen_name"
 		statusNodes = elementRoot->getElementsByTagName(TAG_username);

@@ -30,8 +30,11 @@ public:
 	HTGTweetTextView(BRect frame, const char *name, BRect textRect, const BFont* font, const rgb_color* color, uint32 resizingMode, uint32 flags);
 	void MessageReceived(BMessage *msg);
 	virtual void MouseDown(BPoint point);
+	void setTweetId(const char* tweetId);
 	
 private:
+	const char* tweetId;
+
 	void openUrl(const char *);
 	bool isValidScreenNameChar(const char &);
 	void sendRetweetMsgToParent();

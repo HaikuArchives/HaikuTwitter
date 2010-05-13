@@ -14,7 +14,7 @@ HTTweet::HTTweet() {
 	date.hour = 0;
 	date.minute = 0;
 	date.second = 0;
-	id = -1;
+	id = string("");
 	bitmapDownloadInProgress = false;
 }
 
@@ -26,7 +26,7 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 	this->setDate(dateString);
 	this->rawDate = dateString;
 	imageBitmap = NULL;
-	id = -1;
+	id = string("");
 	bitmapDownloadInProgress = false;
 }
 
@@ -173,12 +173,12 @@ bool HTTweet::operator<(const HTTweet &b) const {
 	return false;	
 }
 
-int HTTweet::getId() {
-	return id;
+const char* HTTweet::getId() {
+	return id.c_str();
 }
 
-void HTTweet::setId(int id) {
-	this->id = id;
+void HTTweet::setId(const char* id) {
+	this->id = string(id);
 }
 
 const int HTTweet::stringToMonth(const char *date) {

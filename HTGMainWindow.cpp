@@ -357,6 +357,7 @@ void HTGMainWindow::_setAutoStarted(bool autostarted) {
 
 void HTGMainWindow::MessageReceived(BMessage *msg) {
 	const char* text_label = "text";
+	const char* id_label = "reply_to_id";
 	switch(msg->what) {
 		case TOGGLE_AUTOSTART:
 			_setAutoStarted(!fAutoStartMenuItem->IsMarked());
@@ -377,6 +378,7 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 		case NEW_TWEET:
 			newTweetWindow = new HTGNewTweetWindow(newTweetObj);
 			newTweetWindow->SetText(msg->FindString(text_label, (int32)0)); //Set text (RT, reply, ie)
+			newTweetWindow->setTweetId(msg->FindString(id_label, (int32)0)); //Set id (RT, reply, ie)
 			newTweetWindow->Show();
 			break;
 		case REFRESH:

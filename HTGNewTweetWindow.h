@@ -33,6 +33,7 @@ public:
 	void inputChanged(int length);
 	void MessageReceived(BMessage *msg);
 	void SetText(const char *text);
+	void setTweetId(const char* tweetId);
 
 private:
 	void postTweet();
@@ -40,6 +41,7 @@ private:
 	void shortenAllUrls();
 	char *shortenUrl(const char *longUrl);
 	std::string urlEncode(const char* input);
+	const char* tweetId;
 	
 	twitCurl *twitObj;
 	HTGTextView *message;
