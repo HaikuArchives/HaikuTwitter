@@ -19,41 +19,55 @@ void HTGTweetTextView::setTweetId(const char* tweetId) {
 }
 
 void HTGTweetTextView::MouseDown(BPoint point) {	
-	BMenuItem* selected;
+	int32 buttons;
+	Window()->CurrentMessage()->FindInt32("buttons", &buttons);
+	if ((buttons & B_SECONDARY_MOUSE_BUTTON) != 0) {
+		BMenuItem* selected;
 	
-	ConvertToScreen(&point);
+		ConvertToScreen(&point);
 	
-	BPopUpMenu *myPopUp = new BPopUpMenu("TweetOptions", false, true, B_ITEMS_IN_COLUMN);
-	
-	myPopUp->AddItem(new BMenuItem("Retweet...", new BMessage(GO_RETWEET)));
-	myPopUp->AddItem(new BMenuItem("Reply...", new BMessage(GO_REPLY)));
-	myPopUp->AddSeparatorItem();
-	
-	BList *screenNameList = this->getScreenNames();
-	for(int i = 0; i < screenNameList->CountItems(); i++)
-		myPopUp->AddItem((BMenuItem *)screenNameList->ItemAt(i));
-	
-	BList *urlList = this->getUrls();
-	if(urlList->CountItems() > 0)
-		myPopUp->AddSeparatorItem();
-	for(int i = 0; i < urlList->CountItems(); i++)
-		myPopUp->AddItem((BMenuItem *)urlList->ItemAt(i));
+		BPopUpMenu *myPopUp = new BPopUpMenu("TweetOptions", false, true, B_ITEMS_IN_COLUMN);
 		
-	BList *tagList = this->getTags();
-	if(tagList->CountItems() > 0)
+		int32 selectionStart;
+		int32 selectionFinish;
+		GetSelection(&selectionStart, &selectionFinish);
+		if((selectionFinish - selectionStart) > 0) {
+			myPopUp->AddItem(new BMenuItem("Copy", new BMessage(B_COPY)));
+			myPopUp->AddSeparatorItem();
+		}
+	
+		myPopUp->AddItem(new BMenuItem("Retweet...", new BMessage(GO_RETWEET)));
+		myPopUp->AddItem(new BMenuItem("Reply...", new BMessage(GO_REPLY)));
 		myPopUp->AddSeparatorItem();
-	for(int i = 0; i < tagList->CountItems(); i++)
-		myPopUp->AddItem((BMenuItem *)tagList->ItemAt(i));
 	
-	selected = myPopUp->Go(point);
+		BList *screenNameList = this->getScreenNames();
+		for(int i = 0; i < screenNameList->CountItems(); i++)
+			myPopUp->AddItem((BMenuItem *)screenNameList->ItemAt(i));
+		
+		BList *urlList = this->getUrls();
+		if(urlList->CountItems() > 0)
+			myPopUp->AddSeparatorItem();
+		for(int i = 0; i < urlList->CountItems(); i++)
+			myPopUp->AddItem((BMenuItem *)urlList->ItemAt(i));
+		
+		BList *tagList = this->getTags();
+		if(tagList->CountItems() > 0)
+			myPopUp->AddSeparatorItem();
+		for(int i = 0; i < tagList->CountItems(); i++)
+			myPopUp->AddItem((BMenuItem *)tagList->ItemAt(i));
 	
-	if (selected) {
-      this->MessageReceived(selected->Message());
-   	}
+		selected = myPopUp->Go(point);
 	
-	delete myPopUp;
-	delete screenNameList;
-	delete urlList;
+		if (selected) {
+    		this->MessageReceived(selected->Message());
+   		}
+	
+		delete myPopUp;
+		delete screenNameList;
+		delete urlList;
+	}
+	else
+		BTextView::MouseDown(point);
 }
 
 BList* HTGTweetTextView::getScreenNames() {
