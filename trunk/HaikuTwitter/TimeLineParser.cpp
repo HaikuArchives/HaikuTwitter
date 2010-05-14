@@ -238,6 +238,7 @@ void TimeLineParser::readData(const char *xmlData)
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		string rawString(XMLString::transcode(textNode->getWholeText()));
+            		rawString[rawString.length()-3] = '\0';
             		tweetPtr[i/2]->setId(rawString.c_str());
             	}
          	}
