@@ -38,6 +38,8 @@ int HTGTweetItem::calculateSize(BView *owner) {
 	calculatedSize = sizeOfTextView+15+15;
 	if(calculatedSize < 60)
 		calculatedSize = 60;
+		
+	delete calcView;
 	return calculatedSize;
 }
 
@@ -83,7 +85,6 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	BRect textRect(60+4,frame.top+15, frame.right, frame.bottom-15);
 	if(textView == NULL) {
 		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-60-4,frame.bottom-15), B_NOT_RESIZABLE, B_WILL_DRAW);
-		textView->setTweetId(theTweet->getId());
 		owner->AddChild(textView);
 	}
 
@@ -92,6 +93,7 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	textView->SetFontAndColor(&textFont);
 	textView->SetWordWrap(true);
 	textView->MakeEditable(false);
+	textView->setTweetId(theTweet->getId());
 	textView->SetText(theTweet->getText().c_str());
 	
 	/*Draw seperator*/

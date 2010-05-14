@@ -380,7 +380,7 @@ bool twitCurl::search( std::string& query )
         /* Prepare URL */
         std::string buildUrl( "" );
         buildUrl = twitterDefaults::TWITCURL_SEARCH_URL;
-        buildUrl.append( twitCurlDefaults::TWITCURL_SEARCHQUERYSTRING.c_str() );        
+        buildUrl.append( twitCurlDefaults::TWITCURL_SEARCHQUERYSTRING.c_str() );
         buildUrl.append( query.c_str() );
 
         /* Perform GET */

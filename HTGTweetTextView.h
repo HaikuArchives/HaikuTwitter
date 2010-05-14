@@ -33,7 +33,7 @@ public:
 	void setTweetId(const char* tweetId);
 	
 private:
-	const char* tweetId;
+	std::string tweetId;
 
 	void openUrl(const char *);
 	bool isValidScreenNameChar(const char &);
