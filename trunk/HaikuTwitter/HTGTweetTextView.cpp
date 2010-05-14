@@ -56,7 +56,7 @@ void HTGTweetTextView::MouseDown(BPoint point) {
 		for(int i = 0; i < tagList->CountItems(); i++)
 			myPopUp->AddItem((BMenuItem *)tagList->ItemAt(i));
 	
-		selected = myPopUp->Go(point);
+		selected = myPopUp->Go(point, true, true, true);
 	
 		if (selected) {
     		this->MessageReceived(selected->Message());
