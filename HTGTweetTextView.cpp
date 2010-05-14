@@ -56,15 +56,9 @@ void HTGTweetTextView::MouseDown(BPoint point) {
 		for(int i = 0; i < tagList->CountItems(); i++)
 			myPopUp->AddItem((BMenuItem *)tagList->ItemAt(i));
 	
+		myPopUp->SetAsyncAutoDestruct(true);
+		myPopUp->SetTargetForItems(BMessenger(this));
 		selected = myPopUp->Go(point, true, true, true);
-	
-		if (selected) {
-    		this->MessageReceived(selected->Message());
-   		}
-	
-		delete myPopUp;
-		delete screenNameList;
-		delete urlList;
 	}
 	else
 		BTextView::MouseDown(point);
