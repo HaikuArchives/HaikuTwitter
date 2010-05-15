@@ -202,6 +202,13 @@ status_t updateTimeLineThread(void *data) {
 		}
 	}
 	
+	if(timeLineParser->count() < 1) {//timeLineParser failed, return!
+			std::cout << "Parser didn't find any tweets." << std::endl;
+			delete timeLineParser;
+			timeLineParser = NULL;
+			return B_OK;
+		}
+	
 	HTGTweetItem *mostRecentItem = NULL;
 	HTTweet *mostRecentTweet = NULL;
 	HTTweet *currentTweet = NULL;
