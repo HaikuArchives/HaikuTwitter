@@ -176,7 +176,6 @@ status_t addTrendingThreadFunction(void *data)
 		theMessage->AddString("text", ((std::string *)queryList->FirstItem())->c_str());
 		trendingSubMenu->AddItem(new BMenuItem(((std::string *)queryList->FirstItem())->c_str(), theMessage));
 		
-		std::cout << *(std::string *)queryList->FirstItem() << std::endl;
 		delete (std::string *)queryList->RemoveItem((int32)0);
 	}
 	
