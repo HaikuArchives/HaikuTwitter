@@ -48,6 +48,7 @@ const int32 TOGGLE_PUBLIC = 'TPUB';
 const int32 TOGGLE_AUTOSTART = 'ASTT';
 
 status_t addSavedSearchesThreadFunction(void *data);
+status_t addTrendingThreadFunction(void *data);
 
 class HTGMainWindow : public BWindow {
 public:
@@ -62,6 +63,7 @@ private:
 	int refreshTime;
 	twitter_settings theSettings;
 	
+	int trendingRefreshCounter;
 	
 	bool _isAutoStarted();
 	void _setAutoStarted(bool autostarted);
@@ -69,6 +71,7 @@ private:
 	void _addPublicTimeLine();
 	void _removePublicTimeLine();
 	void _addSavedSearches();
+	void _addTrending();
 	status_t _getSettingsPath(BPath &path);
 	void _retrieveSettings();
 	status_t _saveSettings();
@@ -95,6 +98,7 @@ private:
 	BMenu *fTwitterMenu;
 	BMenu *fEditMenu;
 	BMenu *fSettingsMenu;
+	BMenu *fTrendingSubMenu;
 	BMenuItem *fOpenInTabsMenuItem;
 	BMenuItem *fEnablePublicMenuItem;
 	BMenuItem *fAutoStartMenuItem;
