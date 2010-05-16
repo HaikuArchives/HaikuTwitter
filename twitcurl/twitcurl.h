@@ -37,6 +37,12 @@ namespace twitterDefaults
 
     /* Search URLs */
     const std::string TWITCURL_SEARCH_URL = "http://search.twitter.com/search.atom";
+    
+    /* Trend URLs */
+	const std::string TWITCURL_TRENDS_URL = "http://search.twitter.com/trends.json";
+	const std::string TWITCURL_TRENDS_CURRENT_URL = "http://search.twitter.com/trends/current.json";
+	const std::string TWITCURL_TRENDS_WEEKLY_URL = "http://search.twitter.com/trends/weekly.json";
+	const std::string TWITCURL_TRENDS_DAILY_URL = "http://search.twitter.com/trends/daily.json";
 
     /* Status URLs */
     const std::string TWITCURL_STATUSUPDATE_URL = "http://twitter.com/statuses/update.xml";
@@ -117,6 +123,10 @@ public:
 
     /* Twitter search APIs */
     bool search( std::string& query );
+    
+    /* Twitter trends APIs */
+    bool trendsGet();
+    bool trendsCurrentGet();
 
     /* Twitter status APIs */
     bool statusUpdate( std::string& newStatus, const char* replyTo = ""  );

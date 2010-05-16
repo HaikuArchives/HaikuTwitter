@@ -390,6 +390,56 @@ bool twitCurl::search( std::string& query )
 }
 
 /*++
+* @method: twitCurl::trendsGet
+*
+* @description: gets the current top 10 trending topics on Twitter.
+*
+* @input: none
+*
+* @output: true if GET is success, otherwise false. This does not check http
+*          response by twitter. Use getLastWebResponse() for that.
+*
+*--*/
+bool twitCurl::trendsGet( )
+{
+    bool retVal = false;
+    if( isCurlInit() )
+    {
+        /* Prepare standard params */
+        prepareStandardParams();
+
+        /* Perform GET */
+        retVal = performGet( twitterDefaults::TWITCURL_TRENDS_URL );
+    }
+    return retVal;
+}
+
+/*++
+* @method: twitCurl::trendsCurrentGet
+*
+* @description: gets the current top 10 trending topics on Twitter.
+*
+* @input: none
+*
+* @output: true if GET is success, otherwise false. This does not check http
+*          response by twitter. Use getLastWebResponse() for that.
+*
+*--*/
+bool twitCurl::trendsCurrentGet( )
+{
+    bool retVal = false;
+    if( isCurlInit() )
+    {
+        /* Prepare standard params */
+        prepareStandardParams();
+
+        /* Perform GET */
+        retVal = performGet( twitterDefaults::TWITCURL_TRENDS_CURRENT_URL );
+    }
+    return retVal;
+}
+
+/*++
 * @method: twitCurl::statusUpdate
 *
 * @description: method to update new status message in twitter profile
