@@ -187,6 +187,7 @@ void HTGTweetTextView::sendRetweetMsgToParent() {
 	RTString.insert(0, "@");
 	RTString.insert(0, "RT ");
 	retweetMsg->AddString("text", RTString.c_str());
+	retweetMsg->AddString("reply_to_id", tweetId.c_str());
 	BTextView::MessageReceived(retweetMsg);
 }
 
