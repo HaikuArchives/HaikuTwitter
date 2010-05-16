@@ -46,6 +46,10 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	/*Add the saved searches as tabs - if tabs is enabled*/
 	if(fOpenInTabsMenuItem->IsMarked() && theSettings.saveSearches)
 		_addSavedSearches();
+		
+	/*Add the current trends*/
+	_addTrending();
+	trendingRefreshCounter = 0;
 
 	/*Fire a REFRESH message every 'refreshTime' minute*/
 	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
@@ -129,6 +133,61 @@ status_t addSavedSearchesThreadFunction(void *data)
 	return B_OK;
 }
 
+status_t addTrendingThreadFunction(void *data)
+{
+	BList *args = (BList *)data;
+	std::string key = *(std::string *)args->ItemAt(0);
+	std::string secret = *(std::string *)args->ItemAt(1);
+	BMenu *trendingSubMenu = (BMenu *)args->ItemAt(2);
+	
+	/*Configure twitter object*/
+	twitCurl *twitObj = new twitCurl();
+	twitObj->setAccessKey( key );
+	twitObj->setAccessSecret( secret );
+	
+	/*Download current trends*/
+	twitObj->trendsCurrentGet();
+	std::string replyMsg(" ");
+	twitObj->getLastWebResponse(replyMsg);
+
+	/*Setup BList to hold the trending queries*/
+	BList *queryList = new BList();
+	
+	/*Parse saved searches for query*/
+	int pos = 0;
+	int i = 0;
+	const char *queryTag = "\"query\":\""; 
+	while(pos != std::string::npos) {
+		pos = replyMsg.find(queryTag, pos);
+		if(pos != std::string::npos) {
+			int start = pos+strlen(queryTag);
+			int end = replyMsg.find("\"}", start);
+			std::string *searchQuery = new std::string(replyMsg.substr(start, end-start));
+			queryList->AddItem(searchQuery);
+			pos = end;
+			i++;
+		}
+	}
+	for(int i = 0; !queryList->IsEmpty(); i++) {
+		if(trendingSubMenu->ItemAt(i) != NULL)
+			delete trendingSubMenu->RemoveItem(i);
+		
+		BMessage *theMessage = new BMessage(GO_SEARCH);
+		theMessage->AddString("text", ((std::string *)queryList->FirstItem())->c_str());
+		trendingSubMenu->AddItem(new BMenuItem(((std::string *)queryList->FirstItem())->c_str(), theMessage));
+		
+		std::cout << *(std::string *)queryList->FirstItem() << std::endl;
+		delete (std::string *)queryList->RemoveItem((int32)0);
+	}
+	
+	/*Clean up*/
+	delete twitObj;
+	delete queryList;
+	delete args;
+
+	return B_OK;
+}
+
 void HTGMainWindow::_addPublicTimeLine() {
 	twitCurl *publicTwitObj = new twitCurl();
 	publicTwitObj->setAccessKey( key );
@@ -152,6 +211,16 @@ void HTGMainWindow::_addSavedSearches() {
 	threadArgs->AddItem(new BRect(Bounds()));
 	
 	thread_id theThread = spawn_thread(addSavedSearchesThreadFunction, "UpdateSearches", 10, threadArgs);
+	resume_thread(theThread);
+}
+
+void HTGMainWindow::_addTrending() {
+	BList *threadArgs = new BList();
+	threadArgs->AddItem(&key);
+	threadArgs->AddItem(&secret);
+	threadArgs->AddItem(fTrendingSubMenu);
+	
+	thread_id theThread = spawn_thread(addTrendingThreadFunction, "UpdateTrends", 10, threadArgs);
 	resume_thread(theThread);
 }
 
@@ -258,6 +327,9 @@ void HTGMainWindow::_SetupMenu() {
 	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("Go to user...", new BMessage(FIND_USER), 'G'));
 	fTwitterMenu->AddItem(new BMenuItem("Search for...", new BMessage(SEARCH_FOR), 'F'));
+	fTwitterMenu->AddSeparatorItem();
+	fTrendingSubMenu = new BMenu("Trending");
+	fTwitterMenu->AddItem(fTrendingSubMenu); //We fill this menu later (see BMessage: REFRESH)
 	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("Refresh", new BMessage(REFRESH), 'R'));
 	fTwitterMenu->AddSeparatorItem();
@@ -384,6 +456,12 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			newTweetWindow->Show();
 			break;
 		case REFRESH:
+			if(trendingRefreshCounter > 3) {//Refresh only every 4 timeline-refresh.
+				_addTrending();
+				trendingRefreshCounter = 0;
+			}
+			else
+				trendingRefreshCounter++;
 			for(int i = 0; i < tabView->CountTabs(); i++) {
 				HTGTimeLineView *current = dynamic_cast<HTGTimeLineView*>(tabView->TabAt(i)->View());
 				if(current != NULL)
