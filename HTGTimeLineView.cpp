@@ -96,7 +96,8 @@ void HTGTimeLineView::updateTimeLine() {
 std::string& htmlFormatedString(const char *orig) {
 	std::string newString(orig);
 	if(orig[0] == '#') {
-		newString = std::string(orig+1);
+		//newString = std::string(orig+1); THIS IS NOT ANYMORE.
+		newString = std::string(orig);
 	}
 	std::string *returnPtr = new std::string(newString);
 	return *returnPtr;
