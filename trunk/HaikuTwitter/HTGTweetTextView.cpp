@@ -58,7 +58,7 @@ void HTGTweetTextView::MouseDown(BPoint point) {
 	
 		myPopUp->SetAsyncAutoDestruct(true);
 		myPopUp->SetTargetForItems(BMessenger(this));
-		selected = myPopUp->Go(point, true, true, true);
+		selected = myPopUp->Go(point+BPoint(1,1), true, true, true);
 	}
 	else
 		BTextView::MouseDown(point);

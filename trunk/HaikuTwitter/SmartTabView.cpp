@@ -80,7 +80,7 @@ SmartTabView::MouseDown(BPoint point)
 				popUpMenu->AddItem(new BMenuItem("Close tab", message));
 				popUpMenu->SetAsyncAutoDestruct(true);
 				popUpMenu->SetTargetForItems(BMessenger(this));
-				popUpMenu->Go(ConvertToScreen(point), true, true, true);
+				popUpMenu->Go(ConvertToScreen(point+BPoint(1, 1)), true, true, true);
 
 				handled = true;
 			} else if ((buttons & B_TERTIARY_MOUSE_BUTTON) != 0) {
