@@ -168,10 +168,15 @@ status_t addTrendingThreadFunction(void *data)
 			i++;
 		}
 	}
+	
+	/*Remove any existing BMenuItems (trending topics), if we have new data to populate the menu with*/
+	while(trendingSubMenu->CountItems() > 0 && !queryList->IsEmpty()) {
+		if(trendingSubMenu->ItemAt((int32)0) != NULL)
+			delete trendingSubMenu->RemoveItem((int32)0);
+	}
+	
+	/*Add the new topics to the BMenu*/
 	for(int i = 0; !queryList->IsEmpty(); i++) {
-		if(trendingSubMenu->ItemAt(i) != NULL)
-			delete trendingSubMenu->RemoveItem(i);
-		
 		BMessage *theMessage = new BMessage(GO_SEARCH);
 		theMessage->AddString("text", ((std::string *)queryList->FirstItem())->c_str());
 		trendingSubMenu->AddItem(new BMenuItem(((std::string *)queryList->FirstItem())->c_str(), theMessage));
