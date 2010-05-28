@@ -76,27 +76,38 @@ int32 HTGTimeLineView::getSearchID() {
 
 void HTGTimeLineView::AttachedToWindow() {
 	BView::AttachedToWindow();
-	if(waitingForUpdate)
-		updateTimeLine();
+	
+	/*Add the unhandled tweets*/
+	if(!unhandledList->IsEmpty()) {
+		BList *newList = new BList();
+		newList->AddList(unhandledList);
+		unhandledList->MakeEmpty();
+		
+		HTGTweetItem *currentItem;
+		HTTweet *currentTweet;
+		while(!listView->IsEmpty()) {
+			currentItem = (HTGTweetItem *)listView->FirstItem();
+			currentTweet = currentItem->getTweetPtr();
+			listView->RemoveItem(currentItem); //Must lock looper before we do this!
+			if(newList->CountItems() < 20) //Only allow 20 tweets to be displayed at once... for now.
+				newList->AddItem(new HTGTweetItem(new HTTweet(currentTweet)));
+			delete currentItem;
+		}
+		listView->AddList(newList);
+		unhandledList->MakeEmpty();
+	}
 }
 
 void HTGTimeLineView::updateTimeLine() {
-	bool looperLocked = listView->LockLooper();
-	/*Update timeline only if we can lock window looper -or we want notifications for this timeline*/
-	if(!looperLocked && !wantsNotifications)
-		waitingForUpdate = true;
-	else {
-		if(looperLocked) listView->UnlockLooper(); //Assume we can lock it later
-		previousThread = spawn_thread(updateTimeLineThread, "UpdateThread", 10, this);
-		resume_thread(previousThread);
-		waitingForUpdate = false;
-	}
+	previousThread = spawn_thread(updateTimeLineThread, "UpdateThread", 10, this);
+	resume_thread(previousThread);
+	waitingForUpdate = false;
 }
 
 std::string& htmlFormatedString(const char *orig) {
 	std::string newString(orig);
 	if(orig[0] == '#') {
-		//newString = std::string(orig+1); THIS IS NOT ANYMORE.
+		//newString = std::string(orig+1); THIS IS NOT NEEDED ANYMORE.
 		newString = std::string(orig);
 	}
 	std::string *returnPtr = new std::string(newString);
@@ -134,7 +145,7 @@ void HTGTimeLineView::savedSearchCreateSelf() {
 
 status_t updateTimeLineThread(void *data) {
 	//Could not figure out how to update a BListItem with a child view (BTextView).
-	//Could be a bug in Haiku API's. After hours of investigation without any
+	//Could be a bug in Haiku APIs. After hours of investigation without any
 	//result, I just don't care anymore. Reallocating all HTGTweetItem on update.
 	
 	HTGTimeLineView *super = (HTGTimeLineView*)data;
@@ -153,37 +164,40 @@ status_t updateTimeLineThread(void *data) {
 	SearchParser *searchParser = new SearchParser();
 	std::string replyMsg(" ");
 	
-	/*Only download tweets if there is no unhandled tweets*/
-	if(super->unhandledList->IsEmpty()) {
-		switch(TYPE) {
-			case TIMELINE_HOME:
-				twitObj->timelineHomeGet();
-				break;
-			case TIMELINE_FRIENDS:
-				twitObj->timelineFriendsGet();
-				break;
-			case TIMELINE_MENTIONS:
-				twitObj->mentionsGet();
-				break;
-			case TIMELINE_PUBLIC:
-				twitObj->timelinePublicGet();
-				break;
-			case TIMELINE_USER:
-				twitObj->timelineUserGet(*new std::string(super->Name()), false);
-				break;
-			case TIMELINE_SEARCH:
-				twitObj->search(htmlFormatedString(super->Name()));
-				break;
-			default:
-				twitObj->timelinePublicGet();
-		}
-		twitObj->getLastWebResponse(replyMsg);
-		if(replyMsg.length() < 100)   //Length of data is less than 100 characters. Clearly,
-			replyMsg = "error";			//something is wrong... abort.
-	}
-	else
-		super->waitingForUpdate = true;
+	HTGTweetItem *mostRecentItem = NULL;
+	HTTweet *mostRecentTweet = NULL;
+	HTTweet *currentTweet = NULL;
 	
+	BList *newList = new BList();
+	
+	switch(TYPE) {
+		case TIMELINE_HOME:
+			twitObj->timelineHomeGet();
+			break;
+		case TIMELINE_FRIENDS:
+			twitObj->timelineFriendsGet();
+			break;
+		case TIMELINE_MENTIONS:
+			twitObj->mentionsGet();
+			break;
+		case TIMELINE_PUBLIC:
+			twitObj->timelinePublicGet();
+			break;
+		case TIMELINE_USER:
+			twitObj->timelineUserGet(*new std::string(super->Name()), false);
+			break;
+		case TIMELINE_SEARCH:
+			twitObj->search(htmlFormatedString(super->Name()));
+			break;
+		default:
+			twitObj->timelinePublicGet();
+	}
+	
+	twitObj->getLastWebResponse(replyMsg);
+
+	if(replyMsg.length() < 100)   //Length of data is less than 100 characters. Clearly,
+		replyMsg = "error";			//something is wrong... abort.;
+
 	if(TYPE == TIMELINE_SEARCH) {
 			try {
 				searchParser->readData(replyMsg.c_str());
@@ -214,10 +228,6 @@ status_t updateTimeLineThread(void *data) {
 			return B_OK;
 		}
 	
-	HTGTweetItem *mostRecentItem = NULL;
-	HTTweet *mostRecentTweet = NULL;
-	HTTweet *currentTweet = NULL;
-	
 	bool initialLoad = (listView->FirstItem() == NULL && super->unhandledList->FirstItem() == NULL);
 	
 	if(!initialLoad && listView->FirstItem() != NULL) {
@@ -244,8 +254,6 @@ status_t updateTimeLineThread(void *data) {
 		mostRecentItem = (HTGTweetItem *)super->unhandledList->FirstItem();
 		mostRecentTweet = mostRecentItem->getTweetPtr();
 	}
-		
-	BList *newList = new BList();
 	
 	for (int i = 0; i < timeLineParser->count(); i++) {
 		currentTweet = timeLineParser->getTweets()[i];
