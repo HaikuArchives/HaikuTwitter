@@ -6,15 +6,12 @@
 #include "ListView.h"
 #include "ScrollView.h"
 #include "TabView.h"
+#include "Roster.h"
 
 #include <string>
 #include <sstream>
 
-#ifdef INFOPOPPER_SUPPORT
-#include <infopopper/InfoPopper.h>
-#include <infopopper/IPMessage.h>
-#include <infopopper/IPConnection.h>
-#endif
+#include <Notification.h>
 
 #include "TimeLineParser.h"
 #include "SearchParser.h"

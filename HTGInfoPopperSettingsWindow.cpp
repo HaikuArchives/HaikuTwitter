@@ -6,7 +6,7 @@
 
 #include "HTGInfoPopperSettingsWindow.h"
 
-HTGInfoPopperSettingsWindow::HTGInfoPopperSettingsWindow() : BWindow(BRect(100, 100, 500, 210), "Account settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGInfoPopperSettingsWindow::HTGInfoPopperSettingsWindow() : BWindow(BRect(100, 100, 500, 210), "Notification settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
 	_retrieveSettings();
 	_setupWindow();
 }

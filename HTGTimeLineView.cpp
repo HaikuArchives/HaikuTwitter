@@ -313,35 +313,18 @@ void HTGTimeLineView::sendNotificationFor(HTTweet *theTweet) {
 	
 	#ifdef INFOPOPPER_SUPPORT
 	
-	IPConnection *conn = new IPConnection;
-	IPMessage *msg = new IPMessage(InfoPopper::Information);
+	BNotification notification(B_INFORMATION_NOTIFICATION);
 
 	//Prepare the message
-	msg->Application("HaikuTwitter");
-	msg->Title(title.c_str());
-	msg->Content(theTweet->getText().c_str());
-
-	// Icon maybe in the future
-	/*if (strlen(fIconFile->Text()) > 0) {
-		entry_ref ref;
-
-		if (get_ref_for_path(fIconFile->Text(), &ref) == B_OK) {
-			if (fSelectedIconType == InfoPopper::Attribute) {
-				msg->MainIcon(ref);
-				msg->MainIconType(fSelectedIconType);
-			}
-			if (fSelectedIconType == InfoPopper::Contents) {
-				msg->OverlayIcon(ref);
-				msg->OverlayIconType(fSelectedIconType);
-			}
-		}
-	}*/
+	notification.SetApplication("HaikuTwitter");
+	notification.SetTitle(title.c_str());
+	notification.SetContent(theTweet->getText().c_str());
+	notification.SetOnClickApp("application/x-vnd.HaikuTwitter");
+	theTweet->waitUntilDownloadComplete();
+	notification.SetIcon(theTweet->getBitmap());
 
 	//Send the notification
-	conn->Send(msg);
-
-	delete msg;
-	delete conn;
+	be_roster->Notify(notification, (bigtime_t)0);
 		
 	#endif
 }
