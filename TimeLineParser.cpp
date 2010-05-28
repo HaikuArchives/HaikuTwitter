@@ -238,7 +238,8 @@ void TimeLineParser::readData(const char *xmlData)
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		string rawString(XMLString::transcode(textNode->getWholeText()));
-            		rawString[rawString.length()-3] = '\0';
+            		if(rawString.length() > 3)
+            			rawString[rawString.length()-3] = '\0';
             		tweetPtr[i/2]->setId(rawString.c_str());
             	}
          	}
@@ -262,7 +263,8 @@ void TimeLineParser::readData(const char *xmlData)
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
             		/*Remove last character, holds ugly symbol.*/
-            		rawString[strlen(rawString)-5] = '\0';
+            		if(strlen(rawString) > 5)
+            			rawString[strlen(rawString)-5] = '\0';
             		
             		string textString(rawString);
             		tweetPtr[i]->setScreenName(textString);
@@ -290,7 +292,8 @@ void TimeLineParser::readData(const char *xmlData)
             		char *rawString = XMLString::transcode(textNode->getWholeText());
             		
             		/*Remove last character, holds ugly symbol.*/
-            		rawString[strlen(rawString)-3] = '\0';
+            		if(strlen(rawString) > 3)
+            			rawString[strlen(rawString)-3] = '\0';
             		
             		std::string sourceName(rawString);
             		
@@ -332,7 +335,8 @@ void TimeLineParser::readData(const char *xmlData)
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
             		/*Remove last character, holds ugly symbol.*/
-            		rawString[strlen(rawString)-5] = '\0';
+            		if(strlen(rawString) > 5)
+            			rawString[strlen(rawString)-5] = '\0';
             		
             		string textString(rawString);
             		tweetPtr[i]->setProfileImageUrl(textString);
@@ -359,7 +363,8 @@ void TimeLineParser::readData(const char *xmlData)
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
             		/*Remove last character, holds ugly symbol.*/
-            		rawString[strlen(rawString)-3] = '\0';
+            		if(strlen(rawString) > 3)
+            			rawString[strlen(rawString)-3] = '\0';
             		
             		string textString(rawString);
             		tweetPtr[i/2]->setDate(textString);

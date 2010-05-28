@@ -265,9 +265,9 @@ void SearchParser::readData(const char *xmlData)
             		char *rawString = XMLString::transcode(textNode->getWholeText());
             		
             		/*Remove last 11 or 9 characters, junk.*/
-            		if(i < nodeCount-1)
+            		if(i < nodeCount-1 && strlen(rawString) > 11)
             			rawString[strlen(rawString)-11] = '\0';
-            		else
+            		else if(strlen(rawString) > 9)
             			rawString[strlen(rawString)-9] = '\0';
             		
             		string textString(rawString+19); //Skip "http://twitter.com/"... and we've got the username:)
@@ -326,7 +326,8 @@ void SearchParser::readData(const char *xmlData)
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
             		//Remove last character, holds ugly symbol.
-            		rawString[strlen(rawString)-3] = '\0';
+            		if(strlen(rawString) > 3)
+            			rawString[strlen(rawString)-3] = '\0';
             		
             		string textString(rawString);
             		tweetPtr[i]->setPublishedDate(textString);
