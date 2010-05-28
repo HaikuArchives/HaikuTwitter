@@ -151,34 +151,38 @@ status_t updateTimeLineThread(void *data) {
 	twitCurl *twitObj = super->twitObj;
 	TimeLineParser *timeLineParser = new TimeLineParser();
 	SearchParser *searchParser = new SearchParser();
-	
-	switch(TYPE) {
-		case TIMELINE_HOME:
-			twitObj->timelineHomeGet();
-			break;
-		case TIMELINE_FRIENDS:
-			twitObj->timelineFriendsGet();
-			break;
-		case TIMELINE_MENTIONS:
-			twitObj->mentionsGet();
-			break;
-		case TIMELINE_PUBLIC:
-			twitObj->timelinePublicGet();
-			break;
-		case TIMELINE_USER:
-			twitObj->timelineUserGet(*new std::string(super->Name()), false);
-			break;
-		case TIMELINE_SEARCH:
-			twitObj->search(htmlFormatedString(super->Name()));
-			break;
-		default:
-			twitObj->timelinePublicGet();
-	}
 	std::string replyMsg(" ");
-	twitObj->getLastWebResponse(replyMsg);
-	if(replyMsg.length() < 100)  { //Length of data is less than 100 characters. Clearly,
-		replyMsg = "error";			//something is wrong... abort.
+	
+	/*Only download tweets if there is no unhandled tweets*/
+	if(super->unhandledList->IsEmpty()) {
+		switch(TYPE) {
+			case TIMELINE_HOME:
+				twitObj->timelineHomeGet();
+				break;
+			case TIMELINE_FRIENDS:
+				twitObj->timelineFriendsGet();
+				break;
+			case TIMELINE_MENTIONS:
+				twitObj->mentionsGet();
+				break;
+			case TIMELINE_PUBLIC:
+				twitObj->timelinePublicGet();
+				break;
+			case TIMELINE_USER:
+				twitObj->timelineUserGet(*new std::string(super->Name()), false);
+				break;
+			case TIMELINE_SEARCH:
+				twitObj->search(htmlFormatedString(super->Name()));
+				break;
+			default:
+				twitObj->timelinePublicGet();
+		}
+		twitObj->getLastWebResponse(replyMsg);
+		if(replyMsg.length() < 100)   //Length of data is less than 100 characters. Clearly,
+			replyMsg = "error";			//something is wrong... abort.
 	}
+	else
+		super->waitingForUpdate = true;
 	
 	if(TYPE == TIMELINE_SEARCH) {
 			try {
