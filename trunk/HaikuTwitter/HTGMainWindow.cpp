@@ -352,7 +352,7 @@ void HTGMainWindow::_SetupMenu() {
 	fSettingsMenu = new BMenu("Settings");
 	fSettingsMenu->AddItem(new BMenuItem("Account...", new BMessage(ACCOUNT_SETTINGS)));
 	#ifdef INFOPOPPER_SUPPORT
-	fSettingsMenu->AddItem(new BMenuItem("InfoPopper...", new BMessage(INFOPOPPER_SETTINGS)));
+	fSettingsMenu->AddItem(new BMenuItem("Notifications...", new BMessage(INFOPOPPER_SETTINGS)));
 	#endif
 	fMenuBar->AddItem(fSettingsMenu);
 	fSettingsMenu->AddSeparatorItem();

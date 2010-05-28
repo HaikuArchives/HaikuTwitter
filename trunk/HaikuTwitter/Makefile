@@ -1,5 +1,5 @@
-# Uncomment these two lines to enable InfoPopper support
- LIBS = -linfopopper
+# Comment out these to lines to disable Notification Server
+# LIBS = -linfopopper
  INFOPOPPER = -DINFOPOPPER_SUPPORT
 
 ### Nothing below this should be changed ###
