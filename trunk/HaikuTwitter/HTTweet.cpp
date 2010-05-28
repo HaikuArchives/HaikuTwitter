@@ -3,7 +3,6 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
-
 #include "HTTweet.h"
 
 HTTweet::HTTweet() {
@@ -17,6 +16,7 @@ HTTweet::HTTweet() {
 	id = string("");
 	sourceName = string("");
 	bitmapDownloadInProgress = false;
+	view = NULL;
 }
 
 HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString) {
@@ -30,6 +30,7 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 	id = string("");
 	sourceName = string("");
 	bitmapDownloadInProgress = false;
+	view = NULL;
 }
 
 HTTweet::HTTweet(HTTweet *originalTweet) {
@@ -44,7 +45,12 @@ HTTweet::HTTweet(HTTweet *originalTweet) {
 	this->id = string(originalTweet->getId());
 	this->sourceName = originalTweet->getSourceName();
 	this->rawDate = originalTweet->getRawDate();
+	this->view = originalTweet->getView();
 	bitmapDownloadInProgress = false;
+}
+
+BView* HTTweet::getView() {
+	return view;
 }
 
 const string HTTweet::getRawDate() {
@@ -77,6 +83,10 @@ void HTTweet::setSourceName(string &sourceName) {
 
 void HTTweet::setText(string &text) {
 	this->text = text;
+}
+
+void HTTweet::setView(BView* view) {
+	this->view = view;
 }
 
 void HTTweet::setDate(string &dateString) {
@@ -274,6 +284,13 @@ status_t _threadDownloadBitmap(void *data) {
 	
 	/*Translate downloaded data to bitmap*/
 	super->setBitmap(BTranslationUtils::GetBitmap(mallocIO));
+	if(super->getView() != NULL) {
+		if(super->getView()->LockLooper()) {
+			super->getView()->Invalidate();
+			super->getView()->UnlockLooper();
+		}
+	}
+		
 	
 	/*Delete the buffer*/
 	delete mallocIO;

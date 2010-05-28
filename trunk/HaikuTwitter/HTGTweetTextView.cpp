@@ -182,10 +182,10 @@ bool HTGTweetTextView::isValidScreenNameChar(const char& c) {
 void HTGTweetTextView::sendRetweetMsgToParent() {
 	BMessage *retweetMsg = new BMessage(NEW_TWEET);
 	std::string RTString(this->Text());
-	RTString.insert(0, " ");
+	RTString.insert(0, ": ");
 	RTString.insert(0, this->Name());
 	RTString.insert(0, "@");
-	RTString.insert(0, "RT ");
+	RTString.insert(0, "♺ ");
 	retweetMsg->AddString("text", RTString.c_str());
 	retweetMsg->AddString("reply_to_id", tweetId.c_str());
 	BTextView::MessageReceived(retweetMsg);
