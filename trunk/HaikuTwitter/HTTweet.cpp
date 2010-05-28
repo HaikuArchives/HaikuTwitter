@@ -285,15 +285,13 @@ status_t _threadDownloadBitmap(void *data) {
 	/*Translate downloaded data to bitmap*/
 	super->setBitmap(BTranslationUtils::GetBitmap(mallocIO));
 	if(super->getView() != NULL) {
-		int loopLimit = 20;
-		while(!super->getView()->LockLooper() && loopLimit > 0) {
-			loopLimit--;
-			usleep(2000);
+		int loopCounter = 1;
+		while(!super->getView()->LockLooper()) {
+			usleep(2000+(100*loopCounter));
+			loopCounter++;
 		}
-		if(loopLimit > 0) {
-			super->getView()->Invalidate();
-			super->getView()->UnlockLooper();
-		}
+		super->getView()->Invalidate();
+		super->getView()->UnlockLooper();
 	}
 		
 	
