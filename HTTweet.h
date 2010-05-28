@@ -3,10 +3,13 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
+#ifndef HT_TWEET_H
+#define HT_TWEET_H
 
 #include <iostream>
 #include <string.h>
 #include <string>
+#include <View.h>
 #include <TranslationUtils.h>
 #include <TranslatorFormats.h>
 #include <DataIO.h>
@@ -20,9 +23,6 @@
 
 #include <ctime>
 #include "curl/curl.h"
-
-#ifndef HT_TWEET_H
-#define HT_TWEET_H
 
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
 status_t _threadDownloadBitmap(void *);
@@ -46,6 +46,7 @@ public:
 	HTTweet(HTTweet *originalTweet);
 	~HTTweet();
 	bool operator<(const HTTweet &b) const;
+	BView* getView();
 	const string getScreenName();
 	const string getText();
 	const string getProfileImageUrl();
@@ -55,6 +56,7 @@ public:
 	BBitmap* getBitmap();
 	BBitmap getBitmapCopy();
 	struct DateStruct getDate() const;
+	void setView(BView *);
 	void downloadBitmap();
 	void setScreenName(string&);
 	void setText(string&);
@@ -72,6 +74,7 @@ public:
 	bool bitmapDownloadInProgress;
 	
 private:
+	BView *view;
 	thread_id downloadThread;
 	const int stringToMonth(const char *date);
 	BBitmap *imageBitmap;

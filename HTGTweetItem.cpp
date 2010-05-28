@@ -44,6 +44,7 @@ int HTGTweetItem::calculateSize(BView *owner) {
 }
 
 void HTGTweetItem::Update(BView *owner, const BFont* font) {
+	theTweet->setView(owner);
 	SetHeight(calculateSize(owner));
 }
 
@@ -100,11 +101,12 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	owner->StrokeLine(BPoint(frame.left, frame.bottom), BPoint(frame.right, frame.bottom));
 	
 	/*Draw userIcon*/
-	if(theTweet->isDownloadingBitmap())
-		theTweet->waitUntilDownloadComplete();
-	owner->SetDrawingMode(B_OP_ALPHA);
-	owner->DrawBitmapAsync(theTweet->getBitmap(), BRect(frame.left+9, frame.top+5+((Height()-60)/2), frame.left+48+8, frame.top+72-20+((Height()-60)/2)));
-	owner->SetDrawingMode(B_OP_OVER);
+	if(!theTweet->isDownloadingBitmap()) {
+		//theTweet->waitUntilDownloadComplete();
+		owner->SetDrawingMode(B_OP_ALPHA);
+		owner->DrawBitmapAsync(theTweet->getBitmap(), BRect(frame.left+9, frame.top+5+((Height()-60)/2), frame.left+48+8, frame.top+72-20+((Height()-60)/2)));
+		owner->SetDrawingMode(B_OP_OVER);
+	}
 }
 
 HTTweet* HTGTweetItem::getTweetPtr() {

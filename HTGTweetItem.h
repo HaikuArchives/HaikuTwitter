@@ -3,7 +3,6 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
-
 #include <ListItem.h>
 #include <Bitmap.h>
 #include <View.h>
