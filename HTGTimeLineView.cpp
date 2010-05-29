@@ -398,7 +398,9 @@ HTGTimeLineView::~HTGTimeLineView() {
 	listView->RemoveSelf();
 	while(!listView->IsEmpty()) {
 		HTGTweetItem *currentItem = (HTGTweetItem *)listView->FirstItem();
-		listView->RemoveItem(currentItem);			
+		listView->RemoveItem(currentItem);
+		if(currentItem->getTweetPtr() != NULL)
+			currentItem->getTweetPtr()->setView(NULL);
 		delete currentItem;
 	}
 	delete listView;
