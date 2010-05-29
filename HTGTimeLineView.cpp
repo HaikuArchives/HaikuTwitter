@@ -115,20 +115,27 @@ std::string& htmlFormatedString(const char *orig) {
 
 void HTGTimeLineView::savedSearchDestoySelf() {
 	/*Destroy saved search on twitter*/
+	twitCurl *saveObj = new twitCurl();
+	saveObj->setAccessKey(twitObj->getAccessKey());
+	saveObj->setAccessSecret(twitObj->getAccessSecret());
 	std::string id;
 	std::stringstream out;
 	out << this->getSearchID(); //Converting int to string
 	id = out.str();
 	if(this->getSearchID() > 0)
-		twitObj->savedSearchDestroy(id);
+		saveObj->savedSearchDestroy(id);
+	delete saveObj;
 }
 
 void HTGTimeLineView::savedSearchCreateSelf() {
 	/*Save search to twitter*/
 	std::string query(::htmlFormatedString(Name()));
-	twitObj->savedSearchCreate(query);
+	twitCurl *saveObj = new twitCurl();
+	saveObj->setAccessKey(twitObj->getAccessKey());
+	saveObj->setAccessSecret(twitObj->getAccessSecret());
+	saveObj->savedSearchCreate(query);
 	std::string replyMsg(" ");
-	twitObj->getLastWebResponse(replyMsg);
+	saveObj->getLastWebResponse(replyMsg);
 
 	/*Parse result*/
 	int pos = 0;
@@ -139,7 +146,8 @@ void HTGTimeLineView::savedSearchCreateSelf() {
 		int end = replyMsg.find("</id>", start);
 		std::string searchID(replyMsg.substr(start, end-start));
 		setSearchID(atoi(searchID.c_str()));
-	}	
+	}
+	delete saveObj;
 }
 
 status_t updateTimeLineThread(void *data) {
