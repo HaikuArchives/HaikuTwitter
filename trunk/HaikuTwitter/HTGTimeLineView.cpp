@@ -46,7 +46,7 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	}
 	
 	/*Set up listview*/
-	this->listView = new BListView(BRect(0, 0, 300, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+	this->listView = new BListView(BRect(0, 0, Bounds().Width()-15, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	
 	/*Prepare the list for unhandled tweets*/
 	unhandledList = new BList();
