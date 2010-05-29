@@ -12,6 +12,7 @@
 
 
 #include <TabView.h>
+#include "AnimationHelper.h"
 
 class HTGTimeLineView;
 class BPopUpMenu;

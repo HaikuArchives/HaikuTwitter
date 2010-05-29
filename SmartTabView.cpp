@@ -175,6 +175,11 @@ SmartTabView::AddTab(BView* target, BTab* tab)
 		return;
 
 	BTabView::AddTab(target, tab);
+	/*Resize window if too small*/
+	int sizeDiff = (TabFrame(CountTabs() -1).right) - Window()->Frame().Width();
+	if(sizeDiff > 0 && (TabFrame(CountTabs() -1).right < 915)) {
+		AnimationHelper::resizeWidthAnimated(Window(), sizeDiff+4, 200);
+	}
 
 	if (CountTabs() == 1) {
 		// Call select on the tab, since
@@ -217,6 +222,14 @@ SmartTabView::AddTab(BView* target, BTab* tab)
 BTab*
 SmartTabView::RemoveTab(int32 index)
 {
+	/*Resize window if it's too big*/
+	int sizeDiff = (TabFrame(CountTabs() -2).right) - Window()->Frame().Width();
+	if((TabFrame(CountTabs() -2).right) < 315)
+			sizeDiff = 315-Window()->Frame().Width();
+	if(sizeDiff < 0) {
+		AnimationHelper::resizeWidthAnimated(Window(), sizeDiff+2, 200);
+	}
+	
 	if (CountTabs() == 2) {
 		// Hide the tab bar again by resizing the container view
 

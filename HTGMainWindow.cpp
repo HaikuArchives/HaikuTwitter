@@ -10,7 +10,7 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	this->key = key;
 	this->secret = secret;
 	this->refreshTime = refreshTime;
-	
+		
 	_retrieveSettings();
 	
 	newTweetObj = new twitCurl();

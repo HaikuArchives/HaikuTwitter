@@ -19,6 +19,7 @@
 #include "FindDirectory.h"
 #include "Directory.h"
 
+#include "AnimationHelper.h"
 #include "SmartTabView.h"
 #include "TimeLineParser.h"
 #include "twitcurl/twitcurl.h"
