@@ -52,7 +52,7 @@ SearchParser::SearchParser()
    TAG_image = XMLString::transcode("link");
    TAG_date = XMLString::transcode("published");
    TAG_id = XMLString::transcode("id");
-   TAG_source = XMLString::transcode("source");
+   TAG_source = XMLString::transcode("twitter:source");
    TAG_error = XMLString::transcode("error");
    ATTR_href = XMLString::transcode("href");
 
@@ -331,6 +331,48 @@ void SearchParser::readData(const char *xmlData)
             		
             		string textString(rawString);
             		tweetPtr[i]->setPublishedDate(textString);
+            		delete rawString;
+            	}
+         	}
+		}
+		
+		// Parse XML file for tags of interest: "twitter:source"
+		statusNodes = elementRoot->getElementsByTagName(TAG_source);
+		
+		for(XMLSize_t i = 0; i < nodeCount; i++) {
+			DOMNode* currentNode = statusNodes->item(i);
+         	if( currentNode->getNodeType() &&  // true is not NULL
+            	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
+         	{
+            	// Found node which is an Element. Re-cast node as element
+            	DOMElement* currentElement
+                	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
+            	if( XMLString::equals(currentElement->getTagName(), TAG_source))
+            	{
+            		DOMText* textNode
+            				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
+            		
+            		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		//Remove last character, holds ugly symbol.
+            		if(strlen(rawString) > 3)
+            			rawString[strlen(rawString)-3] = '\0';
+            		std::string sourceName(rawString);
+            		
+            		// Parse the data for Application name
+            		int pos = sourceName.find(">", 0); //<a href="http://www.tweetdeck.com/" rel="nofollow">TweetDeck</a>
+					if(pos != std::string::npos) {
+						int start = pos;
+						int end = pos;
+						while(end < sourceName.length() && sourceName[end] != '<') {
+							end++;
+						}
+						
+						string finalString = sourceName.substr(start+1, end-start-1);
+						tweetPtr[i]->setSourceName(finalString);
+					}	
+            		else //Handles web/API sources.
+            			tweetPtr[i]->setSourceName(sourceName);
+            		
             		delete rawString;
             	}
          	}
