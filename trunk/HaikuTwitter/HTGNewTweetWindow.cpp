@@ -52,6 +52,11 @@ void HTGNewTweetWindow::postTweet() {
 	std::string postMsg = urlEncode(message->Text());
 	if( twitObj->statusUpdate(postMsg, tweetId.c_str()) )  {
 		printf( "Status update: OK\n" );
+		twitObj->getLastWebResponse(replyMsg);
+		int errorStart = replyMsg.find("<error>");
+		int errorEnd = replyMsg.find("<\error>");
+		if(errorStart-errorEnd > 0)
+			HTGErrorHandling::displayError(replyMsg.substr(errorStart, errorEnd-errorStart).c_str());
 	}
 	else {
 		twitObj->getLastCurlError( replyMsg );
