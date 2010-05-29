@@ -18,6 +18,7 @@ void AnimationHelper::resizeWidthAnimated(BWindow* theWindow, const float pixels
 		theWindow->ResizeBy(pixelsPerFrame, 0);
 		if(theWindow->Frame().right > limit)
 			theWindow->MoveBy(-pixelsPerFrame, 0);
+		theWindow->Sync();
 		usleep((ms/frames)*1000);
 	}
 }

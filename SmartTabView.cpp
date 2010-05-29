@@ -175,11 +175,6 @@ SmartTabView::AddTab(BView* target, BTab* tab)
 		return;
 
 	BTabView::AddTab(target, tab);
-	/*Resize window if too small*/
-	int sizeDiff = (TabFrame(CountTabs() -1).right) - Window()->Frame().Width();
-	if(sizeDiff > 0 && (TabFrame(CountTabs() -1).right < 915)) {
-		AnimationHelper::resizeWidthAnimated(Window(), sizeDiff+4, 200);
-	}
 
 	if (CountTabs() == 1) {
 		// Call select on the tab, since
@@ -216,6 +211,12 @@ SmartTabView::AddTab(BView* target, BTab* tab)
 	}
 
 	Invalidate(TabFrame(CountTabs() - 1).InsetByCopy(-2, -2));
+	
+	/*Resize window if too small*/
+	int sizeDiff = (TabFrame(CountTabs() -1).right) - Window()->Frame().Width();
+	if(sizeDiff > 0 && (TabFrame(CountTabs() -1).right < 915)) {
+		AnimationHelper::resizeWidthAnimated(Window(), sizeDiff+4, 200);
+	}
 }
 
 

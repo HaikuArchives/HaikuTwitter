@@ -21,7 +21,7 @@ int HTGTweetItem::calculateSize(BView *owner) {
 	
 	/*Create a testView for the text, so we can calculate the number of line breaks*/
 	BRect textRect(72,0, owner->Frame().right, 150);
-	HTGTweetTextView *calcView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,owner->Frame().right-72,100), B_FOLLOW_ALL, B_WILL_DRAW);
+	HTGTweetTextView *calcView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,owner->Frame().right-72,100), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
 	calcView->setTweetId(theTweet->getId());
 	textFont.SetEncoding(B_UNICODE_UTF8);
 	textFont.SetSize(10);
@@ -49,6 +49,7 @@ void HTGTweetItem::Update(BView *owner, const BFont* font) {
 }
 
 void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
+	SetHeight(calculateSize(owner));
 	BFont textFont;
 	owner->GetFont(&textFont);
 	
@@ -85,11 +86,12 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	/*Write text*/
 	BRect textRect(60+4,frame.top+15, frame.right, frame.bottom-15);
 	if(textView == NULL) {
-		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-60-4,frame.bottom-15), B_FOLLOW_ALL, B_WILL_DRAW);
+		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-60-4,frame.bottom-15), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
 		owner->AddChild(textView);
 	}
 	else {
-		//textView->Set(textRect);
+		textView->MoveTo(textRect.left, textRect.top);
+		textView->ResizeTo(textRect.Width(), textRect.Height());
 		textView->SetTextRect(BRect(0,0,frame.right-60-4,frame.bottom-15));
 	}
 	textFont.SetEncoding(B_UNICODE_UTF8);
