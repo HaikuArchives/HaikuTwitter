@@ -15,6 +15,7 @@
 
 #include "TimeLineParser.h"
 #include "HTTweet.h"
+#include "HTGErrorHandling.h"
 
 #ifndef HTG_NEWTWEETWINDOW_H
 #define HTG_NEWTWEETWINDOW_H
