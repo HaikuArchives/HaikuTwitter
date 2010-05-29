@@ -15,10 +15,15 @@ void AnimationHelper::resizeWidthAnimated(BWindow* theWindow, const float pixels
 	
 	float pixelsPerFrame = pixels/frames;
 	for(int n = 0; n < frames; n++) {
+		bool wasLocked = theWindow->IsLocked();
+		if(wasLocked)
+			theWindow->UnlockLooper(); //For smoother animations
 		theWindow->ResizeBy(pixelsPerFrame, 0);
 		if(theWindow->Frame().right > limit)
 			theWindow->MoveBy(-pixelsPerFrame, 0);
 		theWindow->Sync();
+		if(wasLocked)
+			theWindow->LockLooper();
 		usleep((ms/frames)*1000);
 	}
 }

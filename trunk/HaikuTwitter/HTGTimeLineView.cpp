@@ -63,7 +63,6 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	
 	/*All done, ready to display tweets*/
 	waitingForUpdate = true;
-	updateTimeLine();
 }
 
 void HTGTimeLineView::setSearchID(int32 id) {
