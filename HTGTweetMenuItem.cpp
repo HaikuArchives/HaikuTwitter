@@ -55,8 +55,12 @@ void HTGTweetMenuItem::downloadLinkIcon() {
 
 void HTGTweetMenuItem::DrawContent() {
 	if(linkIcon != NULL) {
+		BRect rect(
+			BPoint(ContentLocation().x-11.5, ContentLocation().y-1.5), 
+			BPoint(ContentLocation().x-11.5+B_MINI_ICON-1, ContentLocation().y-1.5+B_MINI_ICON-1)
+		);
 		Menu()->SetDrawingMode(B_OP_ALPHA);
-		Menu()->DrawBitmap(linkIcon, BPoint(ContentLocation().x-11.5, ContentLocation().y-1.5));
+		Menu()->DrawBitmap(linkIcon, rect);
 		Menu()->SetDrawingMode(B_OP_OVER);
 	}
 	
