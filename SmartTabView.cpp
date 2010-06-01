@@ -217,6 +217,7 @@ SmartTabView::AddTab(BView* target, BTab* tab)
 	if(sizeDiff > 0 && (TabFrame(CountTabs() -1).right < 915)) {
 		AnimationHelper::resizeWidthAnimated(Window(), sizeDiff+4, 200);
 	}
+	
 	((HTGTimeLineView*)target)->updateTimeLine();
 }
 
