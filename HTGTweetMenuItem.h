@@ -13,11 +13,19 @@
 #include <TranslatorFormats.h>
 #include <DataIO.h>
 #include <Bitmap.h>
+#include <MimeType.h>
 
 #include <curl/curl.h>
 
 #ifndef HTG_TWEETMENUITEM_H
 #define HTG_TWEETMENUITEM_H
+
+enum icon_source {
+	kNoIcon = 0,
+	kOwnIcon,
+	kApplicationIcon,
+	kSupertypeIcon
+};
 
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
 status_t _threadDownloadLinkIcon(void *);
@@ -45,4 +53,8 @@ private:
 	BBitmap *linkIcon;
 
 };
+
+extern status_t icon_for_type(const BMimeType& type, BBitmap& bitmap,
+	icon_size size, icon_source* _source = NULL);
+
 #endif

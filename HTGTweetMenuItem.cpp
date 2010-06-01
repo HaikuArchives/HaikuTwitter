@@ -26,7 +26,22 @@ void HTGTweetMenuItem::setLinkIcon(BBitmap* linkIcon) {
 
 void HTGTweetMenuItem::setLinkIconUrl(std::string& url) {
 	this->linkIconUrl = url;
-	downloadLinkIcon();
+	
+	if(linkIconUrl.find(".ico") == std::string::npos) {
+		/*Load generic icon*/
+		BRect iconRect(0, 0, B_MINI_ICON-1, B_MINI_ICON-1);
+		linkIcon = new BBitmap(iconRect, B_RGBA32);
+		BMimeType mimeType("text/html");
+		status_t status=icon_for_type(mimeType,*linkIcon,B_MINI_ICON);
+		
+		if(Menu()->LockLooper()) {
+			Menu()->Invalidate();
+			Menu()->UnlockLooper();
+		}
+	}
+	else if(!linkIconDownloadInProgress) {
+		downloadLinkIcon();
+	}
 }
 
 const std::string HTGTweetMenuItem::getLinkIconUrl() {
@@ -34,23 +49,18 @@ const std::string HTGTweetMenuItem::getLinkIconUrl() {
 }
 
 void HTGTweetMenuItem::downloadLinkIcon() {
-	if(linkIconUrl.find(".ico") == std::string::npos) {
-		linkIcon = NULL;
-	}
-	else if(!linkIconDownloadInProgress) {
-		downloadThread = spawn_thread(_threadDownloadLinkIcon, linkIconUrl.c_str(), 10, this);
-		resume_thread(downloadThread);
-	}
+	downloadThread = spawn_thread(_threadDownloadLinkIcon, linkIconUrl.c_str(), 10, this);
+	resume_thread(downloadThread);
 }
 
 void HTGTweetMenuItem::DrawContent() {
 	if(linkIcon != NULL) {
 		Menu()->SetDrawingMode(B_OP_ALPHA);
-		Menu()->DrawBitmap(linkIcon, BPoint(ContentLocation().x-10, ContentLocation().y-2));
+		Menu()->DrawBitmap(linkIcon, BPoint(ContentLocation().x-11.5, ContentLocation().y-1.5));
 		Menu()->SetDrawingMode(B_OP_OVER);
 	}
-	Menu()->MoveTo(0,0);
-	BMenuItem::DrawContent();
+	
+	Menu()->DrawString(Label(), BPoint(ContentLocation().x+6, ContentLocation().y+10.5));
 }
 
 HTGTweetMenuItem::~HTGTweetMenuItem() {
@@ -90,9 +100,6 @@ status_t _threadDownloadLinkIcon(void *data) {
 
 	if(super->Menu() != NULL && theBitmap->IsValid()) {
 		if(super->Menu()->LockLooper()) {
-			std::string newLabel(super->Label());
-			newLabel.insert(0, "  ");
-			super->SetLabel(newLabel.c_str());
 			super->Menu()->Invalidate();
 			super->Menu()->UnlockLooper();
 		}
@@ -111,4 +118,52 @@ static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *da
 	BMallocIO *mallocIO = (BMallocIO *)data;
 	
 	return mallocIO->Write(ptr, realsize);
+}
+
+status_t
+icon_for_type(const BMimeType& type, BBitmap& bitmap, icon_size size,
+	icon_source* _source)
+{
+	icon_source source = kNoIcon;
+
+	if (type.GetIcon(&bitmap, size) == B_OK)
+		source = kOwnIcon;
+
+	if (source == kNoIcon) {
+		// check for icon from preferred app
+
+		char preferred[B_MIME_TYPE_LENGTH];
+		if (type.GetPreferredApp(preferred) == B_OK) {
+			BMimeType preferredApp(preferred);
+
+			if (preferredApp.GetIconForType(type.Type(), &bitmap, size) == B_OK)
+				source = kApplicationIcon;
+		}
+	}
+
+	if (source == kNoIcon) {
+		// check super type for an icon
+
+		BMimeType superType;
+		if (type.GetSupertype(&superType) == B_OK) {
+			if (superType.GetIcon(&bitmap, size) == B_OK)
+				source = kSupertypeIcon;
+			else {
+				// check the super type's preferred app
+				char preferred[B_MIME_TYPE_LENGTH];
+				if (superType.GetPreferredApp(preferred) == B_OK) {
+					BMimeType preferredApp(preferred);
+
+					if (preferredApp.GetIconForType(superType.Type(),
+							&bitmap, size) == B_OK)
+						source = kSupertypeIcon;
+				}
+			}
+		}
+	}
+
+	if (_source)
+		*_source = source;
+
+	return source != kNoIcon ? B_OK : B_ERROR;
 }
