@@ -37,6 +37,8 @@ public:
 	bool linkIconDownloadInProgress;
 	void downloadLinkIcon();
 	
+	~HTGTweetMenuItem();
+	
 private:
 	thread_id downloadThread;
 	std::string linkIconUrl;
