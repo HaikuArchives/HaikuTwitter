@@ -20,8 +20,6 @@
 #ifndef HTG_TIMELINEWINDOW_H
 #define HTG_TIMELINEWINDOW_H
 
-static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
-
 class HTGTimeLineWindow : public BWindow {
 public:
 	HTGTimeLineWindow(BWindow *parent, string key, string secret, int refreshTime, const int32 TYPE, const char* requestInfo);

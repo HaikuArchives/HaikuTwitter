@@ -14,7 +14,7 @@ ODIR = ${BDIR}/obj
 
 all: ${APP}
 
-_OBJ = HaikuTwitter.o AnimationHelper.o HTGErrorHandling.o HTGLogoView.o HTGAuthorizeWindow.o oauth.o oauth_http.o xmalloc.o twitcurl.o SearchParser.o SmartTabView.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
+_OBJ = HaikuTwitter.o AnimationHelper.o HTGTweetMenuItem.o HTGErrorHandling.o HTGLogoView.o HTGAuthorizeWindow.o oauth.o oauth_http.o xmalloc.o twitcurl.o SearchParser.o SmartTabView.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o
 OBJ =  $(patsubst %,$(ODIR)/%, $(_OBJ))
 
 ${APP}: ${OBJ}
