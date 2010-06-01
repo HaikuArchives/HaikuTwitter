@@ -6,7 +6,6 @@
 #include <Message.h>
 #include <TextView.h>
 #include <PopUpMenu.h>
-#include <MenuItem.h>
 #include <List.h>
 #include <string>
 #include <Looper.h>
@@ -16,6 +15,7 @@
 #include <iostream>
 
 #include "HTGMainWindow.h"
+#include "HTGTweetMenuItem.h"
 
 #ifndef HTG_TWEETTEXTVIEW_H
 #define HTG_TWEETTEXTVIEW_H
@@ -31,16 +31,24 @@ public:
 	void MessageReceived(BMessage *msg);
 	virtual void MouseDown(BPoint point);
 	void setTweetId(const char* tweetId);
+
+	BList* getUrls(); //A thread needs this
+	BList* urls; //A thread needs this
 	
+	void parseForUrlsAndDownloadIcons();
+	
+	~HTGTweetTextView();
+		
 private:
 	std::string tweetId;
+	
+	thread_id currentThread;
 
 	void openUrl(const char *);
 	bool isValidScreenNameChar(const char &);
 	void sendRetweetMsgToParent();
 	void sendReplyMsgToParent();
 	BList* getScreenNames();
-	BList* getUrls();
 	BList* getTags();
 };
 #endif

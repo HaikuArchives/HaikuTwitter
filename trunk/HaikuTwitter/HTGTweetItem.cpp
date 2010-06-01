@@ -88,19 +88,19 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	if(textView == NULL) {
 		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-60-4,frame.bottom-15), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
 		owner->AddChild(textView);
+		textFont.SetEncoding(B_UNICODE_UTF8);
+		textFont.SetSize(10);
+		textView->SetFontAndColor(&textFont);
+		textView->SetWordWrap(true);
+		textView->MakeEditable(false);
+		textView->setTweetId(theTweet->getId());
+		textView->SetText(theTweet->getText().c_str());
 	}
 	else {
 		textView->MoveTo(textRect.left, textRect.top);
 		textView->ResizeTo(textRect.Width(), textRect.Height());
 		textView->SetTextRect(BRect(0,0,frame.right-60-4,frame.bottom-15));
 	}
-	textFont.SetEncoding(B_UNICODE_UTF8);
-	textFont.SetSize(10);
-	textView->SetFontAndColor(&textFont);
-	textView->SetWordWrap(true);
-	textView->MakeEditable(false);
-	textView->setTweetId(theTweet->getId());
-	textView->SetText(theTweet->getText().c_str());
 	
 	/*Draw seperator*/
 	owner->StrokeLine(BPoint(frame.left, frame.bottom), BPoint(frame.right, frame.bottom));
