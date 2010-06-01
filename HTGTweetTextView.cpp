@@ -61,9 +61,9 @@ void HTGTweetTextView::MouseDown(BPoint point) {
 		for(int i = 0; i < screenNameList->CountItems(); i++)
 			myPopUp->AddItem((HTGTweetMenuItem *)screenNameList->ItemAt(i));
 		
-		//urls = getUrls();
-		//currentThread = spawn_thread(_threadDownloadLinkIconURLs, "favIcon downloader", 10, this);
-		//resume_thread(currentThread);
+		urls = getUrls();
+		currentThread = spawn_thread(_threadDownloadLinkIconURLs, "favIcon downloader", 10, this);
+		resume_thread(currentThread);
 		if(urls->CountItems() > 0)
 			myPopUp->AddSeparatorItem();
 		for(int i = 0; i < urls->CountItems(); i++) {
