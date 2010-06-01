@@ -263,7 +263,6 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 	HTGTweetMenuItem* currentItem = NULL;
 	for(int i = 0; i < super->urls->CountItems(); i++) {
 		currentItem = (HTGTweetMenuItem *)super->urls->ItemAt(i);
-		char hei[1000];
 		
 		curl_global_init(CURL_GLOBAL_ALL);
 		curl_handle = curl_easy_init();
@@ -288,8 +287,10 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 		curl_easy_cleanup(curl_handle);
 		
 		std::string replyMsg((char *)mallocIO->Buffer(), mallocIO->BufferLength());
-		if(replyMsg.length() < 100)
+		if(!replyMsg.length()) {
+			currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
 			continue;
+		}
 		
 		/*Parse for base-url*/
 		std::string location(currentItem->Label());
@@ -340,6 +341,9 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 				i++;
 			}
 		}
+		
+		if(currentItem->getLinkIconUrl().length() < 1)
+			currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
 		
 		/*Delete the buffer*/
 		delete mallocIO;
