@@ -53,6 +53,11 @@ void HTGTweetMenuItem::DrawContent() {
 	BMenuItem::DrawContent();
 }
 
+HTGTweetMenuItem::~HTGTweetMenuItem() {
+	/*Kill the update thread*/
+	kill_thread(downloadThread);
+}
+
 status_t _threadDownloadLinkIcon(void *data) {
 	HTGTweetMenuItem *super = (HTGTweetMenuItem*)data;
 	super->linkIconDownloadInProgress = true;

@@ -287,9 +287,9 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 		/*cleanup curl stuff*/
 		curl_easy_cleanup(curl_handle);
 		
-		char *rawData = (char *)mallocIO->Buffer();
-		rawData[mallocIO->BufferLength()-1] = '\0';
-		std::string replyMsg(rawData);
+		std::string replyMsg((char *)mallocIO->Buffer(), mallocIO->BufferLength());
+		if(replyMsg.length() < 100)
+			continue;
 		
 		/*Parse for base-url*/
 		std::string location(currentItem->Label());
