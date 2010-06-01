@@ -75,6 +75,7 @@ int32 HTGTimeLineView::getSearchID() {
 
 void HTGTimeLineView::AttachedToWindow() {
 	BView::AttachedToWindow();
+	listView->AttachedToWindow();
 	
 	/*Add the unhandled tweets*/
 	if(!unhandledList->IsEmpty()) {
@@ -154,6 +155,8 @@ status_t updateTimeLineThread(void *data) {
 	//Could not figure out how to update a BListItem with a child view (BTextView).
 	//Could be a bug in Haiku APIs. After hours of investigation without any
 	//result, I just don't care anymore. Reallocating all HTGTweetItem on update.
+	
+	sleep(1); //Let the calling thread calm down before we start the job	
 	
 	HTGTimeLineView *super = (HTGTimeLineView*)data;
 	

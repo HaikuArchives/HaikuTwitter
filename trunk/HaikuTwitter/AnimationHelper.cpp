@@ -6,7 +6,7 @@
 
 #include "AnimationHelper.h"
 
-const int32 AnimationHelper::REFRESH_RATE = 120;
+const int32 AnimationHelper::REFRESH_RATE = 160;
 
 void AnimationHelper::resizeWidthAnimated(BWindow* theWindow, const float pixels, const int32 ms) {
 	float frames = ms*REFRESH_RATE/1000;
@@ -21,7 +21,7 @@ void AnimationHelper::resizeWidthAnimated(BWindow* theWindow, const float pixels
 		theWindow->ResizeBy(pixelsPerFrame, 0);
 		if(theWindow->Frame().right > limit)
 			theWindow->MoveBy(-pixelsPerFrame, 0);
-		theWindow->Sync();
+		theWindow->UpdateIfNeeded();
 		if(wasLocked)
 			theWindow->LockLooper();
 		usleep((ms/frames)*1000);

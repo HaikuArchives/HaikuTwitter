@@ -49,10 +49,9 @@ void HTGTweetItem::Update(BView *owner, const BFont* font) {
 }
 
 void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
-	SetHeight(calculateSize(owner));
 	BFont textFont;
 	owner->GetFont(&textFont);
-	
+
 	/*Write screen name*/
 	owner->SetHighColor(100,100,100);
 	owner->MovePenTo(frame.left+60+4, frame.top+12);
