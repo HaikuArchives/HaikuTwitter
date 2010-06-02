@@ -18,7 +18,7 @@ const int32 kContentsIcon	= 1006;
 HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo) : BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS) {	
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
-	thread_id previousThread = B_NAME_NOT_FOUND;
+	previousThread = B_NAME_NOT_FOUND;
 	searchID = 0;
 	
 	/*Set view name*/
@@ -401,7 +401,8 @@ bool HTGTimeLineView::_retrieveInfoPopperBoolFromSettings() {
 
 HTGTimeLineView::~HTGTimeLineView() {
 	/*Kill the update thread*/
-	kill_thread(previousThread);
+	if(previousThread != B_NAME_NOT_FOUND)
+		kill_thread(previousThread);
 	
 	listView->RemoveSelf();
 	while(!listView->IsEmpty()) {
