@@ -11,7 +11,7 @@ const int32 AnimationHelper::REFRESH_RATE = 120;
 void AnimationHelper::resizeWidthAnimated(BWindow* theWindow, const float pixels, const int32 ms) {
 	BScreen currentScreen(theWindow);
 	float limit = currentScreen.Frame().Width();
-	if(ms < 1) {
+	if(ms < 1 ) {
 		theWindow->ResizeBy(pixels, 0);
 		if(theWindow->Frame().right > limit)
 			theWindow->MoveBy(-pixels, 0);
@@ -19,8 +19,8 @@ void AnimationHelper::resizeWidthAnimated(BWindow* theWindow, const float pixels
 		return;
 	}
 	
-	float frames = ms*REFRESH_RATE/1000;
-	float pixelsPerFrame = pixels/frames;
+	int frames = ms*REFRESH_RATE/1000;
+	float pixelsPerFrame = (pixels/(float)frames);
 	float newWidth = theWindow->Frame().Width() + pixels;
 	
 	for(int i = 0; i < frames; i++) {
@@ -35,6 +35,7 @@ void AnimationHelper::resizeWidthAnimated(BWindow* theWindow, const float pixels
 			theWindow->LockLooper();
 		usleep((ms/frames)*1000);
 	}
+	
 	if(newWidth != theWindow->Frame().Width())
 		theWindow->ResizeTo(newWidth, theWindow->Frame().Height());
 }
