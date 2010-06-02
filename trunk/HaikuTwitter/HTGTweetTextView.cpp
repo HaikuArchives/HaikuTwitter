@@ -293,11 +293,10 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 		
 		std::string replyMsg((char *)mallocIO->Buffer(), mallocIO->BufferLength());
 		if(!replyMsg.length()) {
-			if((HTGTweetMenuItem *)super->urls->ItemAt(i) != NULL)
-				currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
+			currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
 			continue;
 		}
-		
+
 		/*Check if menu has been closed, or the menu item for some other reason is gone*/
 		if(currentItem == NULL)
 			return B_OK;
@@ -347,17 +346,14 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 					searchQuery.insert(0, location);
 					std::cout << searchQuery << std::endl;
 				}
-				if((HTGTweetMenuItem *)super->urls->ItemAt(i) != NULL)
-					currentItem->setLinkIconUrl(searchQuery);
+				currentItem->setLinkIconUrl(searchQuery);
 				std::cout << "Detected icon at: " << searchQuery << std::endl;
 				pos = end;
 				i++;
 			}
 		}
-		if((HTGTweetMenuItem *)super->urls->ItemAt(i) != NULL) {
-			if(currentItem->getLinkIconUrl().length() < 1)
-				currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
-		}
+		if(currentItem->getLinkIconUrl().length() < 1)
+			currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
 		
 		/*Delete the buffer*/
 		delete mallocIO;
