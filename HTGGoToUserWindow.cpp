@@ -33,7 +33,7 @@ void HTGGoToUserWindow::findUser() {
 	newMsg->AddString("text", username->Text());
 	
 	/*Let main window handle the message*/
-	delegate->MessageReceived(newMsg);
+	DispatchMessage(newMsg, delegate);
 }
 
 void HTGGoToUserWindow::MessageReceived(BMessage *msg) {

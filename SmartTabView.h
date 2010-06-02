@@ -50,7 +50,7 @@ public:
 
 	virtual	void				RemoveAndDeleteTab(int32 index);
 
-	virtual	void				AddTab(BView* target, BTab* tab = NULL);
+	virtual	void				AddTab(BView* target, bool select = false, BTab* tab = NULL);
 	virtual BTab*				RemoveTab(int32 index);
 
 	virtual BRect				DrawTabs();

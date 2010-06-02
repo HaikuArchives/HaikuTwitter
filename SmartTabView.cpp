@@ -169,7 +169,7 @@ SavedSearchDestroy(void *data)
 	return B_OK;
 }
 void
-SmartTabView::AddTab(BView* target, BTab* tab)
+SmartTabView::AddTab(BView* target, bool select, BTab* tab)
 {
 	if (target == NULL)
 		return;
@@ -212,15 +212,17 @@ SmartTabView::AddTab(BView* target, BTab* tab)
 
 	Invalidate(TabFrame(CountTabs() - 1).InsetByCopy(-2, -2));
 	
+	if(select)
+		Select(CountTabs()-1);
+	
 	/*Resize window if too small*/
 	int sizeDiff = (TabFrame(CountTabs() -1).right) - Window()->Frame().Width();
-	if(sizeDiff > 0 && (TabFrame(CountTabs() -1).right < 915)) {
-		AnimationHelper::resizeWidthAnimated(Window(), sizeDiff+4, 200);
+	if(sizeDiff > 0 && (TabFrame(CountTabs() -1).right < 914)) {
+		AnimationHelper::resizeWidthAnimated(Window(), sizeDiff, 200); //No animation here
 	}
 	
 	((HTGTimeLineView*)target)->updateTimeLine();
 }
-
 
 BTab*
 SmartTabView::RemoveTab(int32 index)
@@ -230,7 +232,7 @@ SmartTabView::RemoveTab(int32 index)
 	if((TabFrame(CountTabs() -2).right) < 315)
 			sizeDiff = 315-Window()->Frame().Width();
 	if(sizeDiff < 0) {
-		AnimationHelper::resizeWidthAnimated(Window(), sizeDiff+2, 200);
+		AnimationHelper::resizeWidthAnimated(Window(), sizeDiff, 200);
 	}
 	
 	if (CountTabs() == 2) {

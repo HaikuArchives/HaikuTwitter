@@ -489,7 +489,7 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 				newTabObj = new twitCurl();
 				newTabObj->setAccessKey( key );
 				newTabObj->setAccessSecret( secret );
-				tabView->AddTab(new HTGTimeLineView(newTabObj, TIMELINE_USER, Bounds(), msg->FindString(text_label, (int32)0)));
+				tabView->AddTab(new HTGTimeLineView(newTabObj, TIMELINE_USER, Bounds(), msg->FindString(text_label, (int32)0)), true);
 				tabView->Select(tabView->CountTabs()-1); //Select the new tab
 				UnlockLooper();
 			}
@@ -504,7 +504,7 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 				newTabObj->setAccessKey( key );
 				newTabObj->setAccessSecret( secret );
 				HTGTimeLineView *newTimeline = new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0));
-				tabView->AddTab(newTimeline); //Add the new timeline
+				tabView->AddTab(newTimeline, true); //Add the new timeline
 				if(theSettings.saveSearches)
 					newTimeline->savedSearchCreateSelf(); //Save the search on twitter
 				tabView->Select(tabView->CountTabs()-1); //Select the new tab
