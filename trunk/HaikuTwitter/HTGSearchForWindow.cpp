@@ -33,7 +33,7 @@ void HTGSearchForWindow::search() {
 	newMsg->AddString("text", query->Text());
 	
 	/*Let main window handle the message*/
-	delegate->MessageReceived(newMsg);
+	DispatchMessage(newMsg, delegate);
 }
 
 void HTGSearchForWindow::MessageReceived(BMessage *msg) {
