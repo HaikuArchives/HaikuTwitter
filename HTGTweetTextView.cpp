@@ -12,6 +12,7 @@ status_t _threadDownloadLinkIconURLs(void *data);
 HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, uint32 resizingMode, uint32 flags) : BTextView(frame, name, textRect, resizingMode, flags) {
 		tweetId = std::string("");
 		urls = new BList();
+		currentThread = B_NAME_NOT_FOUND;
 }
 	
 HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, const BFont* font, const rgb_color* color, uint32 resizingMode, uint32 flags) : BTextView(frame, name, textRect, font, color, resizingMode, flags) {
@@ -252,7 +253,8 @@ void HTGTweetTextView::openUrl(const char *url) {
 
 HTGTweetTextView::~HTGTweetTextView() {
 	/*Kill the update thread*/
-	kill_thread(currentThread);
+	if(currentThread != B_NAME_NOT_FOUND)
+		kill_thread(currentThread);
 }
 
 status_t _threadDownloadLinkIconURLs(void *data) {
@@ -263,6 +265,9 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 	HTGTweetMenuItem* currentItem = NULL;
 	for(int i = 0; i < super->urls->CountItems(); i++) {
 		currentItem = (HTGTweetMenuItem *)super->urls->ItemAt(i);
+		
+		if(currentItem == NULL)
+			return B_OK; //Abort: The menu has been closed and deleted.
 		
 		curl_global_init(CURL_GLOBAL_ALL);
 		curl_handle = curl_easy_init();
@@ -288,9 +293,16 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 		
 		std::string replyMsg((char *)mallocIO->Buffer(), mallocIO->BufferLength());
 		if(!replyMsg.length()) {
-			currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
+			if((HTGTweetMenuItem *)super->urls->ItemAt(i) != NULL)
+				currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
 			continue;
 		}
+		
+		/*Check if menu has been closed, or the menu item for some other reason is gone*/
+		if(currentItem == NULL)
+			return B_OK;
+		if(currentItem->Label() == NULL)
+			return B_OK;
 		
 		/*Parse for base-url*/
 		std::string location(currentItem->Label());
@@ -335,15 +347,17 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 					searchQuery.insert(0, location);
 					std::cout << searchQuery << std::endl;
 				}
-				currentItem->setLinkIconUrl(searchQuery);
+				if((HTGTweetMenuItem *)super->urls->ItemAt(i) != NULL)
+					currentItem->setLinkIconUrl(searchQuery);
 				std::cout << "Detected icon at: " << searchQuery << std::endl;
 				pos = end;
 				i++;
 			}
 		}
-		
-		if(currentItem->getLinkIconUrl().length() < 1)
-			currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
+		if((HTGTweetMenuItem *)super->urls->ItemAt(i) != NULL) {
+			if(currentItem->getLinkIconUrl().length() < 1)
+				currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
+		}
 		
 		/*Delete the buffer*/
 		delete mallocIO;

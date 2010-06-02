@@ -10,6 +10,7 @@ HTGTweetMenuItem::HTGTweetMenuItem(const char* label, BMessage* message, char sh
 	linkIconUrl = std::string("");
 	linkIcon = NULL;
 	linkIconDownloadInProgress = false;
+	downloadThread = B_NAME_NOT_FOUND;
 }
 
 HTGTweetMenuItem::HTGTweetMenuItem(BMenu* submenu, BMessage* message) : BMenuItem(submenu, message) {
@@ -69,7 +70,8 @@ void HTGTweetMenuItem::DrawContent() {
 
 HTGTweetMenuItem::~HTGTweetMenuItem() {
 	/*Kill the update thread*/
-	kill_thread(downloadThread);
+	if(downloadThread != B_NAME_NOT_FOUND)
+		kill_thread(downloadThread);
 }
 
 status_t _threadDownloadLinkIcon(void *data) {
@@ -100,7 +102,7 @@ status_t _threadDownloadLinkIcon(void *data) {
 	/*Translate downloaded data to bitmap*/
 	BBitmap *theBitmap = BTranslationUtils::GetBitmap(mallocIO);
 	if(theBitmap->IsValid())
-		super->setLinkIcon(BTranslationUtils::GetBitmap(mallocIO));
+		super->setLinkIcon(theBitmap);
 
 	if(super->Menu() != NULL && theBitmap->IsValid()) {
 		if(super->Menu()->LockLooper()) {
