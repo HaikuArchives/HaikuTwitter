@@ -79,7 +79,10 @@ void HTGTweetTextView::MouseDown(BPoint point) {
 	
 		myPopUp->SetAsyncAutoDestruct(true);
 		myPopUp->SetTargetForItems(BMessenger(this));
-		myPopUp->Go(point+BPoint(1,1), true, true, true);
+		myPopUp->Go(point+BPoint(1,1), true, true, false); //Do this synchronously
+		/*Kill the update thread so it does not try to access an allready freed object*/
+		if(currentThread != B_NAME_NOT_FOUND)
+			kill_thread(currentThread);
 	}
 	else
 		BTextView::MouseDown(point);
