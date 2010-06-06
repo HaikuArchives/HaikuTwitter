@@ -286,7 +286,7 @@ status_t _threadDownloadBitmap(void *data) {
 	super->setBitmap(BTranslationUtils::GetBitmap(mallocIO));
 	if(super->getView() != NULL) {
 		int loopCounter = 1;
-		while(!super->getView()->LockLooper()) {
+		while(!super->getView()->LockLooper() && loopCounter < 200) {
 			usleep(2000+(100*loopCounter));
 			loopCounter++;
 		}
