@@ -53,7 +53,7 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	owner->GetFont(&textFont);
 
 	/*Write screen name*/
-	owner->SetHighColor(100,100,100);
+	owner->SetHighColor(100,100,100); //Or maybe twitter's color: 000,153,185 (blue)?
 	owner->MovePenTo(frame.left+60+4, frame.top+12);
 	owner->DrawString(theTweet->getScreenName().c_str());
 	
