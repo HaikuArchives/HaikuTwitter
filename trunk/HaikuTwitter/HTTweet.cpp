@@ -291,7 +291,8 @@ status_t _threadDownloadBitmap(void *data) {
 			loopCounter++;
 		}
 		super->getView()->Invalidate();
-		super->getView()->UnlockLooper();
+		if(loopCounter < 200)
+			super->getView()->UnlockLooper();
 	}
 		
 	
