@@ -15,16 +15,16 @@ int HTGTweetItem::calculateSize(BView *owner) {
 	BFont textFont;
 	owner->GetFont(&textFont);
 	
-	int calculatedSize = 0;
-	int sizeOfTextView = 0;
+	float calculatedSize = 0;
+	float sizeOfTextView = 0;
 	string tweetContent = theTweet->getText();
 	
 	/*Create a testView for the text, so we can calculate the number of line breaks*/
-	BRect textRect(72,0, owner->Frame().right, 150);
-	HTGTweetTextView *calcView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,owner->Frame().right-72,100), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
+	BRect textRect(72,0, owner->Frame().right, 0);
+	HTGTweetTextView *calcView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,owner->Frame().right-72,300), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
 	calcView->setTweetId(theTweet->getId());
 	textFont.SetEncoding(B_UNICODE_UTF8);
-	textFont.SetSize(10);
+	textFont.SetSize(textFont.Size()-2);
 	calcView->SetFontAndColor(&textFont);
 	calcView->SetWordWrap(true);
 	calcView->MakeEditable(false);
@@ -32,15 +32,17 @@ int HTGTweetItem::calculateSize(BView *owner) {
 	
 	font_height height;
 	calcView->GetFontHeight(&height);
-	int lineHeight = (height.ascent + height.descent + height.leading);
-	
+	float lineHeight = (height.ascent + height.descent + height.leading);
+	if(textFont.Size() > 11)
+		lineHeight += (textFont.Size()-11)*1.5f;
 	sizeOfTextView = calcView->CountLines()*lineHeight;
-	calculatedSize = sizeOfTextView+15+15;
+
+	calculatedSize = sizeOfTextView+(lineHeight+3)*2;
 	if(calculatedSize < 60)
 		calculatedSize = 60;
 		
 	delete calcView;
-	return calculatedSize;
+	return (int)(calculatedSize + 0.5f);
 }
 
 void HTGTweetItem::Update(BView *owner, const BFont* font) {
@@ -51,10 +53,14 @@ void HTGTweetItem::Update(BView *owner, const BFont* font) {
 void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	BFont textFont;
 	owner->GetFont(&textFont);
+	
+	font_height height;
+	owner->GetFontHeight(&height);
+	float lineHeight = (height.ascent + height.descent + height.leading);
 
 	/*Write screen name*/
 	owner->SetHighColor(100,100,100); //Or maybe twitter's color: 000,153,185 (blue)?
-	owner->MovePenTo(frame.left+60+4, frame.top+12);
+	owner->MovePenTo(frame.left+60+4, frame.top+lineHeight);
 	owner->DrawString(theTweet->getScreenName().c_str());
 	
 	/*Write time*/
@@ -73,7 +79,7 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 		owner->GetFont(&textFont);
 		owner->GetFont(&currentFont);
 		textFont.SetEncoding(B_UNICODE_UTF8);
-		textFont.SetSize(10);
+		textFont.SetSize(textFont.Size()-2);
 		owner->SetFont(&textFont, B_FONT_ALL);
 		owner->SetHighColor(128,128,128);
 		owner->MovePenTo(frame.right-textFont.StringWidth(viaString.c_str())-5, frame.bottom-5);
@@ -83,12 +89,12 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	}
 	
 	/*Write text*/
-	BRect textRect(60+4,frame.top+15, frame.right, frame.bottom-15);
+	BRect textRect(60+4,frame.top+lineHeight+3, frame.right, frame.bottom-lineHeight);
 	if(textView == NULL) {
-		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-60-4,frame.bottom-15), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
+		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-60-4,frame.bottom-lineHeight), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
 		owner->AddChild(textView);
 		textFont.SetEncoding(B_UNICODE_UTF8);
-		textFont.SetSize(10);
+		textFont.SetSize(textFont.Size()-2);
 		textView->SetFontAndColor(&textFont);
 		textView->SetWordWrap(true);
 		textView->MakeEditable(false);
@@ -96,9 +102,12 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 		textView->SetText(theTweet->getText().c_str());
 	}
 	else {
+		textFont.SetEncoding(B_UNICODE_UTF8);
+		textFont.SetSize(textFont.Size()-2);
+		textView->SetFontAndColor(&textFont);
 		textView->MoveTo(textRect.left, textRect.top);
 		textView->ResizeTo(textRect.Width(), textRect.Height());
-		textView->SetTextRect(BRect(0,0,frame.right-60-4,frame.bottom-15));
+		textView->SetTextRect(BRect(0,0,frame.right-60-4,frame.bottom));
 	}
 	
 	/*Draw seperator*/

@@ -73,6 +73,12 @@ int32 HTGTimeLineView::getSearchID() {
 	return searchID;
 }
 
+void HTGTimeLineView::SetFont(const BFont *font, uint32 properties) {
+	listView->SetFont(font, properties);
+	BView::SetFont(font, properties);
+	listView->Invalidate();
+}
+
 void HTGTimeLineView::AttachedToWindow() {
 	BView::AttachedToWindow();
 	listView->AttachedToWindow();
