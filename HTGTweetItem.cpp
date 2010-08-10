@@ -33,11 +33,11 @@ int HTGTweetItem::calculateSize(BView *owner) {
 	font_height height;
 	calcView->GetFontHeight(&height);
 	float lineHeight = (height.ascent + height.descent + height.leading);
-	if(textFont.Size() > 11)
-		lineHeight += (textFont.Size()-11)*1.5f;
+	if(textFont.Size() > 10)
+		lineHeight += (textFont.Size()-11)*1.8f;
 	sizeOfTextView = calcView->CountLines()*lineHeight;
 
-	calculatedSize = sizeOfTextView+(lineHeight+3)*2;
+	calculatedSize = sizeOfTextView+(lineHeight+3)*1.8;
 	if(calculatedSize < 60)
 		calculatedSize = 60;
 		
@@ -65,7 +65,7 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	
 	/*Write time*/
 	owner->SetHighColor(128,128,128);
-	owner->MovePenTo(frame.right-textFont.StringWidth(theTweet->getRelativeDate().c_str())-5, frame.top+12);
+	owner->MovePenTo(frame.right-textFont.StringWidth(theTweet->getRelativeDate().c_str())-5, frame.top+lineHeight);
 	owner->DrawString(theTweet->getRelativeDate().c_str());
 	
 	/*Write source name*/
