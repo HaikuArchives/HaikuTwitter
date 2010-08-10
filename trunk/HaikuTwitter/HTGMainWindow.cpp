@@ -350,22 +350,30 @@ void HTGMainWindow::_SetupMenu() {
 	
 	/*Make Settings Menu*/
 	fSettingsMenu = new BMenu("Settings");
-	fSettingsMenu->AddItem(new BMenuItem("Account...", new BMessage(ACCOUNT_SETTINGS)));
-	#ifdef INFOPOPPER_SUPPORT
-	fSettingsMenu->AddItem(new BMenuItem("Notifications...", new BMessage(INFOPOPPER_SETTINGS)));
-	#endif
 	fMenuBar->AddItem(fSettingsMenu);
-	fSettingsMenu->AddSeparatorItem();
-	fOpenInTabsMenuItem = new BMenuItem("Use tabs", new BMessage(TOGGLE_TABS));
 	fEnablePublicMenuItem = new BMenuItem("Show public stream", new BMessage(TOGGLE_PUBLIC));
-	fSettingsMenu->AddItem(fOpenInTabsMenuItem);
 	fSettingsMenu->AddItem(fEnablePublicMenuItem);
 	fEnablePublicMenuItem->SetMarked(theSettings.enablePublic);
+	
+	fSettingsMenu->AddSeparatorItem();
+	fOpenInTabsMenuItem = new BMenuItem("Use tabs", new BMessage(TOGGLE_TABS));
+	BMenu *textSizeSubMenu = new BMenu("Text Size");
+	textSizeSubMenu->AddItem(new BMenuItem("Increase", new BMessage(TEXT_SIZE_INCREASE), '+'));
+	textSizeSubMenu->AddItem(new BMenuItem("Decrease", new BMessage(TEXT_SIZE_DECREASE), '-'));
+	fSettingsMenu->AddItem(fOpenInTabsMenuItem);
+	fSettingsMenu->AddItem(textSizeSubMenu);
 	fOpenInTabsMenuItem->SetMarked(theSettings.useTabs);
+	
 	fSettingsMenu->AddSeparatorItem();
 	fAutoStartMenuItem = new BMenuItem("Auto start at login", new BMessage(TOGGLE_AUTOSTART));
 	fAutoStartMenuItem->SetMarked(_isAutoStarted());
 	fSettingsMenu->AddItem(fAutoStartMenuItem);
+	
+	fSettingsMenu->AddSeparatorItem();
+	#ifdef INFOPOPPER_SUPPORT
+	fSettingsMenu->AddItem(new BMenuItem("Notifications...", new BMessage(INFOPOPPER_SETTINGS)));
+	#endif
+	fSettingsMenu->AddItem(new BMenuItem("Preferences...", new BMessage(ACCOUNT_SETTINGS)));
 	
 	AddChild(fMenuBar);
 }
@@ -526,6 +534,32 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 		case ABOUT:
 			showAbout();
 			break;
+		case TEXT_SIZE_INCREASE:
+		case TEXT_SIZE_DECREASE:
+		{
+			BFont font;
+			tabView->TabAt(0)->View()->GetFont(&font);
+			float size = font.Size();
+			if(msg->what == TEXT_SIZE_INCREASE)
+				size += 1;
+			else
+				size -= 1;
+				
+			//Limit the font size
+			if (size < 9)
+				size = 9;
+			if (size > 18)
+				size = 18;
+			
+			font.SetSize(size);
+			
+			for(int i = 0; i < tabView->CountTabs(); i++) {
+				HTGTimeLineView *current = dynamic_cast<HTGTimeLineView*>(tabView->TabAt(i)->View());
+				if(current != NULL)
+					current->SetFont(&font);
+			}
+			break;
+		}
 		case B_CLOSE_REQUESTED:
 			be_app->PostMessage(B_QUIT_REQUESTED);
 			break;

@@ -37,6 +37,7 @@ public:
 	HTGTimeLineView(twitCurl *, const int32, BRect, const char * requestInfo = " ");
 	void updateTimeLine();
 	void AttachedToWindow();
+	void SetFont(const BFont*, uint32 = B_FONT_ALL);
 	~HTGTimeLineView();
 	
 //private:
