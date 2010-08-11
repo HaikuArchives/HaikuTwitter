@@ -127,6 +127,7 @@ void HTGAccountSettingsWindow::_retrieveSettings() {
 	theSettings.useTabs = true;
 	theSettings.enablePublic = false;
 	theSettings.saveSearches = false;
+	theSettings.textSize = BFont().Size();
 	
 	BPath path;
 	

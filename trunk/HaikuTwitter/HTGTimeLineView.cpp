@@ -15,7 +15,7 @@ const int32 kProgressType	= 1004;
 const int32 kAttributeIcon	= 1005;
 const int32 kContentsIcon	= 1006;
 
-HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo) : BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS) {	
+HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo, int textSize) : BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS) {	
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
 	previousThread = B_NAME_NOT_FOUND;
@@ -60,6 +60,12 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	#ifdef INFOPOPPER_SUPPORT
 	wantsNotifications = _retrieveInfoPopperBoolFromSettings();
 	#endif
+	
+	/*Set text size*/
+	BFont font;
+	listView->GetFont(&font);
+	font.SetSize(textSize);
+	SetFont(&font);
 	
 	/*All done, ready to display tweets*/
 	waitingForUpdate = true;
