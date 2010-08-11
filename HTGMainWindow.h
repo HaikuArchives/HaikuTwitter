@@ -76,6 +76,7 @@ private:
 	void _removePublicTimeLine();
 	void _addSavedSearches();
 	void _addTrending();
+	void _setTimelineTextSize(int);
 	status_t _getSettingsPath(BPath &path);
 	void _retrieveSettings();
 	status_t _saveSettings();

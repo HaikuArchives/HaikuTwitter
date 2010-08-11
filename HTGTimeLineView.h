@@ -34,7 +34,7 @@ status_t updateTimeLineThread(void *data);
 
 class HTGTimeLineView : public BView {
 public:
-	HTGTimeLineView(twitCurl *, const int32, BRect, const char * requestInfo = " ");
+	HTGTimeLineView(twitCurl *, const int32, BRect, const char * requestInfo = " ", int textSize = BFont().Size());
 	void updateTimeLine();
 	void AttachedToWindow();
 	void SetFont(const BFont*, uint32 = B_FONT_ALL);

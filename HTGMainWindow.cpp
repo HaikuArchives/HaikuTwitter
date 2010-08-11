@@ -29,21 +29,21 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	twitCurl *timelineTwitObj = new twitCurl();
 	timelineTwitObj->setAccessKey( key );
 	timelineTwitObj->setAccessSecret( secret );
-	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, Bounds());
+	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, Bounds(), "", theSettings.textSize);
 	tabView->AddTab(friendsTimeLine);
 	
 	/*Set up mentions timeline*/
 	twitCurl *mentionsTwitObj = new twitCurl();
 	mentionsTwitObj->setAccessKey( key );
 	mentionsTwitObj->setAccessSecret( secret );
-	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds());
+	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds(), "", theSettings.textSize);
 	tabView->AddTab(mentionsTimeLine);
 	
 	/*Set up public timeline - if enabled*/
 	if(fEnablePublicMenuItem->IsMarked())
 		_addPublicTimeLine();
 	
-	/*Add the saved searches as tabs - if tabs is enabled*/
+	/*Add the saved searches as tabs - if tabs are enabled*/
 	if(fOpenInTabsMenuItem->IsMarked() && theSettings.saveSearches)
 		_addSavedSearches();
 		
@@ -62,6 +62,7 @@ status_t addSavedSearchesThreadFunction(void *data)
 	std::string secret = *(std::string *)args->ItemAt(1);
 	SmartTabView *tabView = (SmartTabView *)args->ItemAt(2);
 	BRect rect = *(BRect *)args->ItemAt(3);
+	int textSize = *(int *)args->ItemAt(4);
 	
 	/*Configure twitter object*/
 	twitCurl *twitObj = new twitCurl();
@@ -89,7 +90,7 @@ status_t addSavedSearchesThreadFunction(void *data)
 			twitCurl *newTabObj = new twitCurl();
 			newTabObj->setAccessKey( key );
 			newTabObj->setAccessSecret( secret );
-			viewList->AddItem(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, rect, searchQuery.c_str()));
+			viewList->AddItem(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, rect, searchQuery.c_str(), textSize));
 			pos = end;
 			i++;
 		}
@@ -196,7 +197,7 @@ void HTGMainWindow::_addPublicTimeLine() {
 	twitCurl *publicTwitObj = new twitCurl();
 	publicTwitObj->setAccessKey( key );
 	publicTwitObj->setAccessSecret( secret );
-	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds());
+	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds(), "", theSettings.textSize);
 	tabView->AddTab(publicTimeLine);	
 }
 
@@ -213,6 +214,7 @@ void HTGMainWindow::_addSavedSearches() {
 	threadArgs->AddItem(&secret);
 	threadArgs->AddItem(tabView);
 	threadArgs->AddItem(new BRect(Bounds()));
+	threadArgs->AddItem(&theSettings.textSize);
 	
 	thread_id theThread = spawn_thread(addSavedSearchesThreadFunction, "UpdateSearches", 10, threadArgs);
 	resume_thread(theThread);
@@ -254,6 +256,7 @@ void HTGMainWindow::_retrieveSettings() {
 	theSettings.useTabs = true;
 	theSettings.enablePublic = false;
 	theSettings.saveSearches = false;
+	theSettings.textSize = BFont().Size();
 	
 	BPath path;
 	
@@ -277,6 +280,9 @@ status_t HTGMainWindow::_saveSettings() {
 	theSettings.position = BPoint(this->Frame().left, this->Frame().top);
 	theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
 	theSettings.enablePublic = fEnablePublicMenuItem->IsMarked();
+	BFont font;
+	tabView->TabAt(0)->View()->GetFont(&font);
+	theSettings.textSize = font.Size();
 	
 	BPath path;
 	status_t status = _getSettingsPath(path);
@@ -288,7 +294,6 @@ status_t HTGMainWindow::_saveSettings() {
 		return status;
 		
 	file.WriteAt(0, &theSettings, sizeof(twitter_settings));
-	std::cout << "Window position saved" << std::endl;
 }
 
 void HTGMainWindow::showAbout() {
@@ -541,7 +546,7 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 		{
 			BFont font;
 			tabView->TabAt(0)->View()->GetFont(&font);
-			float size = font.Size();
+			int size = font.Size();
 			if(msg->what == TEXT_SIZE_INCREASE)
 				size += 1;
 			else if(msg->what == TEXT_SIZE_DECREASE)
@@ -555,13 +560,8 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			if (size > 18)
 				size = 18;
 			
-			font.SetSize(size);
-			
-			for(int i = 0; i < tabView->CountTabs(); i++) {
-				HTGTimeLineView *current = dynamic_cast<HTGTimeLineView*>(tabView->TabAt(i)->View());
-				if(current != NULL)
-					current->SetFont(&font);
-			}
+			_setTimelineTextSize(size);
+			theSettings.textSize = size;
 			break;
 		}
 		case B_CLOSE_REQUESTED:
@@ -569,6 +569,18 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			break;
 		default:
 			BWindow::MessageReceived(msg);
+	}
+}
+
+void HTGMainWindow::_setTimelineTextSize(int size) {
+	BFont font;
+	tabView->TabAt(0)->View()->GetFont(&font);
+	font.SetSize(size);
+	
+	for(int i = 0; i < tabView->CountTabs(); i++) {
+		HTGTimeLineView *current = dynamic_cast<HTGTimeLineView*>(tabView->TabAt(i)->View());
+		if(current != NULL)
+			current->SetFont(&font);
 	}
 }
 
