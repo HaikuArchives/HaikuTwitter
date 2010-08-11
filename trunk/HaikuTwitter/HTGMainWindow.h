@@ -49,6 +49,7 @@ const int32 TOGGLE_PUBLIC = 'TPUB';
 const int32 TOGGLE_AUTOSTART = 'ASTT';
 const int32 TEXT_SIZE_INCREASE = 'TINC';
 const int32 TEXT_SIZE_DECREASE = 'TDEC';
+const int32 TEXT_SIZE_REVERT = 'TREV';
 
 status_t addSavedSearchesThreadFunction(void *data);
 status_t addTrendingThreadFunction(void *data);
