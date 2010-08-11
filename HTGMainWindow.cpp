@@ -360,6 +360,7 @@ void HTGMainWindow::_SetupMenu() {
 	BMenu *textSizeSubMenu = new BMenu("Text Size");
 	textSizeSubMenu->AddItem(new BMenuItem("Increase", new BMessage(TEXT_SIZE_INCREASE), '+'));
 	textSizeSubMenu->AddItem(new BMenuItem("Decrease", new BMessage(TEXT_SIZE_DECREASE), '-'));
+	textSizeSubMenu->AddItem(new BMenuItem("Revert", new BMessage(TEXT_SIZE_REVERT)));
 	fSettingsMenu->AddItem(fOpenInTabsMenuItem);
 	fSettingsMenu->AddItem(textSizeSubMenu);
 	fOpenInTabsMenuItem->SetMarked(theSettings.useTabs);
@@ -536,14 +537,17 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 			break;
 		case TEXT_SIZE_INCREASE:
 		case TEXT_SIZE_DECREASE:
+		case TEXT_SIZE_REVERT:
 		{
 			BFont font;
 			tabView->TabAt(0)->View()->GetFont(&font);
 			float size = font.Size();
 			if(msg->what == TEXT_SIZE_INCREASE)
 				size += 1;
-			else
+			else if(msg->what == TEXT_SIZE_DECREASE)
 				size -= 1;
+			else
+				size = BFont().Size(); //BE_PLAIN_FONT used
 				
 			//Limit the font size
 			if (size < 9)
