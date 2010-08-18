@@ -42,15 +42,17 @@ void HTGInfoPopperSettingsWindow::_setupWindow() {
 	this->AddChild(backgroundView);
 	
 	/*Add revertButton*/
-	revertButton = new BButton(BRect(3, 80, 100, -1), NULL, "Revert", new BMessage(kRevert));
+	revertButton = new BButton(BRect(3, 85, 100, -1), NULL, "Revert", new BMessage(kRevert));
 	backgroundView->AddChild(revertButton);
 	
 	/*Add the check boxes*/
 	friendsNotifyBox = new BCheckBox(BRect(5, 5, 400, 15), "Friends checkbox", "Display notifications for friends timeline", new BMessage());
 	mentionsNotifyBox = new BCheckBox(BRect(5, 25, 400, 35), "Mentions checkbox", "Display notifications for mentions", new BMessage());
-	publicNotifyBox = new BCheckBox(BRect(5, 45, 400, 55), "Public checkbox", "Display notifications for public timeline (Not recommended)", new BMessage());
+	searchesNotifyBox = new BCheckBox(BRect(5, 45, 400, 55), "Searches checkbox", "Display notifications for searches", new BMessage());
+	publicNotifyBox = new BCheckBox(BRect(5, 65, 400, 75), "Public checkbox", "Display notifications for public timeline (Not recommended)", new BMessage());
 	backgroundView->AddChild(friendsNotifyBox);
 	backgroundView->AddChild(mentionsNotifyBox);
+	backgroundView->AddChild(searchesNotifyBox);
 	backgroundView->AddChild(publicNotifyBox);
 	
 	/*Set values*/
@@ -66,6 +68,10 @@ void HTGInfoPopperSettingsWindow::_setupWindow() {
 		publicNotifyBox->SetValue(B_CONTROL_ON);
 	else
 		publicNotifyBox->SetValue(B_CONTROL_OFF);
+	if(theSettings.searchesNotify)
+		searchesNotifyBox->SetValue(B_CONTROL_ON);
+	else
+		searchesNotifyBox->SetValue(B_CONTROL_OFF);
 
 }
 
@@ -86,6 +92,10 @@ void HTGInfoPopperSettingsWindow::MessageReceived(BMessage *msg) {
 				publicNotifyBox->SetValue(B_CONTROL_ON);
 			else
 				publicNotifyBox->SetValue(B_CONTROL_OFF);
+			if(theSettings.searchesNotify)
+				searchesNotifyBox->SetValue(B_CONTROL_ON);
+			else
+				searchesNotifyBox->SetValue(B_CONTROL_OFF);
 				
 			break;
 		default:
@@ -115,13 +125,14 @@ infopopper_settings HTGInfoPopperSettingsWindow::_getDefaults() {
 	
 	returnSettings.friendsNotify = false;
 	returnSettings.mentionsNotify = true;
+	returnSettings.searchesNotify = false;
 	returnSettings.publicNotify = false;
 	
 	return returnSettings;
 }
 
 status_t HTGInfoPopperSettingsWindow::_saveSettings() {
-	if (((friendsNotifyBox->Value() == B_CONTROL_ON) == theSettings.friendsNotify) && ((mentionsNotifyBox->Value() == B_CONTROL_ON) == theSettings.mentionsNotify) && ((publicNotifyBox->Value() == B_CONTROL_ON) == theSettings.publicNotify))
+	if (((friendsNotifyBox->Value() == B_CONTROL_ON) == theSettings.friendsNotify) && ((mentionsNotifyBox->Value() == B_CONTROL_ON) == theSettings.mentionsNotify) && ((publicNotifyBox->Value() == B_CONTROL_ON) == theSettings.publicNotify) && ((searchesNotifyBox->Value() == B_CONTROL_ON) == theSettings.searchesNotify))
 		return B_OK;
 		
 	BAlert *theAlert = new BAlert("Please restart!", "You must restart HaikuTwitter for the changes to take place.", "Ok", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);	
@@ -129,6 +140,7 @@ status_t HTGInfoPopperSettingsWindow::_saveSettings() {
 	
 	theSettings.friendsNotify = (friendsNotifyBox->Value() == B_CONTROL_ON);
 	theSettings.mentionsNotify = (mentionsNotifyBox->Value() == B_CONTROL_ON);
+	theSettings.searchesNotify = (searchesNotifyBox->Value() == B_CONTROL_ON);
 	theSettings.publicNotify = (publicNotifyBox->Value() == B_CONTROL_ON);
 	
 	BPath path;
