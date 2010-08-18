@@ -393,6 +393,9 @@ bool HTGTimeLineView::_retrieveInfoPopperBoolFromSettings() {
 		case TIMELINE_PUBLIC:
 			return theSettings.publicNotify;
 			break;
+		case TIMELINE_SEARCH:
+			return theSettings.searchesNotify;
+			break;
 		}
 	}
 	
@@ -406,6 +409,9 @@ bool HTGTimeLineView::_retrieveInfoPopperBoolFromSettings() {
 			break;
 		case TIMELINE_PUBLIC:
 			return theSettings.publicNotify;
+			break;
+		case TIMELINE_SEARCH:
+			return theSettings.searchesNotify;
 			break;
 		}
 	return false; //Just in case nothing get's picked up... no compile error/warning without this though

@@ -31,6 +31,7 @@ struct infopopper_settings {
 	bool friendsNotify;
 	bool mentionsNotify;
 	bool publicNotify;
+	bool searchesNotify;
 };
 
 
@@ -53,6 +54,7 @@ private:
 	BButton *revertButton;
 	BCheckBox *friendsNotifyBox;
 	BCheckBox *mentionsNotifyBox;
+	BCheckBox *searchesNotifyBox;
 	BCheckBox *publicNotifyBox;
 	BView *backgroundView;
 	BStringView *informationView;
