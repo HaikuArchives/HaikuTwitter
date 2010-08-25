@@ -59,7 +59,7 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	float lineHeight = (height.ascent + height.descent + height.leading);
 
 	/*Write screen name*/
-	owner->SetHighColor(100,100,100); //Or maybe twitter's color: 000,153,185 (blue)?
+	owner->SetHighColor(051,102,152); //Twitter's color: 000,153,185 , Haiku's color: 051,102,152 , Original color: 100,100,100?
 	owner->MovePenTo(frame.left+60+4, frame.top+lineHeight);
 	owner->DrawString(theTweet->getScreenName().c_str());
 	
