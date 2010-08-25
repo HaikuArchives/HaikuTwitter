@@ -69,12 +69,28 @@ std::string HTGNewTweetWindow::urlEncode(const char* input) {
 	std::string output(input);
 	
 	for(int i = 0; i < output.length(); i++) {
+		if(output[i] == '%')
+			output.replace(i, 1, "%25");
 		if(output[i] == '&')
 			output.replace(i, 1, "%26");
 		if(output[i] == '+')
 			output.replace(i, 1, "%2B");
 		if(output[i] == '@')
 			output.replace(i, 1, "%40");
+		if(output[i] == '?')
+			output.replace(i, 1, "%3F");
+		if(output[i] == '=')
+			output.replace(i, 1, "%3D");
+		if(output[i] == '$')
+			output.replace(i, 1, "%24");
+		if(output[i] == '/')
+			output.replace(i, 1, "%2F");
+		if(output[i] == ':')
+			output.replace(i, 1, "%3A");
+		if(output[i] == ';')
+			output.replace(i, 1, "%3B");
+		if(output[i] == ',')
+			output.replace(i, 1, "%2C");
 	}
 	
 	return output;
