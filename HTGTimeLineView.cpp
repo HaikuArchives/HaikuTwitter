@@ -214,6 +214,12 @@ status_t updateTimeLineThread(void *data) {
 	}
 	
 	twitObj->getLastWebResponse(replyMsg);
+	
+	#ifdef DEBUG_ENABLED
+		std::cout << "---Reply from Twitter API---" << std::endl;
+	 	std::cout << replyMsg << std::endl;
+	 	std::cout << "---End of reply---" << std::endl;
+	 #endif
 
 	if(replyMsg.length() < 100)   //Length of data is less than 100 characters. Clearly,
 		replyMsg = "error";			//something is wrong... abort.;
