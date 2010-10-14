@@ -7,6 +7,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string.h>
+
 #include <Application.h>
 
 #include "twitcurl/twitcurl.h"
@@ -18,7 +19,8 @@ status_t getSettingsPath(BPath &path);
 struct twitter_settings retrieveSettings();
 struct oauth_settings retrieveOAuth();
 
-int main()
+int 
+main()
 {   
 	BApplication HaikuApp("application/x-vnd.HaikuTwitter");
 	
@@ -42,7 +44,9 @@ int main()
     return 0;
 }
 
-status_t getSettingsPath(BPath &path) {
+status_t
+getSettingsPath(BPath &path) 
+{
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
 	if (status < B_OK)
 		return status;
@@ -50,7 +54,9 @@ status_t getSettingsPath(BPath &path) {
 	return B_OK;
 }
 
-struct twitter_settings retrieveSettings() {
+struct twitter_settings
+retrieveSettings() 
+{
 	twitter_settings theSettings;
 	
 	/*Set the defaults, just in case anything bad happens*/
@@ -81,7 +87,9 @@ struct twitter_settings retrieveSettings() {
 	return theSettings;
 }
 
-struct oauth_settings retrieveOAuth() {
+struct oauth_settings
+retrieveOAuth()
+{
 	oauth_settings theSettings;
 	
 	/*Set the defaults, just in case anything bad happens*/

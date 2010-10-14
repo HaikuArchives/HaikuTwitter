@@ -3,16 +3,18 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
-
 #include "HTGAccountSettingsWindow.h"
 
-HTGAccountSettingsWindow::HTGAccountSettingsWindow(BWindow *parent) : BWindow(BRect(100, 100, 500, 180), "Account settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGAccountSettingsWindow::HTGAccountSettingsWindow(BWindow *parent) 
+	: BWindow(BRect(100, 100, 500, 180), "Account settings", B_TITLED_WINDOW, B_NOT_RESIZABLE)
+{
 	this->parent = parent;
 	_retrieveSettings();
 	_setupWindow();
 }
 
-HTGAccountSettingsWindow::~HTGAccountSettingsWindow() {
+HTGAccountSettingsWindow::~HTGAccountSettingsWindow()
+{
 	_saveSettings();
 	
 	revertButton->RemoveSelf();
@@ -27,7 +29,9 @@ HTGAccountSettingsWindow::~HTGAccountSettingsWindow() {
 	delete backgroundView;
 }
 
-status_t HTGAccountSettingsWindow::_getSettingsPath(BPath &path) {
+status_t
+HTGAccountSettingsWindow::_getSettingsPath(BPath &path)
+{
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
 	if (status < B_OK)
 		return status;
@@ -36,7 +40,9 @@ status_t HTGAccountSettingsWindow::_getSettingsPath(BPath &path) {
 	return B_OK;
 }
 
-void HTGAccountSettingsWindow::_setupWindow() {
+void
+HTGAccountSettingsWindow::_setupWindow()
+{
 	/*Add the view*/
 	backgroundView = new BView(Bounds(), "BackgroundView", B_NOT_RESIZABLE, B_WILL_DRAW);
 	backgroundView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -73,7 +79,9 @@ void HTGAccountSettingsWindow::_setupWindow() {
 	backgroundView->AddChild(revertButton);
 }
 
-void HTGAccountSettingsWindow::MessageReceived(BMessage *msg) {
+void
+HTGAccountSettingsWindow::MessageReceived(BMessage *msg)
+{
 	switch(msg->what) {
 		case REVERT:
 			_retrieveSettings();
@@ -95,7 +103,9 @@ void HTGAccountSettingsWindow::MessageReceived(BMessage *msg) {
 	}
 }
 
-void HTGAccountSettingsWindow::_invalidateOAuth() {
+void
+HTGAccountSettingsWindow::_invalidateOAuth()
+{
 	BPath settingsPath;
 	
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &settingsPath);
@@ -117,7 +127,9 @@ void HTGAccountSettingsWindow::_invalidateOAuth() {
 	}
 }
 
-void HTGAccountSettingsWindow::_retrieveSettings() {
+void
+HTGAccountSettingsWindow::_retrieveSettings()
+{
 	/*Set the defaults, just in case anything bad happens*/
 	sprintf(theSettings.username, "changeme");
 	sprintf(theSettings.password, "hackme");
@@ -146,7 +158,9 @@ void HTGAccountSettingsWindow::_retrieveSettings() {
 	}
 }
 
-status_t HTGAccountSettingsWindow::_saveSettings() {
+status_t
+HTGAccountSettingsWindow::_saveSettings()
+{
 	if (strcmp(usernameView->Text(), theSettings.username) == 0 && ((savedSearchesBox->Value() == B_CONTROL_ON) == theSettings.saveSearches) && (strcmp(passwordView->Text(), theSettings.password) == 0 || strlen(passwordView->Text()) <= 0) && theSettings.refreshTime == atoi(refreshView->Text()))
 		return B_OK;
 		

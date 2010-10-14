@@ -7,15 +7,17 @@
 #include "HTGTimeLineView.h"
 
 /*InfoPopper constants*/
-const int32 kNotify		= 1000;
+const int32 kNotify				= 1000;
 const int32 kInformationType	= 1001;
-const int32 kImportantType	= 1002;
-const int32 kErrorType		= 1003;
-const int32 kProgressType	= 1004;
-const int32 kAttributeIcon	= 1005;
-const int32 kContentsIcon	= 1006;
+const int32 kImportantType		= 1002;
+const int32 kErrorType			= 1003;
+const int32 kProgressType		= 1004;
+const int32 kAttributeIcon		= 1005;
+const int32 kContentsIcon		= 1006;
 
-HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo, int textSize) : BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS) {	
+HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo, int textSize)
+	: BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS)
+{
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
 	previousThread = B_NAME_NOT_FOUND;
@@ -55,11 +57,9 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
 	this->AddChild(theScrollView);
 		
-	/*Load infopopper settings (if supported)*/
+	/*Load infopopper settings*/
 	wantsNotifications = false; //Default should be false
-	#ifdef INFOPOPPER_SUPPORT
 	wantsNotifications = _retrieveInfoPopperBoolFromSettings();
-	#endif
 	
 	/*Set text size*/
 	BFont font;
@@ -71,21 +71,29 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	waitingForUpdate = true;
 }
 
-void HTGTimeLineView::setSearchID(int32 id) {
+void
+HTGTimeLineView::setSearchID(int32 id)
+{
 	searchID = id;
 }
 
-int32 HTGTimeLineView::getSearchID() {
+int32
+HTGTimeLineView::getSearchID()
+{
 	return searchID;
 }
 
-void HTGTimeLineView::SetFont(const BFont *font, uint32 properties) {
+void
+HTGTimeLineView::SetFont(const BFont *font, uint32 properties)
+{
 	listView->SetFont(font, properties);
 	BView::SetFont(font, properties);
 	listView->Invalidate();
 }
 
-void HTGTimeLineView::AttachedToWindow() {
+void
+HTGTimeLineView::AttachedToWindow()
+{
 	BView::AttachedToWindow();
 	listView->AttachedToWindow();
 	
@@ -110,13 +118,17 @@ void HTGTimeLineView::AttachedToWindow() {
 	}
 }
 
-void HTGTimeLineView::updateTimeLine() {
+void
+HTGTimeLineView::updateTimeLine()
+{
 	previousThread = spawn_thread(updateTimeLineThread, "UpdateThread", 10, this);
 	resume_thread(previousThread);
 	waitingForUpdate = false;
 }
 
-std::string& htmlFormatedString(const char *orig) {
+std::string&
+htmlFormatedString(const char *orig)
+{
 	std::string newString(orig);
 	if(orig[0] == '#') {
 		//newString = std::string(orig+1); THIS IS NOT NEEDED ANYMORE.
@@ -126,7 +138,9 @@ std::string& htmlFormatedString(const char *orig) {
 	return *returnPtr;
 }
 
-void HTGTimeLineView::savedSearchDestoySelf() {
+void
+HTGTimeLineView::savedSearchDestoySelf()
+{
 	/*Destroy saved search on twitter*/
 	twitCurl *saveObj = new twitCurl();
 	saveObj->setAccessKey(twitObj->getAccessKey());
@@ -140,7 +154,9 @@ void HTGTimeLineView::savedSearchDestoySelf() {
 	delete saveObj;
 }
 
-void HTGTimeLineView::savedSearchCreateSelf() {
+void
+HTGTimeLineView::savedSearchCreateSelf()
+{
 	/*Save search to twitter*/
 	std::string query(::htmlFormatedString(Name()));
 	twitCurl *saveObj = new twitCurl();
@@ -163,7 +179,9 @@ void HTGTimeLineView::savedSearchCreateSelf() {
 	delete saveObj;
 }
 
-status_t updateTimeLineThread(void *data) {
+status_t
+updateTimeLineThread(void *data)
+{
 	//Could not figure out how to update a BListItem with a child view (BTextView).
 	//Could be a bug in Haiku APIs. After hours of investigation without any
 	//result, I just don't care anymore. Reallocating all HTGTweetItem on update.
@@ -344,16 +362,14 @@ status_t updateTimeLineThread(void *data) {
 	return B_OK;
 }
 
-void HTGTimeLineView::sendNotificationFor(HTTweet *theTweet) {	
-	std::string title("New tweet from ");
-	title.append(theTweet->getScreenName());
-	std::cout << title << std::endl;
-	
-	#ifdef INFOPOPPER_SUPPORT
-	
+void
+HTGTimeLineView::sendNotificationFor(HTTweet *theTweet)
+{
 	BNotification notification(B_INFORMATION_NOTIFICATION);
 
 	//Prepare the message
+	std::string title("New tweet from ");
+	title.append(theTweet->getScreenName());
 	notification.SetApplication("HaikuTwitter");
 	notification.SetTitle(title.c_str());
 	notification.SetContent(theTweet->getText().c_str());
@@ -364,10 +380,11 @@ void HTGTimeLineView::sendNotificationFor(HTTweet *theTweet) {
 	//Send the notification
 	be_roster->Notify(notification, (bigtime_t)0);
 		
-	#endif
 }
 
-bool HTGTimeLineView::_retrieveInfoPopperBoolFromSettings() {
+bool
+HTGTimeLineView::_retrieveInfoPopperBoolFromSettings()
+{
 	BPath path;
 	infopopper_settings theSettings;
 	
@@ -423,7 +440,8 @@ bool HTGTimeLineView::_retrieveInfoPopperBoolFromSettings() {
 	return false; //Just in case nothing get's picked up... no compile error/warning without this though
 }
 
-HTGTimeLineView::~HTGTimeLineView() {
+HTGTimeLineView::~HTGTimeLineView()
+{
 	/*Kill the update thread*/
 	if(previousThread != B_NAME_NOT_FOUND)
 		kill_thread(previousThread);

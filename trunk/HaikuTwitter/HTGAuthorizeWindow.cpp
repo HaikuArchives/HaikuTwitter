@@ -6,7 +6,9 @@
 
 #include "HTGAuthorizeWindow.h"
 
-HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int height) : BWindow(BRect(200, 200, 565, 405), "Authorize with twitter.com", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int height)
+	: BWindow(BRect(200, 200, 565, 405), "Authorize with twitter.com", B_TITLED_WINDOW, B_NOT_RESIZABLE)
+{
 	CenterOnScreen();
 	
 	/*These will be used to open the main window*/
@@ -54,7 +56,9 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	openButton->MakeDefault(true);
 }
 
-void HTGAuthorizeWindow::openUrl(std::string url) {	
+void
+HTGAuthorizeWindow::openUrl(std::string url)
+{	
 	char* args[] = { (char *)url.c_str(), NULL };
 	const char* mime = "application/x-vnd.Be.URL.http";
 	
@@ -65,7 +69,9 @@ void HTGAuthorizeWindow::openUrl(std::string url) {
 	}
 }
 
-void HTGAuthorizeWindow::copyToClipboard(const char* theString) {
+void
+HTGAuthorizeWindow::copyToClipboard(const char* theString)
+{
 	BMessage *clip = (BMessage *)NULL;
 	if (be_clipboard->Lock()) {
 		be_clipboard->Clear();
@@ -77,7 +83,9 @@ void HTGAuthorizeWindow::copyToClipboard(const char* theString) {
 	}
 }
 
-void HTGAuthorizeWindow::storeTokens(std::string key, std::string secret) {
+void
+HTGAuthorizeWindow::storeTokens(std::string key, std::string secret)
+{
 	sprintf(oauth.key, key.c_str());
 	sprintf(oauth.secret, secret.c_str());
 	
@@ -94,7 +102,9 @@ void HTGAuthorizeWindow::storeTokens(std::string key, std::string secret) {
 	std::cout << "Settings saved" << std::endl;
 }
 
-status_t HTGAuthorizeWindow::_getSettingsPath(BPath &path) {
+status_t
+HTGAuthorizeWindow::_getSettingsPath(BPath &path)
+{
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
 	if (status < B_OK)
 		return status;
@@ -103,7 +113,9 @@ status_t HTGAuthorizeWindow::_getSettingsPath(BPath &path) {
 	return B_OK;
 }
 
-void HTGAuthorizeWindow::MessageReceived(BMessage *msg) {
+void
+HTGAuthorizeWindow::MessageReceived(BMessage *msg)
+{
 	const char* text_label = "text";
 	switch(msg->what) {
 		case GO_TO_AUTH_URL: {
@@ -139,7 +151,8 @@ void HTGAuthorizeWindow::MessageReceived(BMessage *msg) {
 	}
 }
 
-HTGAuthorizeWindow::~HTGAuthorizeWindow() {
+HTGAuthorizeWindow::~HTGAuthorizeWindow()
+{
 	query->RemoveSelf();
 	delete query;
 	

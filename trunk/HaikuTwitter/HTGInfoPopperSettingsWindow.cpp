@@ -6,12 +6,15 @@
 
 #include "HTGInfoPopperSettingsWindow.h"
 
-HTGInfoPopperSettingsWindow::HTGInfoPopperSettingsWindow() : BWindow(BRect(100, 100, 500, 210), "Notification settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGInfoPopperSettingsWindow::HTGInfoPopperSettingsWindow()
+	: BWindow(BRect(100, 100, 500, 210), "Notification settings", B_TITLED_WINDOW, B_NOT_RESIZABLE) 
+{
 	_retrieveSettings();
 	_setupWindow();
 }
 
-HTGInfoPopperSettingsWindow::~HTGInfoPopperSettingsWindow() {
+HTGInfoPopperSettingsWindow::~HTGInfoPopperSettingsWindow()
+{
 	_saveSettings();
 	
 	friendsNotifyBox->RemoveSelf();
@@ -26,7 +29,9 @@ HTGInfoPopperSettingsWindow::~HTGInfoPopperSettingsWindow() {
 	delete backgroundView;
 }
 
-status_t HTGInfoPopperSettingsWindow::_getSettingsPath(BPath &path) {
+status_t
+HTGInfoPopperSettingsWindow::_getSettingsPath(BPath &path)
+{
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
 	if (status < B_OK)
 		return status;
@@ -35,7 +40,9 @@ status_t HTGInfoPopperSettingsWindow::_getSettingsPath(BPath &path) {
 	return B_OK;
 }
 
-void HTGInfoPopperSettingsWindow::_setupWindow() {
+void
+HTGInfoPopperSettingsWindow::_setupWindow()
+{
 	/*Add the view*/
 	backgroundView = new BView(Bounds(), "BackgroundView", B_NOT_RESIZABLE, B_WILL_DRAW);
 	backgroundView->SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
@@ -75,7 +82,9 @@ void HTGInfoPopperSettingsWindow::_setupWindow() {
 
 }
 
-void HTGInfoPopperSettingsWindow::MessageReceived(BMessage *msg) {
+void
+HTGInfoPopperSettingsWindow::MessageReceived(BMessage *msg)
+{
 	switch(msg->what) {
 		case kRevert:
 			_retrieveSettings();
@@ -103,7 +112,9 @@ void HTGInfoPopperSettingsWindow::MessageReceived(BMessage *msg) {
 	}
 }
 
-void HTGInfoPopperSettingsWindow::_retrieveSettings() {
+void
+HTGInfoPopperSettingsWindow::_retrieveSettings()
+{
 	BPath path;
 	
 	if (_getSettingsPath(path) < B_OK) {
@@ -120,7 +131,9 @@ void HTGInfoPopperSettingsWindow::_retrieveSettings() {
 	file.ReadAt(0, &theSettings, sizeof(infopopper_settings));
 }
 
-infopopper_settings HTGInfoPopperSettingsWindow::_getDefaults() {
+infopopper_settings
+HTGInfoPopperSettingsWindow::_getDefaults()
+{
 	infopopper_settings returnSettings;
 	
 	returnSettings.friendsNotify = false;
@@ -131,7 +144,9 @@ infopopper_settings HTGInfoPopperSettingsWindow::_getDefaults() {
 	return returnSettings;
 }
 
-status_t HTGInfoPopperSettingsWindow::_saveSettings() {
+status_t
+HTGInfoPopperSettingsWindow::_saveSettings()
+{
 	if (((friendsNotifyBox->Value() == B_CONTROL_ON) == theSettings.friendsNotify) && ((mentionsNotifyBox->Value() == B_CONTROL_ON) == theSettings.mentionsNotify) && ((publicNotifyBox->Value() == B_CONTROL_ON) == theSettings.publicNotify) && ((searchesNotifyBox->Value() == B_CONTROL_ON) == theSettings.searchesNotify))
 		return B_OK;
 		

@@ -6,7 +6,9 @@
 
 #include "HTGSearchForWindow.h"
 
-HTGSearchForWindow::HTGSearchForWindow(BWindow *delegate) : BWindow(BRect(100, 100, 360, 160), "Search for...", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGSearchForWindow::HTGSearchForWindow(BWindow *delegate)
+	: BWindow(BRect(100, 100, 360, 160), "Search for...", B_TITLED_WINDOW, B_NOT_RESIZABLE)
+{
 	this->delegate = delegate;
 	
 	/*Add a grey view*/
@@ -27,7 +29,9 @@ HTGSearchForWindow::HTGSearchForWindow(BWindow *delegate) : BWindow(BRect(100, 1
 	goButton->MakeDefault(true);
 }
 
-void HTGSearchForWindow::search() {
+void
+HTGSearchForWindow::search()
+{
 	/*Create new BMessage for opening a new timeline for username*/
 	BMessage *newMsg = new BMessage('SRCH');
 	newMsg->AddString("text", query->Text());
@@ -36,7 +40,9 @@ void HTGSearchForWindow::search() {
 	DispatchMessage(newMsg, delegate);
 }
 
-void HTGSearchForWindow::MessageReceived(BMessage *msg) {
+void
+HTGSearchForWindow::MessageReceived(BMessage *msg)
+{
 	const char* text_label = "text";
 	switch(msg->what) {
 		case SEARCH:
@@ -48,7 +54,8 @@ void HTGSearchForWindow::MessageReceived(BMessage *msg) {
 	}
 }
 
-HTGSearchForWindow::~HTGSearchForWindow() {
+HTGSearchForWindow::~HTGSearchForWindow()
+{
 	query->RemoveSelf();
 	delete query;
 	

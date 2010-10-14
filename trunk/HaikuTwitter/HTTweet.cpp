@@ -5,7 +5,8 @@
 
 #include "HTTweet.h"
 
-HTTweet::HTTweet() {
+HTTweet::HTTweet()
+{
 	imageBitmap = NULL;
 	date.day = 1;
 	date.month = 0;
@@ -19,7 +20,8 @@ HTTweet::HTTweet() {
 	view = NULL;
 }
 
-HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString) {
+HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString)
+{
 	HTTweet::HTTweet();
 	this->screenName = screenName;
 	this->text = text;
@@ -33,7 +35,8 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 	view = NULL;
 }
 
-HTTweet::HTTweet(HTTweet *originalTweet) {
+HTTweet::HTTweet(HTTweet *originalTweet)
+{
 	HTTweet::HTTweet();
 	this->screenName = originalTweet->getScreenName();
 	this->text = originalTweet->getText();
@@ -49,47 +52,69 @@ HTTweet::HTTweet(HTTweet *originalTweet) {
 	bitmapDownloadInProgress = false;
 }
 
-BView* HTTweet::getView() {
+BView*
+HTTweet::getView()
+{
 	return view;
 }
 
-const string HTTweet::getRawDate() {
+const string
+HTTweet::getRawDate()
+{
 	return rawDate;
 }
 
-const string HTTweet::getScreenName() {
+const string
+HTTweet::getScreenName()
+{
 	return screenName;	
 }
 
-const string HTTweet::getSourceName() {
+const string
+HTTweet::getSourceName()
+{
 	return sourceName;
 }
 
-const string HTTweet::getText() {
+const string
+HTTweet::getText()
+{
 	return text;	
 }
 
-const string HTTweet::getProfileImageUrl() {
+const string
+HTTweet::getProfileImageUrl()
+{
 	return profileImageUrl;	
 }
 
-void HTTweet::setScreenName(string &screenName) {
+void
+HTTweet::setScreenName(string &screenName)
+{
 	this->screenName = screenName;
 }
 
-void HTTweet::setSourceName(string &sourceName) {
+void
+HTTweet::setSourceName(string &sourceName)
+{
 	this->sourceName = sourceName;
 }
 
-void HTTweet::setText(string &text) {
+void
+HTTweet::setText(string &text)
+{
 	this->text = text;
 }
 
-void HTTweet::setView(BView* view) {
+void
+HTTweet::setView(BView* view)
+{
 	this->view = view;
 }
 
-void HTTweet::setDate(string &dateString) {
+void
+HTTweet::setDate(string &dateString)
+{
 	if(dateString.length() < 29) { //29
 		std::cout << "HTTweet::setDate(string &): Got invalid date string" << std::endl;
 		dateString = std::string("Wed Jan 01 00:00:00 +0000 1970");
@@ -108,8 +133,10 @@ void HTTweet::setDate(string &dateString) {
 	date.year = cString[29]-48 + (cString[28]-48)*10;
 }
 
-void HTTweet::setPublishedDate(string &dateString) {
-	if(dateString.length() < 17) { //17
+void
+HTTweet::setPublishedDate(string &dateString)
+{
+	if(dateString.length() < 17) {
 		std::cout << "HTTweet::setPublishedDate(string &): Got invalid date string" << std::endl;
 		dateString = std::string("1970-01-01T00:00:00Z");
 	}
@@ -127,11 +154,15 @@ void HTTweet::setPublishedDate(string &dateString) {
 	date.year = cString[3]-48 + (cString[2]-48)*10;
 }
 
-struct DateStruct HTTweet::getDate() const {
+struct DateStruct
+HTTweet::getDate() const
+{
 	return date;
 }
 
-const string HTTweet::getRelativeDate() {
+const string
+HTTweet::getRelativeDate()
+{
 	time_t currentTime = time(NULL);
 	tm *timeinfo;
 	timeinfo = gmtime(&currentTime);
@@ -170,7 +201,9 @@ const string HTTweet::getRelativeDate() {
 	return std::string(tempString);
 }
 
-bool HTTweet::operator<(const HTTweet &b) const {
+bool
+HTTweet::operator<(const HTTweet &b) const
+{
 	struct DateStruct bDate = b.getDate();
 	struct DateStruct aDate = this->getDate();
 	if(aDate.month < bDate.month)
@@ -194,15 +227,21 @@ bool HTTweet::operator<(const HTTweet &b) const {
 	return false;	
 }
 
-const char* HTTweet::getId() {
+const char*
+HTTweet::getId()
+{
 	return id.c_str();
 }
 
-void HTTweet::setId(const char* id) {
+void
+HTTweet::setId(const char* id)
+{
 	this->id = string(id);
 }
 
-const int HTTweet::stringToMonth(const char *date) {
+const int
+HTTweet::stringToMonth(const char *date)
+{
 	//jan feb mar apr may jun jul aug sep oct nov dec
 	if(strncmp(date+4, "Jan", 3) == 0)
 		return 0;
@@ -232,23 +271,33 @@ const int HTTweet::stringToMonth(const char *date) {
 	return 0;
 }
 
-void HTTweet::setProfileImageUrl(string &profileImageUrl) {
+void
+HTTweet::setProfileImageUrl(string &profileImageUrl)
+{
 	this->profileImageUrl = profileImageUrl;
 }
 
-BBitmap* HTTweet::getBitmap() {
+BBitmap*
+HTTweet::getBitmap()
+{
 	return imageBitmap;
 }
 
-void HTTweet::setBitmap(BBitmap *bitmap) {
+void
+HTTweet::setBitmap(BBitmap *bitmap)
+{
 	imageBitmap = bitmap;
 }
 
-BBitmap HTTweet::getBitmapCopy() {
+BBitmap
+HTTweet::getBitmapCopy()
+{
 	return *imageBitmap;
 }
 
-void HTTweet::downloadBitmap() {
+void
+HTTweet::downloadBitmap()
+{
 	if(profileImageUrl.find("error") != std::string::npos)
 		imageBitmap = defaultBitmap();
 	else if(!bitmapDownloadInProgress) {
@@ -257,7 +306,9 @@ void HTTweet::downloadBitmap() {
 	}
 }
 
-status_t _threadDownloadBitmap(void *data) {
+status_t
+_threadDownloadBitmap(void *data)
+{
 	HTTweet *super = (HTTweet*)data;
 	super->bitmapDownloadInProgress = true;
 	CURL *curl_handle;
@@ -303,16 +354,21 @@ status_t _threadDownloadBitmap(void *data) {
 	return B_OK;
 }
 
-bool HTTweet::isDownloadingBitmap() {
+bool
+HTTweet::isDownloadingBitmap()
+{
 	return bitmapDownloadInProgress;
 }
 
-void HTTweet::waitUntilDownloadComplete() {
+void
+HTTweet::waitUntilDownloadComplete()
+{
 	status_t junkId;
 	wait_for_thread(downloadThread, &junkId);
 }
 
-HTTweet::~HTTweet() {
+HTTweet::~HTTweet()
+{
 	/*Kill the download thread*/
 	if(bitmapDownloadInProgress)
 		kill_thread(downloadThread);
@@ -323,13 +379,17 @@ HTTweet::~HTTweet() {
 }
 
 /*Callback function for cURL (userIcon download)*/
-static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
+static size_t
+WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data)
+{
 	size_t realsize = size *nmemb;
 	BMallocIO *mallocIO = (BMallocIO *)data;
 	
 	return mallocIO->Write(ptr, realsize);
 }
 
-BBitmap* defaultBitmap() {
+BBitmap*
+defaultBitmap()
+{
 	return BTranslationUtils::GetBitmap(B_VECTOR_ICON_TYPE, "twitter_icon");
 }

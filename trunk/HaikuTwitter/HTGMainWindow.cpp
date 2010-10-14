@@ -6,7 +6,9 @@
 
 #include "HTGMainWindow.h"
 
-HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint position, int height) : BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE) {	
+HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint position, int height)
+	: BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE)
+{
 	this->key = key;
 	this->secret = secret;
 	this->refreshTime = refreshTime;
@@ -55,7 +57,8 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
 
-status_t addSavedSearchesThreadFunction(void *data) 
+status_t
+addSavedSearchesThreadFunction(void *data) 
 {
 	BList *args = (BList *)data;
 	std::string key = *(std::string *)args->ItemAt(0);
@@ -134,7 +137,8 @@ status_t addSavedSearchesThreadFunction(void *data)
 	return B_OK;
 }
 
-status_t addTrendingThreadFunction(void *data)
+status_t
+addTrendingThreadFunction(void *data)
 {
 	BList *args = (BList *)data;
 	std::string key = *(std::string *)args->ItemAt(0);
@@ -193,7 +197,9 @@ status_t addTrendingThreadFunction(void *data)
 	return B_OK;
 }
 
-void HTGMainWindow::_addPublicTimeLine() {
+void
+HTGMainWindow::_addPublicTimeLine()
+{
 	twitCurl *publicTwitObj = new twitCurl();
 	publicTwitObj->setAccessKey( key );
 	publicTwitObj->setAccessSecret( secret );
@@ -201,14 +207,18 @@ void HTGMainWindow::_addPublicTimeLine() {
 	tabView->AddTab(publicTimeLine);	
 }
 
-void HTGMainWindow::_removePublicTimeLine() {
+void
+HTGMainWindow::_removePublicTimeLine()
+{
 	for(int i = 2; i < tabView->CountTabs(); i++) {
 		if(tabView->TabAt(i)->View() == publicTimeLine)
 			tabView->RemoveAndDeleteTab(i);
 	}
 }
 
-void HTGMainWindow::_addSavedSearches() {
+void
+HTGMainWindow::_addSavedSearches()
+{
 	BList *threadArgs = new BList();
 	threadArgs->AddItem(&key);
 	threadArgs->AddItem(&secret);
@@ -220,7 +230,9 @@ void HTGMainWindow::_addSavedSearches() {
 	resume_thread(theThread);
 }
 
-void HTGMainWindow::_addTrending() {
+void
+HTGMainWindow::_addTrending()
+{
 	BList *threadArgs = new BList();
 	threadArgs->AddItem(&key);
 	threadArgs->AddItem(&secret);
@@ -230,14 +242,18 @@ void HTGMainWindow::_addTrending() {
 	resume_thread(theThread);
 }
 
-bool HTGMainWindow::QuitRequested() {
+bool
+HTGMainWindow::QuitRequested()
+{
 	_retrieveSettings();
 	_saveSettings();
 	be_app->PostMessage(B_QUIT_REQUESTED);
 	return true;
 }
 
-status_t HTGMainWindow::_getSettingsPath(BPath &path) {
+status_t
+HTGMainWindow::_getSettingsPath(BPath &path)
+{
 	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
 	if (status < B_OK)
 		return status;
@@ -246,7 +262,9 @@ status_t HTGMainWindow::_getSettingsPath(BPath &path) {
 	return B_OK;
 }
 
-void HTGMainWindow::_retrieveSettings() {
+void
+HTGMainWindow::_retrieveSettings()
+{
 	/*Set the defaults, just in case anything bad happens*/
 	sprintf(theSettings.username, "changeme");
 	sprintf(theSettings.password, "hackme");
@@ -275,7 +293,9 @@ void HTGMainWindow::_retrieveSettings() {
 	}
 }
 
-status_t HTGMainWindow::_saveSettings() {	
+status_t
+HTGMainWindow::_saveSettings()
+{
 	theSettings.height = this->Bounds().Height() -23;
 	theSettings.position = BPoint(this->Frame().left, this->Frame().top);
 	theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
@@ -296,7 +316,9 @@ status_t HTGMainWindow::_saveSettings() {
 	file.WriteAt(0, &theSettings, sizeof(twitter_settings));
 }
 
-void HTGMainWindow::showAbout() {
+void
+HTGMainWindow::showAbout()
+{
 	std::string text("HaikuTwitter Beta (rev. ");
 	text.append(SVN_REV);
 	text.append(")\n");
@@ -326,7 +348,9 @@ void HTGMainWindow::showAbout() {
 	alert->Go();
 }
 
-void HTGMainWindow::_SetupMenu() {
+void
+HTGMainWindow::_SetupMenu()
+{
 	/*Menu bar object*/
 	fMenuBar = new BMenuBar(Bounds(), "mbar");
 	
@@ -376,9 +400,7 @@ void HTGMainWindow::_SetupMenu() {
 	fSettingsMenu->AddItem(fAutoStartMenuItem);
 	
 	fSettingsMenu->AddSeparatorItem();
-	#ifdef INFOPOPPER_SUPPORT
 	fSettingsMenu->AddItem(new BMenuItem("Notifications...", new BMessage(INFOPOPPER_SETTINGS)));
-	#endif
 	fSettingsMenu->AddItem(new BMenuItem("Preferences...", new BMessage(ACCOUNT_SETTINGS)));
 	
 	AddChild(fMenuBar);
@@ -387,7 +409,9 @@ void HTGMainWindow::_SetupMenu() {
 /*This function checks for a file named HaikuTwitter in the users launch-folder, 
  * it does not check if it's a valid symlink or even an executable.
  */
-bool HTGMainWindow::_isAutoStarted() {
+bool
+HTGMainWindow::_isAutoStarted()
+{
 	BPath path;
 	status_t status = find_directory(B_USER_CONFIG_DIRECTORY, &path);
 	if (status < B_OK) {
@@ -404,7 +428,9 @@ bool HTGMainWindow::_isAutoStarted() {
 		return true;
 }
 
-void HTGMainWindow::_setAutoStarted(bool autostarted) {
+void
+HTGMainWindow::_setAutoStarted(bool autostarted)
+{
 	BPath launchPath;
 	BPath installPath;
 	
@@ -447,7 +473,9 @@ void HTGMainWindow::_setAutoStarted(bool autostarted) {
 	}
 }
 
-void HTGMainWindow::MessageReceived(BMessage *msg) {
+void
+HTGMainWindow::MessageReceived(BMessage *msg)
+{
 	const char* text_label = "text";
 	const char* id_label = "reply_to_id";
 	switch(msg->what) {
@@ -572,7 +600,9 @@ void HTGMainWindow::MessageReceived(BMessage *msg) {
 	}
 }
 
-void HTGMainWindow::_setTimelineTextSize(int size) {
+void
+HTGMainWindow::_setTimelineTextSize(int size)
+{
 	BFont font;
 	tabView->TabAt(0)->View()->GetFont(&font);
 	font.SetSize(size);
@@ -584,7 +614,8 @@ void HTGMainWindow::_setTimelineTextSize(int size) {
 	}
 }
 
-HTGMainWindow::~HTGMainWindow() {
+HTGMainWindow::~HTGMainWindow()
+{
 	
 	be_app->PostMessage(B_QUIT_REQUESTED);
 }

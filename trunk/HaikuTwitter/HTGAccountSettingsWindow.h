@@ -3,7 +3,6 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
-
 #include <string>
 #include <iostream>
 #include <string.h>
@@ -30,8 +29,8 @@
 
 using namespace std;
 
-const int32 REVERT = 'RVRT';
-const int32 RESET_AUTH = 'RATH';
+const int32 REVERT 		= 'RVRT';
+const int32 RESET_AUTH 	= 'RATH';
 
 struct twitter_settings {
 	char username[30];
@@ -49,26 +48,26 @@ struct twitter_settings {
 
 class HTGAccountSettingsWindow : public BWindow {
 public:
-	HTGAccountSettingsWindow(BWindow *parent);
-	~HTGAccountSettingsWindow();
+							HTGAccountSettingsWindow(BWindow *parent);
+	virtual					~HTGAccountSettingsWindow();
 	
 private:
-	status_t _getSettingsPath(BPath &path);
-	void _invalidateOAuth();
-	void _retrieveSettings();
-	status_t _saveSettings();
-	void _setupWindow();
-	void MessageReceived(BMessage *msg);
-	twitter_settings theSettings;
+			status_t 		_getSettingsPath(BPath &path);
+			void 			_invalidateOAuth();
+			void 			_retrieveSettings();
+			status_t 		_saveSettings();
+			void 			_setupWindow();
+			void 			MessageReceived(BMessage *msg);
+			twitter_settings	theSettings;
 	
-	BWindow *parent;
-	BButton *revertButton;
-	BTextControl *passwordView;
-	BTextControl *usernameView;
-	BTextControl *refreshView;
-	BCheckBox *savedSearchesBox;
-	BView *backgroundView;
-	BStringView *informationView;
+			BWindow*		parent;
+			BButton*		revertButton;
+			BTextControl*	passwordView;
+			BTextControl*	usernameView;
+			BTextControl*	refreshView;
+			BCheckBox*		savedSearchesBox;
+			BView*			backgroundView;
+			BStringView*	informationView;
 	
 };
 #endif
