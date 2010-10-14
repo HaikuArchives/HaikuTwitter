@@ -3,7 +3,6 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
-
 #include <string>
 #include <iostream>
 #include <string.h>
@@ -19,6 +18,6 @@
 
 class HTGErrorHandling {
 public:
-	static void displayError(const char *theError);
+			static void 			displayError(const char *theError);
 };
 #endif

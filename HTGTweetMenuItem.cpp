@@ -6,26 +6,36 @@
 
 #include "HTGTweetMenuItem.h"
 
-HTGTweetMenuItem::HTGTweetMenuItem(const char* label, BMessage* message, char shortcut, uint32 modifiers) : BMenuItem(label, message, shortcut, modifiers) {
+HTGTweetMenuItem::HTGTweetMenuItem(const char* label, BMessage* message, char shortcut, uint32 modifiers)
+	: BMenuItem(label, message, shortcut, modifiers)
+{
 	linkIconUrl = std::string("");
 	linkIcon = NULL;
 	linkIconDownloadInProgress = false;
 	downloadThread = B_NAME_NOT_FOUND;
 }
 
-HTGTweetMenuItem::HTGTweetMenuItem(BMenu* submenu, BMessage* message) : BMenuItem(submenu, message) {
+HTGTweetMenuItem::HTGTweetMenuItem(BMenu* submenu, BMessage* message)
+	: BMenuItem(submenu, message)
+{
 
 }
 
-HTGTweetMenuItem::HTGTweetMenuItem(BMessage* archive) : BMenuItem(archive) {
+HTGTweetMenuItem::HTGTweetMenuItem(BMessage* archive)
+	: BMenuItem(archive)
+{
 
 }
 
-void HTGTweetMenuItem::setLinkIcon(BBitmap* linkIcon) {
+void
+HTGTweetMenuItem::setLinkIcon(BBitmap* linkIcon)
+{
 	this->linkIcon = linkIcon;
 }
 
-void HTGTweetMenuItem::setLinkIconUrl(std::string& url) {
+void
+HTGTweetMenuItem::setLinkIconUrl(std::string& url)
+{
 	this->linkIconUrl = url;
 	
 	if(linkIconUrl.find(".ico") == std::string::npos) {
@@ -45,16 +55,22 @@ void HTGTweetMenuItem::setLinkIconUrl(std::string& url) {
 	}
 }
 
-const std::string HTGTweetMenuItem::getLinkIconUrl() {
+const std::string
+HTGTweetMenuItem::getLinkIconUrl()
+{
 	return linkIconUrl;
 }
 
-void HTGTweetMenuItem::downloadLinkIcon() {
+void
+HTGTweetMenuItem::downloadLinkIcon()
+{
 	downloadThread = spawn_thread(_threadDownloadLinkIcon, linkIconUrl.c_str(), 10, this);
 	resume_thread(downloadThread);
 }
 
-void HTGTweetMenuItem::DrawContent() {
+void
+HTGTweetMenuItem::DrawContent()
+{
 	if(linkIcon != NULL) {
 		BRect rect(
 			BPoint(ContentLocation().x-11.5, ContentLocation().y-1.5), 
@@ -68,13 +84,16 @@ void HTGTweetMenuItem::DrawContent() {
 	Menu()->DrawString(Label(), BPoint(ContentLocation().x+6, ContentLocation().y+10.5));
 }
 
-HTGTweetMenuItem::~HTGTweetMenuItem() {
+HTGTweetMenuItem::~HTGTweetMenuItem()
+{
 	/*Kill the update thread*/
 	if(downloadThread != B_NAME_NOT_FOUND)
 		kill_thread(downloadThread);
 }
 
-status_t _threadDownloadLinkIcon(void *data) {
+status_t
+_threadDownloadLinkIcon(void *data)
+{
 	HTGTweetMenuItem *super = (HTGTweetMenuItem*)data;
 	super->linkIconDownloadInProgress = true;
 	CURL *curl_handle;
@@ -119,7 +138,9 @@ status_t _threadDownloadLinkIcon(void *data) {
 }
 
 /*Callback function for cURL (favIcon download)*/
-static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
+static size_t
+WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data)
+{
 	size_t realsize = size *nmemb;
 	BMallocIO *mallocIO = (BMallocIO *)data;
 	
@@ -127,8 +148,7 @@ static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *da
 }
 
 status_t
-icon_for_type(const BMimeType& type, BBitmap& bitmap, icon_size size,
-	icon_source* _source)
+icon_for_type(const BMimeType& type, BBitmap& bitmap, icon_size size, icon_source* _source)
 {
 	icon_source source = kNoIcon;
 

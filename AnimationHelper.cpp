@@ -8,7 +8,9 @@
 
 const int32 AnimationHelper::REFRESH_RATE = 120;
 
-void AnimationHelper::resizeWidthAnimated(BWindow* theWindow, const float pixels, const int32 ms) {
+void
+AnimationHelper::resizeWidthAnimated(BWindow* theWindow, const float pixels, const int32 ms)
+{
 	BScreen currentScreen(theWindow);
 	float limit = currentScreen.Frame().Width();
 	if(ms < 1 ) {

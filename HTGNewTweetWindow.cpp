@@ -6,7 +6,9 @@
 
 #include "HTGNewTweetWindow.h"
 
-HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj) : BWindow(BRect(100, 100, 500, 200), "New tweet...", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj)
+	: BWindow(BRect(100, 100, 500, 200), "New tweet...", B_TITLED_WINDOW, B_NOT_RESIZABLE)
+{
 	this->twitObj = twitObj;
 	this->tweetId = string("");
 	
@@ -37,17 +39,23 @@ HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj) : BWindow(BRect(100, 100
 	message->MakeFocus();
 }
 
-void HTGNewTweetWindow::SetText(const char *text) {
+void
+HTGNewTweetWindow::SetText(const char *text)
+{
 	message->SetText(text);
 	this->MessageReceived(new BMessage('UPDT')); //Update counter
 }
 
-void HTGNewTweetWindow::setTweetId(const char* tweetId) {	
+void
+HTGNewTweetWindow::setTweetId(const char* tweetId)
+{
 	if(tweetId != NULL)
 		this->tweetId = string(tweetId);
 }
 
-void HTGNewTweetWindow::postTweet() {
+void
+HTGNewTweetWindow::postTweet()
+{
 	std::string replyMsg( "" );
 	std::string postMsg = urlEncode(message->Text());
 	if( twitObj->statusUpdate(postMsg, tweetId.c_str()) )  {
@@ -65,7 +73,9 @@ void HTGNewTweetWindow::postTweet() {
 	}
 }
 
-std::string HTGNewTweetWindow::urlEncode(const char* input) {
+std::string
+HTGNewTweetWindow::urlEncode(const char* input)
+{
 	std::string output(input);
 	
 	for(int i = 0; i < output.length(); i++) {
@@ -96,7 +106,9 @@ std::string HTGNewTweetWindow::urlEncode(const char* input) {
 	return output;
 }
 
-void HTGNewTweetWindow::MessageReceived(BMessage *msg) {
+void
+HTGNewTweetWindow::MessageReceived(BMessage *msg)
+{
 	switch(msg->what) {
 		case POST:
 			this->postTweet();
@@ -117,7 +129,9 @@ void HTGNewTweetWindow::MessageReceived(BMessage *msg) {
 	}
 }
 
-void HTGNewTweetWindow::shortenAllUrls() {
+void
+HTGNewTweetWindow::shortenAllUrls()
+{
 	size_t pos = 0;
 	std::string theText(message->Text());
 	
@@ -139,7 +153,9 @@ void HTGNewTweetWindow::shortenAllUrls() {
 	}	
 }
 
-void HTGNewTweetWindow::updateCounter() {
+void
+HTGNewTweetWindow::updateCounter()
+{
 	char counterString[32];
 	int symbolsLeft =  NUMBER_OF_ALLOWED_CHARS;
 	
@@ -169,7 +185,9 @@ void HTGNewTweetWindow::updateCounter() {
 	counterView->SetText(counterString);
 }
 
-char *HTGNewTweetWindow::shortenUrl(const char *longUrl) {
+char*
+HTGNewTweetWindow::shortenUrl(const char *longUrl)
+{
 	// Use bit.ly for shortening
 	std::string url("http://api.bit.ly/shorten?login=");
 	const char *user = "haikutwitter";
@@ -230,14 +248,17 @@ char *HTGNewTweetWindow::shortenUrl(const char *longUrl) {
 }
 
 /*Callback function for cURL*/
-static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data) {
+static size_t
+WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data)
+{
 	size_t realsize = size *nmemb;
 	BMallocIO *mallocIO = (BMallocIO *)data;
 	
 	return mallocIO->Write(ptr, realsize);
 }
 
-HTGNewTweetWindow::~HTGNewTweetWindow() {
+HTGNewTweetWindow::~HTGNewTweetWindow()
+{
 	message->RemoveSelf();
 	delete message;
 	

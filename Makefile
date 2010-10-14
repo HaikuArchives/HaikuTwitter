@@ -1,10 +1,6 @@
 # Uncomment this line to enable more debugging information (printed to console)
 #DEBUG = -DDEBUG_ENABLED
 
-# Comment out these two lines to disable Notification Server
-#LIBS = -linfopopper
-INFOPOPPER = -DINFOPOPPER_SUPPORT
-
 ### Nothing below this should be changed ###
 
 APP = HaikuTwitter

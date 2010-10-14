@@ -9,35 +9,29 @@
 static size_t WriteUrlCallback(void *ptr, size_t size, size_t nmemb, void *data);
 status_t _threadDownloadLinkIconURLs(void *data);
 
-HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, uint32 resizingMode, uint32 flags) : BTextView(frame, name, textRect, resizingMode, flags) {
+HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, uint32 resizingMode, uint32 flags)
+	: BTextView(frame, name, textRect, resizingMode, flags)
+{
 		tweetId = std::string("");
 		urls = new BList();
 		currentThread = B_NAME_NOT_FOUND;
 }
 	
-HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, const BFont* font, const rgb_color* color, uint32 resizingMode, uint32 flags) : BTextView(frame, name, textRect, font, color, resizingMode, flags) {
+HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, const BFont* font, const rgb_color* color, uint32 resizingMode, uint32 flags)
+	: BTextView(frame, name, textRect, font, color, resizingMode, flags)
+{
 		tweetId = std::string("");
 }
 
-void HTGTweetTextView::setTweetId(const char* tweetId) {
+void
+HTGTweetTextView::setTweetId(const char* tweetId)
+{
 	this->tweetId = std::string(tweetId);
 }
 
-/*This function is not in use, but I'm keeping it around for now*/
-void HTGTweetTextView::parseForUrlsAndDownloadIcons() {
-	/*Kill the update thread and clean up*/
-	kill_thread(currentThread);
-	for(int i = 0; i < urls->CountItems(); i++) {
-		delete (HTGTweetMenuItem* )urls->RemoveItem(i);
-	}
-	delete urls;
-	
-	urls = getUrls();
-	currentThread = spawn_thread(_threadDownloadLinkIconURLs, "favIcon downloader", 10, this);
-	resume_thread(currentThread);
-}
-
-void HTGTweetTextView::MouseDown(BPoint point) {	
+void
+HTGTweetTextView::MouseDown(BPoint point)
+{
 	int32 buttons;
 	Window()->CurrentMessage()->FindInt32("buttons", &buttons);
 	if ((buttons & B_SECONDARY_MOUSE_BUTTON) != 0) {
@@ -88,7 +82,9 @@ void HTGTweetTextView::MouseDown(BPoint point) {
 		BTextView::MouseDown(point);
 }
 
-BList* HTGTweetTextView::getScreenNames() {
+BList*
+HTGTweetTextView::getScreenNames()
+{
 	BList *theList = new BList();
 	
 	std::string tweetersName(this->Name());
@@ -117,7 +113,9 @@ BList* HTGTweetTextView::getScreenNames() {
 	return theList;
 }
 
-BList* HTGTweetTextView::getUrls() {
+BList*
+HTGTweetTextView::getUrls()
+{
 	BList *theList = new BList();
 	size_t pos = 0;
 	std::string theText(this->Text());
@@ -165,7 +163,9 @@ BList* HTGTweetTextView::getUrls() {
 	return theList;
 }
 
-BList* HTGTweetTextView::getTags() {
+BList*
+HTGTweetTextView::getTags()
+{
 	BList *theList = new BList();
 	size_t pos = 0;
 	std::string theText(this->Text());
@@ -190,7 +190,9 @@ BList* HTGTweetTextView::getTags() {
 	return theList;
 }
 
-bool HTGTweetTextView::isValidScreenNameChar(const char& c) {
+bool
+HTGTweetTextView::isValidScreenNameChar(const char& c)
+{
 	if(c <= 'z' && c >= 'a')
 		return true;
 	if(c <= 'Z' && c >= 'A')
@@ -203,7 +205,9 @@ bool HTGTweetTextView::isValidScreenNameChar(const char& c) {
 	return false;
 }
 
-void HTGTweetTextView::sendRetweetMsgToParent() {
+void
+HTGTweetTextView::sendRetweetMsgToParent()
+{
 	BMessage *retweetMsg = new BMessage(NEW_TWEET);
 	std::string RTString(this->Text());
 	RTString.insert(0, ": ");
@@ -215,7 +219,9 @@ void HTGTweetTextView::sendRetweetMsgToParent() {
 	BTextView::MessageReceived(retweetMsg);
 }
 
-void HTGTweetTextView::sendReplyMsgToParent() {
+void
+HTGTweetTextView::sendReplyMsgToParent()
+{
 	BMessage *replyMsg = new BMessage(NEW_TWEET);
 	std::string theString(" ");
 	theString.insert(0, this->Name());
@@ -225,7 +231,9 @@ void HTGTweetTextView::sendReplyMsgToParent() {
 	BTextView::MessageReceived(replyMsg);
 }
 
-void HTGTweetTextView::MessageReceived(BMessage *msg) {
+void
+HTGTweetTextView::MessageReceived(BMessage *msg)
+{
 	const char* url_label = "url";
 	const char* name_label = "screenName";
 	std::string newTweetAppend(" ");
@@ -244,7 +252,9 @@ void HTGTweetTextView::MessageReceived(BMessage *msg) {
 	}
 }
 
-void HTGTweetTextView::openUrl(const char *url) {
+void
+HTGTweetTextView::openUrl(const char *url)
+{
 	// be lazy and let /bin/open open the URL
 	entry_ref ref;
 	if (get_ref_for_path("/bin/open", &ref))
@@ -254,13 +264,16 @@ void HTGTweetTextView::openUrl(const char *url) {
 	be_roster->Launch(&ref, 2, args);
 }
 
-HTGTweetTextView::~HTGTweetTextView() {
+HTGTweetTextView::~HTGTweetTextView()
+{
 	/*Kill the update thread*/
 	if(currentThread != B_NAME_NOT_FOUND)
 		kill_thread(currentThread);
 }
 
-status_t _threadDownloadLinkIconURLs(void *data) {
+status_t
+_threadDownloadLinkIconURLs(void *data)
+{
 	HTGTweetTextView *super = (HTGTweetTextView*)data;
 	CURL *curl_handle;
 	BMallocIO *mallocIO = NULL;
@@ -366,7 +379,9 @@ status_t _threadDownloadLinkIconURLs(void *data) {
 }
 
 /*Callback function for cURL (favIcon download)*/
-static size_t WriteUrlCallback(void *ptr, size_t size, size_t nmemb, void *data) {
+static size_t
+WriteUrlCallback(void *ptr, size_t size, size_t nmemb, void *data)
+{
 	size_t realsize = size *nmemb;
 	BMallocIO *mallocIO = (BMallocIO *)data;
 	size_t written = mallocIO->Write(ptr, realsize);

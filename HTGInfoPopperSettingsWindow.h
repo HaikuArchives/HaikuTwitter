@@ -38,26 +38,26 @@ struct infopopper_settings {
 
 class HTGInfoPopperSettingsWindow : public BWindow {
 public:
-	HTGInfoPopperSettingsWindow();
-	~HTGInfoPopperSettingsWindow();
+							HTGInfoPopperSettingsWindow();
+	virtual					~HTGInfoPopperSettingsWindow();
 	
-	static infopopper_settings _getDefaults();
-	static status_t _getSettingsPath(BPath &path);
+			static infopopper_settings	_getDefaults();
+			static status_t	_getSettingsPath(BPath &path);
 	
 private:
-	void _retrieveSettings();
-	status_t _saveSettings();
-	void _setupWindow();
-	void MessageReceived(BMessage *msg);
-	infopopper_settings theSettings;
+			void			_retrieveSettings();
+			status_t		_saveSettings();
+			void			_setupWindow();
+			void			MessageReceived(BMessage *msg);
+			infopopper_settings	theSettings;
 	
-	BButton *revertButton;
-	BCheckBox *friendsNotifyBox;
-	BCheckBox *mentionsNotifyBox;
-	BCheckBox *searchesNotifyBox;
-	BCheckBox *publicNotifyBox;
-	BView *backgroundView;
-	BStringView *informationView;
+			BButton*		revertButton;
+			BCheckBox*		friendsNotifyBox;
+			BCheckBox*		mentionsNotifyBox;
+			BCheckBox*		searchesNotifyBox;
+			BCheckBox*		publicNotifyBox;
+			BView*			backgroundView;
+			BStringView*	informationView;
 	
 };
 #endif

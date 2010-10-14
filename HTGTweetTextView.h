@@ -34,9 +34,7 @@ public:
 
 	BList* getUrls(); //A thread needs this
 	BList* urls; //A thread needs this
-	
-	void parseForUrlsAndDownloadIcons();
-	
+		
 	~HTGTweetTextView();
 		
 private:

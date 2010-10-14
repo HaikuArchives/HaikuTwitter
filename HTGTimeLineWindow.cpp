@@ -6,7 +6,9 @@
 
 #include "HTGTimeLineWindow.h"
 
-HTGTimeLineWindow::HTGTimeLineWindow(BWindow *parent, string key, string secret, int refreshTime, const int32 TYPE, const char* requestInfo) : BWindow(BRect(300, 300, 615, 840), requestInfo, B_TITLED_WINDOW, B_NOT_H_RESIZABLE) {	
+HTGTimeLineWindow::HTGTimeLineWindow(BWindow *parent, string key, string secret, int refreshTime, const int32 TYPE, const char* requestInfo)
+	: BWindow(BRect(300, 300, 615, 840), requestInfo, B_TITLED_WINDOW, B_NOT_H_RESIZABLE)
+{
 	/*Set parent window (used for handeling messages)*/
 	this->parent = parent;
 	
@@ -21,7 +23,9 @@ HTGTimeLineWindow::HTGTimeLineWindow(BWindow *parent, string key, string secret,
 	refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
 
-void HTGTimeLineWindow::MessageReceived(BMessage *msg) {
+void
+HTGTimeLineWindow::MessageReceived(BMessage *msg)
+{
 	switch(msg->what) {
 		case REFRESH:
 			theTimeLine->updateTimeLine();;
@@ -32,7 +36,8 @@ void HTGTimeLineWindow::MessageReceived(BMessage *msg) {
 	}
 }
 
-HTGTimeLineWindow::~HTGTimeLineWindow() {
+HTGTimeLineWindow::~HTGTimeLineWindow()
+{
 	theTimeLine->RemoveSelf();
 	delete theTimeLine;
 	delete refreshTimer;

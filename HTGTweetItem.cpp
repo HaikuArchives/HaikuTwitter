@@ -6,12 +6,16 @@
 
 #include "HTGTweetItem.h"
 
-HTGTweetItem::HTGTweetItem(HTTweet *theTweet) : BListItem() {
+HTGTweetItem::HTGTweetItem(HTTweet *theTweet)
+	: BListItem()
+{
 	this->theTweet = theTweet;
 	textView = NULL;
 }
 
-int HTGTweetItem::calculateSize(BView *owner) {
+int
+HTGTweetItem::calculateSize(BView *owner)
+{
 	BFont textFont;
 	owner->GetFont(&textFont);
 	
@@ -45,12 +49,16 @@ int HTGTweetItem::calculateSize(BView *owner) {
 	return (int)(calculatedSize + 0.5f);
 }
 
-void HTGTweetItem::Update(BView *owner, const BFont* font) {
+void
+HTGTweetItem::Update(BView *owner, const BFont* font)
+{
 	theTweet->setView(owner);
 	SetHeight(calculateSize(owner));
 }
 
-void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
+void
+HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
+{
 	BFont textFont;
 	owner->GetFont(&textFont);
 	
@@ -122,11 +130,14 @@ void HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete) {
 	}
 }
 
-HTTweet* HTGTweetItem::getTweetPtr() {
+HTTweet*
+HTGTweetItem::getTweetPtr()
+{
 	return theTweet;
 }
 
-HTGTweetItem::~HTGTweetItem() {
+HTGTweetItem::~HTGTweetItem()
+{
 	if(textView != NULL) {
 		textView->RemoveSelf();
 		delete textView;

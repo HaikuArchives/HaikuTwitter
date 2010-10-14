@@ -6,7 +6,9 @@
 
 #include "HTGGoToUserWindow.h"
 
-HTGGoToUserWindow::HTGGoToUserWindow(BWindow *delegate) : BWindow(BRect(100, 100, 360, 160), "Go to user...", B_TITLED_WINDOW, B_NOT_RESIZABLE) {
+HTGGoToUserWindow::HTGGoToUserWindow(BWindow *delegate)
+	: BWindow(BRect(100, 100, 360, 160), "Go to user...", B_TITLED_WINDOW, B_NOT_RESIZABLE)
+{
 	this->delegate = delegate;
 	
 	/*Add a grey view*/
@@ -27,7 +29,9 @@ HTGGoToUserWindow::HTGGoToUserWindow(BWindow *delegate) : BWindow(BRect(100, 100
 	goButton->MakeDefault(true);
 }
 
-void HTGGoToUserWindow::findUser() {
+void
+HTGGoToUserWindow::findUser()
+{
 	/*Create new BMessage for opening a new timeline for username*/
 	BMessage *newMsg = new BMessage('GUSR');
 	newMsg->AddString("text", username->Text());
@@ -36,7 +40,9 @@ void HTGGoToUserWindow::findUser() {
 	DispatchMessage(newMsg, delegate);
 }
 
-void HTGGoToUserWindow::MessageReceived(BMessage *msg) {
+void
+HTGGoToUserWindow::MessageReceived(BMessage *msg)
+{
 	const char* text_label = "text";
 	switch(msg->what) {
 		case GO:
@@ -48,7 +54,8 @@ void HTGGoToUserWindow::MessageReceived(BMessage *msg) {
 	}
 }
 
-HTGGoToUserWindow::~HTGGoToUserWindow() {
+HTGGoToUserWindow::~HTGGoToUserWindow()
+{
 	username->RemoveSelf();
 	delete username;
 	

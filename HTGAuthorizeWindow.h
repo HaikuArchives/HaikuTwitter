@@ -26,7 +26,7 @@
 #define HTG_AUTHORIZEWINDOW_H
 
 const int32 GO_TO_AUTH_URL = 'URL';
-const int32 GO_AUTH = 'GO';
+const int32 GO_AUTH 		= 'GO';
 
 struct oauth_settings {
 	char key[255];
@@ -35,27 +35,27 @@ struct oauth_settings {
 
 class HTGAuthorizeWindow : public BWindow {
 public:
-	HTGAuthorizeWindow(int refreshTime, BPoint position, int height);
-	~HTGAuthorizeWindow();
-	void MessageReceived(BMessage *msg);
+							HTGAuthorizeWindow(int refreshTime, BPoint position, int height);
+	virtual					~HTGAuthorizeWindow();
+			void			MessageReceived(BMessage *msg);
 
 private:
-	status_t _getSettingsPath(BPath &path);
-	void openUrl(std::string url);
-	void storeTokens(std::string key, std::string secret);
-	void copyToClipboard(const char* theString);
-	int refreshTime;
-	BPoint position;
-	int height;
-	
-	oauth_settings oauth;
-	twitCurl *twitObj;
-	BTextControl *query;
-	HTGLogoView *logoView;
-	BTextView *headerText;
-	BButton *goButton;
-	BButton *openButton;
-	BView *theView;
-	BWindow *delegate;
+			status_t		_getSettingsPath(BPath &path);
+			void			openUrl(std::string url);
+			void			storeTokens(std::string key, std::string secret);
+			void			copyToClipboard(const char* theString);
+			
+			int				refreshTime;
+			BPoint			position;
+			int				height;
+			oauth_settings	oauth;
+			twitCurl*		twitObj;
+			BTextControl*	query;
+			HTGLogoView*	logoView;
+			BTextView*		headerText;
+			BButton*		goButton;
+			BButton*		openButton;
+			BView*			theView;
+			BWindow*		delegate;
 };
 #endif

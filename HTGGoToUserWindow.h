@@ -18,16 +18,16 @@ const int32 GO = 'GO';
 
 class HTGGoToUserWindow : public BWindow {
 public:
-	HTGGoToUserWindow(BWindow *delegate);
-	~HTGGoToUserWindow();
-	void MessageReceived(BMessage *msg);
+							HTGGoToUserWindow(BWindow *delegate);
+	virtual					~HTGGoToUserWindow();
+			void 			MessageReceived(BMessage *msg);
 
 private:
-	void findUser();
+			void 			findUser();
 	
-	BTextControl *username;
-	BButton *goButton;
-	BView *theView;
-	BWindow *delegate;
+			BTextControl*	username;
+			BButton*		goButton;
+			BView*			theView;
+			BWindow*		delegate;
 };
 #endif
