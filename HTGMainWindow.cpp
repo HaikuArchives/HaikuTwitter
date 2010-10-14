@@ -166,7 +166,7 @@ addTrendingThreadFunction(void *data)
 		pos = replyMsg.find(queryTag, pos);
 		if(pos != std::string::npos) {
 			int start = pos+strlen(queryTag);
-			int end = replyMsg.find("\"}", start);
+			int end = replyMsg.find("\"", start);
 			std::string *searchQuery = new std::string(replyMsg.substr(start, end-start));
 			queryList->AddItem(searchQuery);
 			pos = end;
