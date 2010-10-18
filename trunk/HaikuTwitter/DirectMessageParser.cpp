@@ -276,7 +276,7 @@ void DirectMessageParser::readData(const char *xmlData)
 		// Parse XML file for tags of interest: "profile_image_url"
 		statusNodes = elementRoot->getElementsByTagName(TAG_image);
 		
-		for(XMLSize_t i = 0; i < nodeCount; i++) {
+		for(XMLSize_t i = 0; i < nodeCount*2; i+=2) {
 			DOMNode* currentNode = statusNodes->item(i);
          	if( currentNode->getNodeType() &&  // true is not NULL
             	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
@@ -295,7 +295,7 @@ void DirectMessageParser::readData(const char *xmlData)
             			rawString[strlen(rawString)-5] = '\0';
             		
             		string textString(rawString);
-            		tweetPtr[i]->setProfileImageUrl(textString);
+            		tweetPtr[i/2]->setProfileImageUrl(textString);
             		delete rawString;
             	}
          	}
@@ -304,7 +304,7 @@ void DirectMessageParser::readData(const char *xmlData)
 		// Parse XML file for tags of interest: "created_at"
 		statusNodes = elementRoot->getElementsByTagName(TAG_date);
 		
-		for(XMLSize_t i = 0; i < nodeCount*2; i+=2) {
+		for(XMLSize_t i = 0; i < nodeCount*3; i+=3) {
 			DOMNode* currentNode = statusNodes->item(i);
          	if( currentNode->getNodeType() &&  // true is not NULL
             	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
@@ -323,7 +323,7 @@ void DirectMessageParser::readData(const char *xmlData)
             			rawString[strlen(rawString)-3] = '\0';
             		
             		string textString(rawString);
-            		tweetPtr[i/2]->setDate(textString);
+            		tweetPtr[i/3]->setDate(textString);
             		delete rawString;
             	}
          	}
