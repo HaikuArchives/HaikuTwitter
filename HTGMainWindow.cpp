@@ -41,6 +41,13 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds(), "", theSettings.textSize);
 	tabView->AddTab(mentionsTimeLine);
 	
+	/*Set up direct messages timeline*/
+	twitCurl *directTwitObj = new twitCurl();
+	directTwitObj->setAccessKey( key );
+	directTwitObj->setAccessSecret( secret );
+	directTimeLine = new HTGTimeLineView(directTwitObj, TIMELINE_DIRECT, Bounds(), "", theSettings.textSize);
+	tabView->AddTab(directTimeLine);
+	
 	/*Set up public timeline - if enabled*/
 	if(fEnablePublicMenuItem->IsMarked())
 		_addPublicTimeLine();
