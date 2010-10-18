@@ -43,6 +43,9 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 		case TIMELINE_SEARCH:
 			SetName(requestInfo);
 			break;
+		case TIMELINE_DIRECT:
+			SetName("Msg");
+			break;
 		default:
 			SetName("Public");
 	}
@@ -200,6 +203,7 @@ updateTimeLineThread(void *data)
 	twitCurl *twitObj = super->twitObj;
 	TimeLineParser *timeLineParser = new TimeLineParser();
 	SearchParser *searchParser = new SearchParser();
+	DirectMessageParser *directParser = new DirectMessageParser();
 	std::string replyMsg(" ");
 	
 	HTGTweetItem *mostRecentItem = NULL;
@@ -227,6 +231,9 @@ updateTimeLineThread(void *data)
 		case TIMELINE_SEARCH:
 			twitObj->search(htmlFormatedString(super->Name()));
 			break;
+		case TIMELINE_DIRECT:
+			twitObj->directMessageGet();
+			break;
 		default:
 			twitObj->timelinePublicGet();
 	}
@@ -252,6 +259,18 @@ updateTimeLineThread(void *data)
 				return B_OK;
 			}
 			timeLineParser = (TimeLineParser *)searchParser; //I'm not so sure this is a good way to go,
+															//so don't tell anyone;-)
+	}
+	else if(TYPE == TIMELINE_DIRECT) {
+			try {
+				directParser->readData(replyMsg.c_str());
+			} catch( xercesc::XMLException& e ) {
+				std::cout << "Error while parsing data." << std::endl;
+				delete timeLineParser;
+				timeLineParser = NULL;
+				return B_OK;
+			}
+			timeLineParser = (TimeLineParser *)directParser; //I'm not so sure this is a good way to go,
 															//so don't tell anyone;-)
 	}
 	else {

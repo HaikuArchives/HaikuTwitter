@@ -91,6 +91,7 @@ private:
 	HTGTimeLineView *friendsTimeLine;
 	HTGTimeLineView *mentionsTimeLine;
 	HTGTimeLineView *publicTimeLine;
+	HTGTimeLineView *directTimeLine;
 	
 	HTGGoToUserWindow *goToUserWindow;
 	HTGSearchForWindow *searchForWindow;

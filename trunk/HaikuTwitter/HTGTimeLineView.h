@@ -14,6 +14,7 @@
 #include <Notification.h>
 
 #include "TimeLineParser.h"
+#include "DirectMessageParser.h"
 #include "SearchParser.h"
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
@@ -29,6 +30,7 @@ const int32 TIMELINE_MENTIONS = 'MNTN';
 const int32 TIMELINE_PUBLIC = 'PBLC';
 const int32 TIMELINE_USER = 'TUSR';
 const int32 TIMELINE_SEARCH = 'TSCH';
+const int32 TIMELINE_DIRECT = 'DMSG';
 
 status_t updateTimeLineThread(void *data);
 
