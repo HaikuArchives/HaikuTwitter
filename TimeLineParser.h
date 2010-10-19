@@ -58,5 +58,6 @@ private:
 	XMLCh* TAG_date;
 	XMLCh* TAG_id;
 	XMLCh* TAG_error;
+	XMLCh* TAG_following;
 };
 #endif

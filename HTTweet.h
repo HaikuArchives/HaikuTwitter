@@ -69,6 +69,8 @@ public:
 	void waitUntilDownloadComplete();
 	bool isDownloadingBitmap();
 	const char* getId();
+	bool following();
+	void setFollowing(bool);
 	
 	/*This must be public (threads)*/
 	bool bitmapDownloadInProgress;
@@ -85,5 +87,6 @@ private:
 	string sourceName;
 	struct DateStruct date;
 	string id;
+	bool isFollowing;
 };
 #endif

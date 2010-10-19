@@ -54,6 +54,7 @@ TimeLineParser::TimeLineParser()
    TAG_date = XMLString::transcode("created_at");
    TAG_id = XMLString::transcode("id");
    TAG_error = XMLString::transcode("error");
+   TAG_following = XMLString::transcode("following");
 
    m_ConfigFileParser = new XercesDOMParser;
    tweetPtr = NULL;
@@ -79,6 +80,7 @@ TimeLineParser::~TimeLineParser()
    XMLString::release( &TAG_id );
    XMLString::release( &TAG_source );
    XMLString::release( &TAG_error );
+   XMLString::release( &TAG_following );
    try
    {
       XMLPlatformUtils::Terminate();  // Terminate Xerces
@@ -368,6 +370,31 @@ void TimeLineParser::readData(const char *xmlData)
             		
             		string textString(rawString);
             		tweetPtr[i/2]->setDate(textString);
+            		delete rawString;
+            	}
+         	}
+		}
+		
+		// Parse XML file for tags of interest: "following"
+		statusNodes = elementRoot->getElementsByTagName(TAG_following);
+		
+		for(XMLSize_t i = 0; i < nodeCount; i++) {
+			DOMNode* currentNode = statusNodes->item(i);
+         	if( currentNode->getNodeType() &&  // true is not NULL
+            	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
+         	{
+            	// Found node which is an Element. Re-cast node as element
+            	DOMElement* currentElement
+                	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
+            	if( XMLString::equals(currentElement->getTagName(), TAG_following))
+            	{
+            		DOMText* textNode
+            				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
+            		
+            		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		
+            		string textString(rawString);
+            		tweetPtr[i]->setFollowing(textString.find("true") != string::npos);
             		delete rawString;
             	}
          	}
