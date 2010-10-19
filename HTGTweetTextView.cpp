@@ -129,7 +129,7 @@ HTGTweetTextView::getUrls()
 			while(start >= 0 && theText[start] != ' ' && theText[start] != '\n' && theText[start] > 0) {
 				start--;
 			}
-			while(end < theText.length() && theText[end] != ' ') {
+			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n') {
 				end++;
 			}
 			BMessage *theMessage = new BMessage(GO_TO_URL);
@@ -148,7 +148,7 @@ HTGTweetTextView::getUrls()
 		else if (pos != std::string::npos) {
 			int start = pos;
 			int end = pos;
-			while(end < theText.length() && theText[end] != ' ') {
+			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n') {
 				end++;
 			}
 			BMessage *theMessage = new BMessage(GO_TO_URL);
