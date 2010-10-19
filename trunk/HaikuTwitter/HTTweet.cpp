@@ -18,6 +18,7 @@ HTTweet::HTTweet()
 	sourceName = string("");
 	bitmapDownloadInProgress = false;
 	view = NULL;
+	isFollowing = false;
 }
 
 HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString)
@@ -33,6 +34,7 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 	sourceName = string("");
 	bitmapDownloadInProgress = false;
 	view = NULL;
+	isFollowing = false;
 }
 
 HTTweet::HTTweet(HTTweet *originalTweet)
@@ -50,6 +52,7 @@ HTTweet::HTTweet(HTTweet *originalTweet)
 	this->rawDate = originalTweet->getRawDate();
 	this->view = originalTweet->getView();
 	bitmapDownloadInProgress = false;
+	this->isFollowing = originalTweet->following();
 }
 
 BView*
@@ -237,6 +240,18 @@ void
 HTTweet::setId(const char* id)
 {
 	this->id = string(id);
+}
+
+bool
+HTTweet::following()
+{
+	return isFollowing;
+}
+
+void
+HTTweet::setFollowing(bool isFollowing)
+{
+	this->isFollowing = isFollowing;
 }
 
 const int
