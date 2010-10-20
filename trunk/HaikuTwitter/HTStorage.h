@@ -7,6 +7,7 @@
 #include <iostream>
 #include <string.h>
 #include <stdlib.h>
+#include <ctime>
 
 #include <MimeType.h>
 #include <fs_index.h>

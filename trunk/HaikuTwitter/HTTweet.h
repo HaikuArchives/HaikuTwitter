@@ -53,6 +53,7 @@ public:
 	const string getRelativeDate();
 	const string getRawDate();
 	const string getSourceName();
+	time_t getUnixTime() const;
 	BBitmap* getBitmap();
 	BBitmap getBitmapCopy();
 	struct DateStruct getDate() const;
@@ -62,6 +63,7 @@ public:
 	void setText(string&);
 	void setProfileImageUrl(string&);
 	void setDate(string&);
+	void setDate(time_t);
 	void setPublishedDate(string&);
 	void setId(const char*);
 	void setSourceName(string&);
