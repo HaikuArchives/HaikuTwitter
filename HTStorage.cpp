@@ -58,6 +58,10 @@ HTStorage::saveTweet(HTTweet *theTweet)
 	status = node->WriteAttr(HAIKUTWITTER_ATTR_ID, B_STRING_TYPE, 0, theTweet->getId(), strlen(theTweet->getId()));
 	if(status < B_OK)
 		return status;
+	int32 creationTime = theTweet->getUnixTime();
+	status = node->WriteAttr(HAIKUTWITTER_ATTR_WHEN, B_TIME_TYPE, 0, &creationTime, sizeof(int32));
+	if(status < B_OK)
+		return status;
 	
 	status = node->Sync();
 	if(status < B_OK)
@@ -117,6 +121,13 @@ HTStorage::loadTweet(entry_ref* ref)
 		return NULL;
 	buffer[attrSize] = '\0';
 	loadedTweet->setSourceName(*new string(buffer));
+	
+	//Read when attribute
+	int32 creationTime = 0;
+	attrSize = node->ReadAttr(HAIKUTWITTER_ATTR_WHEN, B_TIME_TYPE, 0, &creationTime, sizeof(int32));
+	if(attrSize == B_ENTRY_NOT_FOUND)
+		return NULL;
+	loadedTweet->setDate((size_t)creationTime);
 	
 	return loadedTweet;
 }

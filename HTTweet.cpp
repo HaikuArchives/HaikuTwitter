@@ -138,6 +138,19 @@ HTTweet::setDate(string &dateString)
 }
 
 void
+HTTweet::setDate(time_t unixTime)
+{	
+	struct tm* timeinfo;
+
+	timeinfo = localtime(&unixTime);
+	date.year = timeinfo->tm_year;
+	date.month = timeinfo->tm_mon;
+	date.day = timeinfo->tm_mday;
+	date.hour = timeinfo->tm_hour;
+	date.minute = timeinfo->tm_min;
+}
+
+void
 HTTweet::setPublishedDate(string &dateString)
 {
 	if(dateString.length() < 17) {
@@ -162,6 +175,22 @@ struct DateStruct
 HTTweet::getDate() const
 {
 	return date;
+}
+
+time_t
+HTTweet::getUnixTime() const
+{
+	time_t rawtime;
+	struct tm* timeinfo;
+	time(&rawtime);
+	timeinfo = localtime(&rawtime);
+	timeinfo->tm_year = date.year;
+	timeinfo->tm_mon = date.month;
+	timeinfo->tm_mday = date.day;
+	timeinfo->tm_hour = date.hour;
+	timeinfo->tm_min = date.minute;
+	
+	return mktime(timeinfo);
 }
 
 const string
