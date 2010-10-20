@@ -60,6 +60,7 @@ public:
 	HTGMainWindow(string key, string secret, int refreshTime, BPoint position, int height);
 	virtual void MessageReceived(BMessage *msg);
 	bool QuitRequested();
+	void setQuitOnClose(bool);
 	~HTGMainWindow();
 	
 private:
@@ -82,6 +83,8 @@ private:
 	void _retrieveSettings();
 	status_t _saveSettings();
 	void showAbout();
+
+	bool quitOnClose;
 
 	SmartTabView *tabView;
 	

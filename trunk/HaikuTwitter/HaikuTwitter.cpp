@@ -20,16 +20,39 @@ HaikuTwitter::HaikuTwitter()
     std::string secret(oauth.secret);
 		
 	/*Display timeline or authorize*/
-	if(key.length() < 5 || secret.length() < 5) {
-			HTGAuthorizeWindow *theWindow = new HTGAuthorizeWindow(theSettings.refreshTime, theSettings.position, theSettings.height);
-			theWindow->Show();
-	}
-	else {
-		mainWindow= new HTGMainWindow(key, secret, theSettings.refreshTime, theSettings.position, theSettings.height);
-		mainWindow->Show();
-	}
+	if(key.length() < 5 || secret.length() < 5)
+			createAndShowAuthWindow();
+	else
+		createAndShowMainWindow();
+		
+	tweetViewWindow = NULL;
+}
+
+void
+HaikuTwitter::createAndShowAuthWindow()
+{
+	/*Get configuration*/
+	struct twitter_settings theSettings = retrieveSettings();
+	struct oauth_settings oauth = retrieveOAuth();
+    std::string key(oauth.key);
+    std::string secret(oauth.secret);
+    
+	authWindow = new HTGAuthorizeWindow(theSettings.refreshTime, theSettings.position, theSettings.height);
+	authWindow->Show();
+}
+
+void
+HaikuTwitter::createAndShowMainWindow()
+{
+	/*Get configuration*/
+	struct twitter_settings theSettings = retrieveSettings();
+	struct oauth_settings oauth = retrieveOAuth();
+    std::string key(oauth.key);
+    std::string secret(oauth.secret);
 	
-	tweetViewWindow = new HTGTweetViewWindow(mainWindow);
+	mainWindow= new HTGMainWindow(key, secret, theSettings.refreshTime, theSettings.position, theSettings.height);
+	mainWindow->Show();
+	mainWindow->setQuitOnClose(true); //Application should quit when this window is closed
 }
 
 void
@@ -60,7 +83,16 @@ HaikuTwitter::MessageReceived(BMessage *message)
 	switch (message->what) {
 		case TWEETVIEWWINDOW_CLOSED:
 			tweetViewWindow = NULL;
-			std::cout << "OK" << std::endl;
+			break;
+		case AUTHORIZATION_DONE:
+			createAndShowMainWindow();
+			break;
+		case REAUTHORIZE:
+			if(mainWindow->LockLooper()) {
+				mainWindow->setQuitOnClose(false);
+				mainWindow->Quit();
+				createAndShowAuthWindow();
+			}
 			break;
 		default:
 			BApplication::MessageReceived(message);

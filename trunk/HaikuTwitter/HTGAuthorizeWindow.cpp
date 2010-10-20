@@ -141,8 +141,7 @@ HTGAuthorizeWindow::MessageReceived(BMessage *msg)
 			}
 			else {
 				storeTokens(twitObj->getAccessKey(), twitObj->getAccessSecret());
-				HTGMainWindow *theWindow = new HTGMainWindow(oauth.key, oauth.secret, refreshTime, position, height);
-				theWindow->Show();
+				be_app->PostMessage(new BMessage(AUTHORIZATION_DONE));
 				this->Close();
 			}
 		}

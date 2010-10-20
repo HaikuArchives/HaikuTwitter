@@ -21,6 +21,7 @@
 #include <FindDirectory.h>
 #include <Directory.h>
 
+#include "HaikuTwitter.h"
 #include "HTGErrorHandling.h"
 #include "HTGAuthorizeWindow.h"
 

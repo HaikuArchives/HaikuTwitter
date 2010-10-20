@@ -93,8 +93,7 @@ HTGAccountSettingsWindow::MessageReceived(BMessage *msg)
 			break;
 		case RESET_AUTH: {
 			_invalidateOAuth();
-			BAlert *theAlert = new BAlert("Please restart!", "You must restart HaikuTwitter for the changes to take place.", "Ok", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);	
-			int32 button_index = theAlert->Go();
+			be_app->PostMessage(new BMessage(REAUTHORIZE));
 			this->Close();
 			break;
 		}
@@ -113,9 +112,7 @@ HTGAccountSettingsWindow::_invalidateOAuth()
 		HTGErrorHandling::displayError("Unable to locate settings path.");
 		return;
 	}
-	
-	//settingsPath.Append("boot/launch/");
-	
+		
 	BDirectory settingsDir(settingsPath.Path());
 	
 	if (settingsDir.Contains("HaikuTwitter_oauth")) {//Delete symlink
