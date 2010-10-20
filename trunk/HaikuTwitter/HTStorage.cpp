@@ -138,7 +138,7 @@ HTStorage::getTweetPath(BPath &path)
 	if (status < B_OK)
 		return status;
 	
-	path.Append("Tweets/");
+	path.Append("tweets/");
 	return B_OK;
 }
 
@@ -163,7 +163,7 @@ HTStorage::makeMimeType(bool remakeMIMETypes)
 		// Set up the list of twitter related attributes that Tracker will
 		// let you display in columns for tweets.
 		addAttribute(info, HAIKUTWITTER_ATTR_ID, "Id");
-		addAttribute(info, HAIKUTWITTER_ATTR_FULLNAME, "Full name");
+		addAttribute(info, HAIKUTWITTER_ATTR_FULLNAME, "Full name", B_STRING_TYPE, false);
 		addAttribute(info, HAIKUTWITTER_ATTR_SCREENNAME, "Screen name");
 		addAttribute(info, HAIKUTWITTER_ATTR_WHEN, "When", B_TIME_TYPE, true, false, 200);
 		addAttribute(info, HAIKUTWITTER_ATTR_TEXT, "Content");
