@@ -137,7 +137,7 @@ HTGAccountSettingsWindow::_retrieveSettings()
 	theSettings.enablePublic = false;
 	theSettings.saveSearches = false;
 	theSettings.textSize = BFont().Size();
-	theSettings.saveTweets = false;
+	theSettings.saveTweets = true;
 	
 	BPath path;
 	

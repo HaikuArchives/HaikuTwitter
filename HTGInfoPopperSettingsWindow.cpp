@@ -136,9 +136,9 @@ HTGInfoPopperSettingsWindow::_getDefaults()
 {
 	infopopper_settings returnSettings;
 	
-	returnSettings.friendsNotify = false;
+	returnSettings.friendsNotify = true;
 	returnSettings.mentionsNotify = true;
-	returnSettings.searchesNotify = false;
+	returnSettings.searchesNotify = true;
 	returnSettings.publicNotify = false;
 	
 	return returnSettings;
