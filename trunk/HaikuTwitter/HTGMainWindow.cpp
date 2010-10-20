@@ -286,7 +286,7 @@ HTGMainWindow::_retrieveSettings()
 	theSettings.useTabs = true;
 	theSettings.enablePublic = false;
 	theSettings.saveSearches = false;
-	theSettings.saveTweets = false;
+	theSettings.saveTweets = true;
 	theSettings.textSize = BFont().Size();
 	
 	BPath path;
