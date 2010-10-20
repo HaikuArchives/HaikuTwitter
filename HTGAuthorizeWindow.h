@@ -25,8 +25,9 @@
 #ifndef HTG_AUTHORIZEWINDOW_H
 #define HTG_AUTHORIZEWINDOW_H
 
-const int32 GO_TO_AUTH_URL = 'URL';
-const int32 GO_AUTH 		= 'GO';
+const int32 GO_TO_AUTH_URL 		= 'URL';
+const int32 GO_AUTH 			= 'GO';
+const int32 AUTHORIZATION_DONE 	= 'ATHD';
 
 struct oauth_settings {
 	char key[255];

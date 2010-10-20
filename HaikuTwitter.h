@@ -24,6 +24,8 @@ status_t getSettingsPath(BPath &path);
 struct twitter_settings retrieveSettings();
 struct oauth_settings retrieveOAuth();
 
+const int32 REAUTHORIZE = 'REAU';
+
 class HaikuTwitter : public BApplication {
 public:
 								HaikuTwitter();
@@ -32,7 +34,10 @@ public:
 	virtual	void				RefsReceived(BMessage* message);
 	virtual void				MessageReceived(BMessage *message);
 private:
+			void				createAndShowMainWindow();
+			void				createAndShowAuthWindow();
+			HTGAuthorizeWindow*	authWindow;
 			HTGMainWindow*		mainWindow;
-			HTGTweetViewWindow*	tweetViewWindow;	
+			HTGTweetViewWindow*	tweetViewWindow;
 };
 #endif

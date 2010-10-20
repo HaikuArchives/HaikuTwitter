@@ -9,6 +9,8 @@
 HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint position, int height)
 	: BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE)
 {
+	quitOnClose = false; //This is default false
+	
 	this->key = key;
 	this->secret = secret;
 	this->refreshTime = refreshTime;
@@ -41,12 +43,12 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 	tabView->AddTab(mentionsTimeLine);
 	
-	/*Set up direct messages timeline*/
-	twitCurl *directTwitObj = new twitCurl();
+	/*Set up direct messages timeline - This should not be a normal timelineview!*/
+	/*twitCurl *directTwitObj = new twitCurl();
 	directTwitObj->setAccessKey( key );
 	directTwitObj->setAccessSecret( secret );
 	directTimeLine = new HTGTimeLineView(directTwitObj, TIMELINE_DIRECT, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
-	tabView->AddTab(directTimeLine);
+	tabView->AddTab(directTimeLine);*/
 	
 	/*Set up public timeline - if enabled*/
 	if(fEnablePublicMenuItem->IsMarked())
@@ -256,7 +258,8 @@ HTGMainWindow::QuitRequested()
 {
 	_retrieveSettings();
 	_saveSettings();
-	be_app->PostMessage(B_QUIT_REQUESTED);
+	if(quitOnClose)
+		be_app->PostMessage(B_QUIT_REQUESTED);
 	return true;
 }
 
@@ -616,12 +619,21 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 			break;
 		}
 		case B_CLOSE_REQUESTED:
-			be_app->PostMessage(B_QUIT_REQUESTED);
+			if(quitOnClose)
+				be_app->PostMessage(B_QUIT_REQUESTED);
+			else
+				BWindow::MessageReceived(msg);
 			break;
 		default:
 			be_app->MessageReceived(msg);
 			BWindow::MessageReceived(msg);
 	}
+}
+
+void
+HTGMainWindow::setQuitOnClose(bool quitOnClose)
+{
+	this->quitOnClose = quitOnClose;
 }
 
 void
@@ -640,6 +652,5 @@ HTGMainWindow::_setTimelineTextSize(int size)
 
 HTGMainWindow::~HTGMainWindow()
 {
-	
-	be_app->PostMessage(B_QUIT_REQUESTED);
+	//This should really not be empty anymore!!
 }
