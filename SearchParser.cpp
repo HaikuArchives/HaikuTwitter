@@ -225,9 +225,9 @@ void SearchParser::readData(const char *xmlData)
 		nodeCount--; //Because we skipped item(0)
 		
 		// Parse XML file for tags of interest: "id"
-		/*statusNodes = elementRoot->getElementsByTagName(TAG_id);
+		statusNodes = elementRoot->getElementsByTagName(TAG_id);
 		
-		for(XMLSize_t i = 0; i < nodeCount*2; i+=2) {
+		for(XMLSize_t i = 0; i < nodeCount; i++) {
 			DOMNode* currentNode = statusNodes->item(i);
          	if( currentNode->getNodeType() &&  // true is not NULL
             	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
@@ -241,10 +241,11 @@ void SearchParser::readData(const char *xmlData)
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		string rawString(XMLString::transcode(textNode->getWholeText()));
-            		tweetPtr[i/2]->setId(rawString.c_str());
+            		int start = rawString.find_last_of(":");
+            		tweetPtr[i]->setId(rawString.c_str()+start+1);
             	}
          	}
-		}*/
+		}
 
 		// Parse XML file for tags of interest: "screen_name"
 		statusNodes = elementRoot->getElementsByTagName(TAG_username);
