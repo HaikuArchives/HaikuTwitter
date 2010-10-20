@@ -19,6 +19,7 @@ HTTweet::HTTweet()
 	bitmapDownloadInProgress = false;
 	view = NULL;
 	isFollowing = false;
+	this->setDate(*new string(" "));
 }
 
 HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString)

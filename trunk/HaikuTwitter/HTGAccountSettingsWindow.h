@@ -42,6 +42,7 @@ struct twitter_settings {
 	bool enablePublic;
 	bool saveSearches;
 	int textSize;
+	bool saveTweets;
 };
 
 

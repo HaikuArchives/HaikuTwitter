@@ -10,11 +10,16 @@ HTStorage::saveTweet(HTTweet *theTweet)
 {
 	status_t status;
 	
-	/*Prepare the file*/
+	/*Prepare the path*/
 	BPath path;
 	status = getTweetPath(path);
 	if (status < B_OK)
 		return status;
+	/*Prepare the directory*/
+	BDirectory tweetsDir(path.Path());
+	tweetsDir.CreateDirectory(path.Path(), NULL); //Assume this is successfull
+	
+	/*Prepare the file*/
 	if(strlen(theTweet->getId()) > 4)
 		path.Append(theTweet->getId());
 	else

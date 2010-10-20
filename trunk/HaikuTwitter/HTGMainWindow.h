@@ -47,6 +47,7 @@ const int32 CLOSE_TAB = 'CTAB';
 const int32 TOGGLE_TABS = 'TTAB';
 const int32 TOGGLE_PUBLIC = 'TPUB';
 const int32 TOGGLE_AUTOSTART = 'ASTT';
+const int32 TOGGLE_SAVETWEETS = 'STTG';
 const int32 TEXT_SIZE_INCREASE = 'TINC';
 const int32 TEXT_SIZE_DECREASE = 'TDEC';
 const int32 TEXT_SIZE_REVERT = 'TREV';
@@ -108,5 +109,6 @@ private:
 	BMenuItem *fOpenInTabsMenuItem;
 	BMenuItem *fEnablePublicMenuItem;
 	BMenuItem *fAutoStartMenuItem;
+	BMenuItem *fSaveTweetsMenuItem;
 };
 #endif
