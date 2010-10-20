@@ -4,25 +4,14 @@
  */ 
 
 
-#include <iostream>
-#include <cstdlib>
-#include <string.h>
+#include "HaikuTwitter.h"
 
-#include <Application.h>
-
-#include "twitcurl/twitcurl.h"
-
-#include "HTGMainWindow.h"
-#include "HTGAuthorizeWindow.h"
-
-status_t getSettingsPath(BPath &path);
-struct twitter_settings retrieveSettings();
-struct oauth_settings retrieveOAuth();
-
-int 
-main()
-{   
-	BApplication HaikuApp("application/x-vnd.HaikuTwitter");
+HaikuTwitter::HaikuTwitter()
+	: BApplication ("application/x-vnd.HaikuTwitter")
+{
+	/*Make mimetype*/
+	HTStorage::makeMimeType(true);
+	HTStorage::makeIndices();
 	
 	/*Get configuration*/
 	struct twitter_settings theSettings = retrieveSettings();
@@ -36,12 +25,52 @@ main()
 			theWindow->Show();
 	}
 	else {
-		HTGMainWindow *theWindow = new HTGMainWindow(key, secret, theSettings.refreshTime, theSettings.position, theSettings.height);
-		theWindow->Show();
+		mainWindow= new HTGMainWindow(key, secret, theSettings.refreshTime, theSettings.position, theSettings.height);
+		mainWindow->Show();
 	}
 	
-	HaikuApp.Run();
-    return 0;
+	tweetViewWindow = new HTGTweetViewWindow(mainWindow);
+}
+
+void
+HaikuTwitter::RefsReceived(BMessage* message)
+{
+	int32 index = 0;
+	entry_ref ref;
+	BList* tweets = new BList();
+	for(int i = 0; (message->FindRef("refs", i, &ref) == B_OK); i++) {
+		HTTweet *theTweet = HTStorage::loadTweet(&ref);
+		if(theTweet != NULL)
+			tweets->AddItem(theTweet);
+	}
+
+	if(!tweets->IsEmpty()) {
+		if(tweetViewWindow == NULL)
+			tweetViewWindow = new HTGTweetViewWindow(mainWindow);
+		tweetViewWindow->AddList(tweets);
+		tweetViewWindow->Show();
+	}
+	else
+		HTGErrorHandling::displayError("An unexpected error occurred.");
+}
+
+void
+HaikuTwitter::MessageReceived(BMessage *message)
+{
+	switch (message->what) {
+		case TWEETVIEWWINDOW_CLOSED:
+			tweetViewWindow = NULL;
+			std::cout << "OK" << std::endl;
+			break;
+		default:
+			BApplication::MessageReceived(message);
+			break;
+	}
+}
+
+HaikuTwitter::~HaikuTwitter()
+{
+	//Nothing to do
 }
 
 status_t
@@ -110,4 +139,12 @@ retrieveOAuth()
 	file.ReadAt(0, &theSettings, sizeof(oauth_settings));
 	
 	return theSettings;
+}
+
+int 
+main(int argc, char** argv)
+{   
+	HaikuTwitter haikuTwitter;
+	haikuTwitter.Run();
+    return 0;
 }

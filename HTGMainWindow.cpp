@@ -31,21 +31,21 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	twitCurl *timelineTwitObj = new twitCurl();
 	timelineTwitObj->setAccessKey( key );
 	timelineTwitObj->setAccessSecret( secret );
-	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, Bounds(), "", theSettings.textSize);
+	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 	tabView->AddTab(friendsTimeLine);
 	
 	/*Set up mentions timeline*/
 	twitCurl *mentionsTwitObj = new twitCurl();
 	mentionsTwitObj->setAccessKey( key );
 	mentionsTwitObj->setAccessSecret( secret );
-	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds(), "", theSettings.textSize);
+	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 	tabView->AddTab(mentionsTimeLine);
 	
 	/*Set up direct messages timeline*/
 	twitCurl *directTwitObj = new twitCurl();
 	directTwitObj->setAccessKey( key );
 	directTwitObj->setAccessSecret( secret );
-	directTimeLine = new HTGTimeLineView(directTwitObj, TIMELINE_DIRECT, Bounds(), "", theSettings.textSize);
+	directTimeLine = new HTGTimeLineView(directTwitObj, TIMELINE_DIRECT, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 	tabView->AddTab(directTimeLine);
 	
 	/*Set up public timeline - if enabled*/
@@ -73,6 +73,7 @@ addSavedSearchesThreadFunction(void *data)
 	SmartTabView *tabView = (SmartTabView *)args->ItemAt(2);
 	BRect rect = *(BRect *)args->ItemAt(3);
 	int textSize = *(int *)args->ItemAt(4);
+	bool saveTweets = *(bool *)args->ItemAt(5);
 	
 	/*Configure twitter object*/
 	twitCurl *twitObj = new twitCurl();
@@ -100,7 +101,7 @@ addSavedSearchesThreadFunction(void *data)
 			twitCurl *newTabObj = new twitCurl();
 			newTabObj->setAccessKey( key );
 			newTabObj->setAccessSecret( secret );
-			viewList->AddItem(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, rect, searchQuery.c_str(), textSize));
+			viewList->AddItem(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, rect, searchQuery.c_str(), textSize, saveTweets));
 			pos = end;
 			i++;
 		}
@@ -210,7 +211,7 @@ HTGMainWindow::_addPublicTimeLine()
 	twitCurl *publicTwitObj = new twitCurl();
 	publicTwitObj->setAccessKey( key );
 	publicTwitObj->setAccessSecret( secret );
-	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds(), "", theSettings.textSize);
+	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 	tabView->AddTab(publicTimeLine);	
 }
 
@@ -232,6 +233,7 @@ HTGMainWindow::_addSavedSearches()
 	threadArgs->AddItem(tabView);
 	threadArgs->AddItem(new BRect(Bounds()));
 	threadArgs->AddItem(&theSettings.textSize);
+	threadArgs->AddItem(&theSettings.saveTweets);
 	
 	thread_id theThread = spawn_thread(addSavedSearchesThreadFunction, "UpdateSearches", 10, threadArgs);
 	resume_thread(theThread);
@@ -281,6 +283,7 @@ HTGMainWindow::_retrieveSettings()
 	theSettings.useTabs = true;
 	theSettings.enablePublic = false;
 	theSettings.saveSearches = false;
+	theSettings.saveTweets = false;
 	theSettings.textSize = BFont().Size();
 	
 	BPath path;
@@ -307,6 +310,7 @@ HTGMainWindow::_saveSettings()
 	theSettings.position = BPoint(this->Frame().left, this->Frame().top);
 	theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
 	theSettings.enablePublic = fEnablePublicMenuItem->IsMarked();
+	theSettings.saveTweets = fSaveTweetsMenuItem->IsMarked();
 	BFont font;
 	tabView->TabAt(0)->View()->GetFont(&font);
 	theSettings.textSize = font.Size();
@@ -405,6 +409,9 @@ HTGMainWindow::_SetupMenu()
 	fAutoStartMenuItem = new BMenuItem("Auto start at login", new BMessage(TOGGLE_AUTOSTART));
 	fAutoStartMenuItem->SetMarked(_isAutoStarted());
 	fSettingsMenu->AddItem(fAutoStartMenuItem);
+	fSaveTweetsMenuItem = new BMenuItem("Download tweets to filesystem", new BMessage(TOGGLE_SAVETWEETS));
+	fSaveTweetsMenuItem->SetMarked(theSettings.saveTweets);
+	fSettingsMenu->AddItem(fSaveTweetsMenuItem);
 	
 	fSettingsMenu->AddSeparatorItem();
 	fSettingsMenu->AddItem(new BMenuItem("Notifications...", new BMessage(INFOPOPPER_SETTINGS)));
@@ -493,6 +500,15 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 		case TOGGLE_TABS:
 			fOpenInTabsMenuItem->SetMarked(!fOpenInTabsMenuItem->IsMarked());
 			theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
+			break;
+		case TOGGLE_SAVETWEETS:
+			fSaveTweetsMenuItem->SetMarked(!fSaveTweetsMenuItem->IsMarked());
+			theSettings.saveTweets = fSaveTweetsMenuItem->IsMarked();
+			for(int i = 0; i < tabView->CountTabs(); i++) {
+				HTGTimeLineView *current = dynamic_cast<HTGTimeLineView*>(tabView->TabAt(i)->View());
+				if(current != NULL)
+					current->setSaveTweets(fSaveTweetsMenuItem->IsMarked());
+			}
 			break;
 		case TOGGLE_PUBLIC:
 			fEnablePublicMenuItem->SetMarked(!fEnablePublicMenuItem->IsMarked());
@@ -603,6 +619,7 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 			be_app->PostMessage(B_QUIT_REQUESTED);
 			break;
 		default:
+			be_app->MessageReceived(msg);
 			BWindow::MessageReceived(msg);
 	}
 }

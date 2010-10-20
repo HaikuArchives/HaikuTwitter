@@ -13,6 +13,7 @@
 
 #include <Notification.h>
 
+#include "HTStorage.h"
 #include "TimeLineParser.h"
 #include "DirectMessageParser.h"
 #include "SearchParser.h"
@@ -31,15 +32,20 @@ const int32 TIMELINE_PUBLIC = 'PBLC';
 const int32 TIMELINE_USER = 'TUSR';
 const int32 TIMELINE_SEARCH = 'TSCH';
 const int32 TIMELINE_DIRECT = 'DMSG';
+const int32 TIMELINE_HDD = 'THDD';
 
 status_t updateTimeLineThread(void *data);
 
 class HTGTimeLineView : public BView {
 public:
-	HTGTimeLineView(twitCurl *, const int32, BRect, const char * requestInfo = " ", int textSize = BFont().Size());
+	HTGTimeLineView(twitCurl *, const int32, BRect, const char * requestInfo = " ", int textSize = BFont().Size(), bool saveTweets = false);
+	HTGTimeLineView(const int32, BRect, BList*, int textSize = BFont().Size());
 	void updateTimeLine();
 	void AttachedToWindow();
 	void SetFont(const BFont*, uint32 = B_FONT_ALL);
+	void AddList(BList *tweets);
+	void setSaveTweets(bool);
+	void clearList();
 	~HTGTimeLineView();
 	
 //private:
@@ -51,6 +57,7 @@ public:
 	bool _retrieveInfoPopperBoolFromSettings();
 	bool waitingForUpdate;
 	bool wantsNotifications;
+	bool saveTweets;
 	BListView *listView;
 	BList *unhandledList;
 	BScrollView *theScrollView;

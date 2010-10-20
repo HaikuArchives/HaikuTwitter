@@ -15,11 +15,12 @@ const int32 kProgressType		= 1004;
 const int32 kAttributeIcon		= 1005;
 const int32 kContentsIcon		= 1006;
 
-HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo, int textSize)
+HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo, int textSize, bool saveTweets)
 	: BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS)
 {
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
+	this->saveTweets = saveTweets;
 	previousThread = B_NAME_NOT_FOUND;
 	searchID = 0;
 	
@@ -74,6 +75,84 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	waitingForUpdate = true;
 }
 
+HTGTimeLineView::HTGTimeLineView(const int32 TYPE, BRect rect, BList* tweets, int textSize)
+	: BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS)
+{
+	this->TYPE = TYPE;
+	previousThread = B_NAME_NOT_FOUND;
+	searchID = 0;
+	twitObj = NULL;
+	
+	/*Set up listview*/
+	this->listView = new BListView(BRect(0, 0, Bounds().Width()-15, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+	
+	/*Prepare the list for unhandled tweets*/
+	unhandledList = new BList();
+	
+	/*Add the list of tweets*/
+	HTTweet *currentTweet;
+	for (int i = 0; i < tweets->CountItems(); i++) {
+		currentTweet = (HTTweet *)tweets->ItemAt(i);
+
+		/*Make a copy, download bitmap and add it to newList*/
+		currentTweet->downloadBitmap();
+		unhandledList->AddItem(new HTGTweetItem(currentTweet));
+	}
+	
+	/*Set up scrollview*/
+	theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
+	this->AddChild(theScrollView);
+	
+	/*Set text size*/
+	BFont font;
+	listView->GetFont(&font);
+	font.SetSize(textSize);
+	SetFont(&font);
+	
+	/*All done, ready to display tweets*/
+	waitingForUpdate = true;
+}
+
+void
+HTGTimeLineView::setSaveTweets(bool saveTweets)
+{
+	this->saveTweets = saveTweets;
+}
+
+void
+HTGTimeLineView::AddList(BList *tweets)
+{
+	/*Add the list of tweets*/
+	HTTweet *currentTweet;
+	for (int i = 0; i < tweets->CountItems(); i++) {
+		currentTweet = (HTTweet *)tweets->ItemAt(i);
+
+		/*Make a copy, download bitmap and add it to newList*/
+		currentTweet->downloadBitmap();
+		unhandledList->AddItem(new HTGTweetItem(currentTweet));
+	}
+	if(LockLooper()) {
+		this->AttachedToWindow();
+		UnlockLooper();
+	}
+}
+
+void
+HTGTimeLineView::clearList()
+{
+	/*Kill the update thread*/
+	if(previousThread != B_NAME_NOT_FOUND)
+		kill_thread(previousThread);
+		
+	while(!listView->IsEmpty()) {
+		HTGTweetItem *currentItem = (HTGTweetItem *)listView->FirstItem();
+		listView->RemoveItem(currentItem);
+		if(currentItem->getTweetPtr() != NULL)
+			currentItem->getTweetPtr()->setView(NULL);
+		delete currentItem;
+	}
+}
+
 void
 HTGTimeLineView::setSearchID(int32 id)
 {
@@ -110,11 +189,9 @@ HTGTimeLineView::AttachedToWindow()
 		HTTweet *currentTweet;
 		while(!listView->IsEmpty()) {
 			currentItem = (HTGTweetItem *)listView->FirstItem();
-			currentTweet = currentItem->getTweetPtr();
 			listView->RemoveItem(currentItem); //Must lock looper before we do this!
-			if(newList->CountItems() < 20) //Only allow 20 tweets to be displayed at once... for now.
-				newList->AddItem(new HTGTweetItem(new HTTweet(currentTweet)));
-			delete currentItem;
+			if(newList->CountItems() < 30) //Only allow 30 tweets to be displayed at once... for now.
+				newList->AddItem(currentItem);//newList->AddItem(new HTGTweetItem(new HTTweet(currentTweet)));
 		}
 		listView->AddList(newList);
 		unhandledList->MakeEmpty();
@@ -198,6 +275,7 @@ updateTimeLineThread(void *data)
 	BListView *listView = super->listView;
 	BView *containerView;
 	char *tabName;
+	bool saveTweets = super->saveTweets;
 	
 	int32 TYPE = super->TYPE;
 	twitCurl *twitObj = super->twitObj;
@@ -233,6 +311,9 @@ updateTimeLineThread(void *data)
 			break;
 		case TIMELINE_DIRECT:
 			twitObj->directMessageGet();
+			break;
+		case TIMELINE_HDD:
+			return B_OK;
 			break;
 		default:
 			twitObj->timelinePublicGet();
@@ -336,6 +417,8 @@ updateTimeLineThread(void *data)
 			if(!initialLoad && super->wantsNotifications) { //New tweet arrived, send notification
 				super->sendNotificationFor(copiedTweet);
 			}
+			if(saveTweets)
+				HTStorage::saveTweet(copiedTweet);
 		}
 		else
 			break;
@@ -474,7 +557,8 @@ HTGTimeLineView::~HTGTimeLineView()
 		delete currentItem;
 	}
 	delete listView;
-	delete twitObj;
+	if(twitObj != NULL)
+		delete twitObj;
 	theScrollView->RemoveSelf();
 	delete theScrollView;
 }

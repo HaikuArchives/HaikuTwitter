@@ -15,6 +15,7 @@
 #include <File.h>
 #include <Message.h>
 #include <Path.h>
+#include <Directory.h>
 #include <FindDirectory.h>
 
 #include "HTTweet.h"
