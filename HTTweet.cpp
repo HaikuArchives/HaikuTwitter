@@ -240,7 +240,11 @@ HTTweet::getId()
 void
 HTTweet::setId(const char* id)
 {
-	this->id = string(id);
+	string idClean(id);
+	int pos = idClean.find(" ");
+	if(pos != std::string::npos)
+		idClean.resize(pos-1);
+	this->id = idClean;
 }
 
 bool
