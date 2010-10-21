@@ -123,7 +123,6 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	
 	/*Draw userIcon*/
 	if(!theTweet->isDownloadingBitmap()) {
-		//theTweet->waitUntilDownloadComplete();
 		owner->SetDrawingMode(B_OP_ALPHA);
 		owner->DrawBitmapAsync(theTweet->getBitmap(), BRect(frame.left+9, frame.top+5+((Height()-60)/2), frame.left+48+8, frame.top+72-20+((Height()-60)/2)));
 		owner->SetDrawingMode(B_OP_OVER);
