@@ -186,12 +186,13 @@ HTGTimeLineView::AttachedToWindow()
 		unhandledList->MakeEmpty();
 		
 		HTGTweetItem *currentItem;
-		HTTweet *currentTweet;
 		while(!listView->IsEmpty()) {
 			currentItem = (HTGTweetItem *)listView->FirstItem();
 			listView->RemoveItem(currentItem); //Must lock looper before we do this!
 			if(newList->CountItems() < 30) //Only allow 30 tweets to be displayed at once... for now.
-				newList->AddItem(currentItem);//newList->AddItem(new HTGTweetItem(new HTTweet(currentTweet)));
+				newList->AddItem(currentItem);
+			else
+				delete currentItem;
 		}
 		listView->AddList(newList);
 		unhandledList->MakeEmpty();
@@ -557,6 +558,16 @@ HTGTimeLineView::~HTGTimeLineView()
 		delete currentItem;
 	}
 	delete listView;
+	
+	while(!unhandledList->IsEmpty()) {
+		HTGTweetItem *currentItem = (HTGTweetItem *)unhandledList->FirstItem();
+		unhandledList->RemoveItem(currentItem);
+		if(currentItem->getTweetPtr() != NULL)
+			currentItem->getTweetPtr()->setView(NULL);
+		delete currentItem;
+	}
+	delete unhandledList;
+	
 	if(twitObj != NULL)
 		delete twitObj;
 	theScrollView->RemoveSelf();
