@@ -123,7 +123,7 @@ HTStorage::loadTweet(entry_ref* ref)
 	loadedTweet->setSourceName(*new string(buffer));
 	
 	//Read when attribute
-	int32 creationTime = 0;
+	time_t creationTime = 0;
 	attrSize = node->ReadAttr(HAIKUTWITTER_ATTR_WHEN, B_TIME_TYPE, 0, &creationTime, sizeof(int32));
 	if(attrSize == B_ENTRY_NOT_FOUND)
 		return NULL;
