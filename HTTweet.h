@@ -48,6 +48,7 @@ public:
 	bool operator<(const HTTweet &b) const;
 	BView* getView();
 	const string getScreenName();
+	const string getFullName();
 	const string getText();
 	const string getProfileImageUrl();
 	const string getRelativeDate();
@@ -60,6 +61,7 @@ public:
 	void setView(BView *);
 	void downloadBitmap();
 	void setScreenName(string&);
+	void setFullName(string&);
 	void setText(string&);
 	void setProfileImageUrl(string&);
 	void setDate(string&);
@@ -84,6 +86,7 @@ private:
 	const char* monthToString(int month);
 	BBitmap *imageBitmap;
 	string screenName;
+	string fullName;
 	string text;
 	string profileImageUrl;
 	string rawDate;

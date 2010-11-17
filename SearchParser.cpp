@@ -279,6 +279,39 @@ void SearchParser::readData(const char *xmlData)
          	}
 		}
 
+		// Parse XML file for tags of interest: "fullname"
+		statusNodes = elementRoot->getElementsByTagName(TAG_user);
+		
+		for(XMLSize_t i = 0; i < nodeCount; i++) {
+			DOMNode* currentNode = statusNodes->item(i);
+         	if( currentNode->getNodeType() &&  // true is not NULL
+            	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
+         	{
+            	// Found node which is an Element. Re-cast node as element
+            	DOMElement* currentElement
+                	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
+            	if( XMLString::equals(currentElement->getTagName(), TAG_user))
+            	{
+            		DOMText* textNode
+            				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
+            		
+            		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		
+            		int screenNameLength = tweetPtr[i]->getScreenName().length();
+            		string fullNameString(rawString);
+            		
+            		//Parse for fullname (Format: "martinhpedersen (Martin H. Pedersen)"
+					int screenNameEndIndex = fullNameString.find(" (");
+					int fullNameEndIndex = fullNameString.find(")");
+					if(fullNameEndIndex < fullNameString.length())
+						fullNameString = fullNameString.substr(screenNameEndIndex+2, fullNameEndIndex-2-screenNameEndIndex);
+
+            		tweetPtr[i]->setFullName(fullNameString);
+            		delete rawString;
+            	}
+         	}
+		}
+		
 		// Parse XML file for tags of interest: "link"
 		statusNodes = elementRoot->getElementsByTagName(TAG_image);
 		//Result will give us 5 links in header that we don't care about.

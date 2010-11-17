@@ -42,6 +42,7 @@ HTTweet::HTTweet(HTTweet *originalTweet)
 {
 	HTTweet::HTTweet();
 	this->screenName = originalTweet->getScreenName();
+	this->fullName = originalTweet->getFullName();
 	this->text = originalTweet->getText();
 	this->profileImageUrl = originalTweet->getProfileImageUrl();
 	if (originalTweet->imageBitmap != NULL)
@@ -74,6 +75,12 @@ HTTweet::getScreenName()
 }
 
 const string
+HTTweet::getFullName()
+{
+	return fullName;	
+}
+
+const string
 HTTweet::getSourceName()
 {
 	return sourceName;
@@ -95,6 +102,12 @@ void
 HTTweet::setScreenName(string &screenName)
 {
 	this->screenName = screenName;
+}
+
+void
+HTTweet::setFullName(string &fullName)
+{
+	this->fullName = fullName;
 }
 
 void

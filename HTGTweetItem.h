@@ -17,7 +17,7 @@
 
 class HTGTweetItem : public BListItem {
 public:
-	HTGTweetItem(HTTweet *);
+	HTGTweetItem(HTTweet *, bool displayFullName = true);
 	HTTweet* getTweetPtr();
 	virtual void DrawItem(BView *owner, BRect frame, bool complete = false);
 	virtual void Update(BView *owner, const BFont* font);
@@ -25,6 +25,7 @@ public:
 private:
 	HTTweet *theTweet;
 	HTGTweetTextView *textView;
+	bool displayFullName;
 	int calculateSize(BView *owner);
 };
 #endif
