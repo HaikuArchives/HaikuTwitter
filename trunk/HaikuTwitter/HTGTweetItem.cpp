@@ -6,10 +6,11 @@
 
 #include "HTGTweetItem.h"
 
-HTGTweetItem::HTGTweetItem(HTTweet *theTweet)
+HTGTweetItem::HTGTweetItem(HTTweet *theTweet, bool displayFullName)
 	: BListItem()
 {
 	this->theTweet = theTweet;
+	this->displayFullName = displayFullName;
 	textView = NULL;
 }
 
@@ -66,10 +67,13 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	owner->GetFontHeight(&height);
 	float lineHeight = (height.ascent + height.descent + height.leading);
 
-	/*Write screen name*/
+	/*Write name*/
 	owner->SetHighColor(051,102,152); //Twitter's color: 000,153,185 , Haiku's color: 051,102,152 , Original color: 100,100,100?
 	owner->MovePenTo(frame.left+60+4, frame.top+lineHeight);
-	owner->DrawString(theTweet->getScreenName().c_str());
+	if(displayFullName)
+		owner->DrawString(theTweet->getFullName().c_str());
+	else
+		owner->DrawString(theTweet->getScreenName().c_str());
 	
 	/*Write time*/
 	owner->SetHighColor(128,128,128);

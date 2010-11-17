@@ -47,7 +47,7 @@ TimeLineParser::TimeLineParser()
    TAG_root        = XMLString::transcode("statuses");
    TAG_status = XMLString::transcode("status");
    TAG_text = XMLString::transcode("text");
-   TAG_user = XMLString::transcode("user");
+   TAG_user = XMLString::transcode("name");
    TAG_username = XMLString::transcode("screen_name");
    TAG_source = XMLString::transcode("source");
    TAG_image = XMLString::transcode("profile_image_url");
@@ -292,6 +292,43 @@ void TimeLineParser::readData(const char *xmlData)
             		
             		string textString(rawString);
             		tweetPtr[i]->setScreenName(textString);
+            		delete rawString;
+            	}
+         	}
+		}
+		
+		// Parse XML file for tags of interest: "name"
+		statusNodes = elementRoot->getElementsByTagName(TAG_user);
+		
+		for(XMLSize_t i = 0; i < nodeCount; i++) {
+			DOMNode* currentNode = statusNodes->item(i);
+         	if( currentNode->getNodeType() &&  // true is not NULL
+            	currentNode->getNodeType() == DOMNode::ELEMENT_NODE ) // is element 
+         	{
+            	// Found node which is an Element. Re-cast node as element
+            	DOMElement* currentElement
+                	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
+            	if( XMLString::equals(currentElement->getTagName(), TAG_user))
+            	{
+            		if(currentElement->getChildNodes()->getLength() < 1) {
+            			tweetPtr[i]->setScreenName(*new string("Unknown")); 
+            			continue;
+            		}
+            		DOMText* textNode
+            				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
+            		
+            		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		
+            		#ifdef DEBUG_ENABLED
+            		printf("%s\n", rawString);
+            		#endif	
+            		
+            		/*Remove last character, holds ugly symbol.*/
+            		if(strlen(rawString) > 5)
+            			rawString[strlen(rawString)-5] = '\0';
+            		
+            		string textString(rawString);
+            		tweetPtr[i]->setFullName(textString);
             		delete rawString;
             	}
          	}
