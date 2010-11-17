@@ -436,7 +436,7 @@ _threadDownloadBitmap(void *data)
 			loopCounter++;
 		}
 		super->getView()->Invalidate();
-		if(loopCounter < 200)
+		if(loopCounter < 600)
 			super->getView()->UnlockLooper();
 	}
 		
