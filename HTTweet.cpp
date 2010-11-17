@@ -77,7 +77,10 @@ HTTweet::getScreenName()
 const string
 HTTweet::getFullName()
 {
-	return fullName;	
+	if(fullName.length() > 0) //Return screenname if fullname is missing
+		return fullName;
+	else
+		return screenName;
 }
 
 const string
