@@ -46,6 +46,9 @@ HTStorage::saveTweet(HTTweet *theTweet)
 	status = node->WriteAttr(HAIKUTWITTER_ATTR_SCREENNAME, B_STRING_TYPE, 0, theTweet->getScreenName().c_str(), theTweet->getScreenName().length());
 	if(status < B_OK)
 		return status;
+	status = node->WriteAttr(HAIKUTWITTER_ATTR_FULLNAME, B_STRING_TYPE, 0, theTweet->getFullName().c_str(), theTweet->getFullName().length());
+	if(status < B_OK)
+		return status;
 	status = node->WriteAttr(HAIKUTWITTER_ATTR_TEXT, B_STRING_TYPE, 0, theTweet->getText().c_str(), theTweet->getText().length());
 	if(status < B_OK)
 		return status;
@@ -100,6 +103,13 @@ HTStorage::loadTweet(entry_ref* ref)
 		return NULL;
 	buffer[attrSize] = '\0';
 	loadedTweet->setScreenName(*new string(buffer));
+	
+	//Read fullname attribute
+	attrSize = node->ReadAttr(HAIKUTWITTER_ATTR_FULLNAME, B_STRING_TYPE, 0, &buffer, 255);
+	if(attrSize != B_ENTRY_NOT_FOUND) {
+		buffer[attrSize] = '\0';
+		loadedTweet->setFullName(*new string(buffer));
+	}
 	
 	//Read text attribute
 	attrSize = node->ReadAttr(HAIKUTWITTER_ATTR_TEXT, B_STRING_TYPE, 0, &buffer, 255);
@@ -163,7 +173,7 @@ HTStorage::makeMimeType(bool remakeMIMETypes)
 		// Set up the list of twitter related attributes that Tracker will
 		// let you display in columns for tweets.
 		addAttribute(info, HAIKUTWITTER_ATTR_ID, "Id");
-		addAttribute(info, HAIKUTWITTER_ATTR_FULLNAME, "Full name", B_STRING_TYPE, false);
+		addAttribute(info, HAIKUTWITTER_ATTR_FULLNAME, "Full name", B_STRING_TYPE, true);
 		addAttribute(info, HAIKUTWITTER_ATTR_SCREENNAME, "Screen name");
 		addAttribute(info, HAIKUTWITTER_ATTR_WHEN, "When", B_TIME_TYPE, true, false, 200);
 		addAttribute(info, HAIKUTWITTER_ATTR_TEXT, "Content");
