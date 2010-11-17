@@ -335,7 +335,7 @@ updateTimeLineThread(void *data)
 			try {
 				searchParser->readData(replyMsg.c_str());
 			} catch( xercesc::XMLException& e ) {
-				std::cout << "Error while parsing data." << std::endl;
+				std::cout << super->Name() << ": Error while parsing data." << std::endl;
 				delete timeLineParser;
 				timeLineParser = NULL;
 				return B_OK;
@@ -347,7 +347,7 @@ updateTimeLineThread(void *data)
 			try {
 				directParser->readData(replyMsg.c_str());
 			} catch( xercesc::XMLException& e ) {
-				std::cout << "Error while parsing data." << std::endl;
+				std::cout << super->Name() << ": Error while parsing data." << std::endl;
 				delete timeLineParser;
 				timeLineParser = NULL;
 				return B_OK;
@@ -359,7 +359,7 @@ updateTimeLineThread(void *data)
 		try {
 			timeLineParser->readData(replyMsg.c_str());
 		} catch( xercesc::XMLException& e ) {
-				std::cout << "Error while parsing data." << std::endl;
+				std::cout << super->Name() << ": Error while parsing data." << std::endl;
 				delete timeLineParser;
 				timeLineParser = NULL;
 				return B_OK;
@@ -367,7 +367,7 @@ updateTimeLineThread(void *data)
 	}
 	
 	if(timeLineParser->count() < 1) {//timeLineParser failed, return!
-			std::cout << "Parser didn't find any tweets." << std::endl;
+			std::cout << super->Name() << ": Parser didn't find any tweets." << std::endl;
 			delete timeLineParser;
 			timeLineParser = NULL;
 			return B_OK;
