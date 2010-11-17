@@ -203,6 +203,10 @@ void TimeLineParser::readData(const char *xmlData)
                 	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
             	if( XMLString::equals(currentElement->getTagName(), TAG_text))
             	{
+            		if(currentElement->getChildNodes()->getLength() < 1) {
+            			tweetPtr[i]->setText(*new string("Parser unable to retrieve tweet content.")); 
+            			continue;
+            		}
             		DOMText* textNode
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
@@ -213,7 +217,10 @@ void TimeLineParser::readData(const char *xmlData)
             		XMLTranscoder *t = XMLPlatformUtils::fgTransService->makeNewTranscoderFor("UTF-8", resValue, 150);
             		t->transcodeTo(textNode->getWholeText(), (XMLSize_t)150, utf8String, (XMLSize_t)150, blabla, XMLTranscoder::UnRep_Throw);
             		delete t;
-            		            		
+            		
+            		#ifdef DEBUG_ENABLED
+            		printf("%s\n", utf8String);
+            		#endif		
             		string textString((char *)utf8String);
             		textString.erase(textString.length()-3, 3); //Last three chars is garbage!
             		tweetPtr[numberOfEntries] = new HTTweet();
@@ -236,10 +243,16 @@ void TimeLineParser::readData(const char *xmlData)
                 	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
             	if( XMLString::equals(currentElement->getTagName(), TAG_id))
             	{
+            		if(currentElement->getChildNodes()->getLength() < 1) {
+            			continue;
+            		}
             		DOMText* textNode
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		string rawString(XMLString::transcode(textNode->getWholeText()));
+            		#ifdef DEBUG_ENABLED
+            		std::cout << rawString << std::endl;
+            		#endif	
             		if(rawString.length() > 3)
             			rawString[rawString.length()-3] = '\0';
             		tweetPtr[i/2]->setId(rawString.c_str());
@@ -260,10 +273,19 @@ void TimeLineParser::readData(const char *xmlData)
                 	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
             	if( XMLString::equals(currentElement->getTagName(), TAG_username))
             	{
+            		if(currentElement->getChildNodes()->getLength() < 1) {
+            			tweetPtr[i]->setScreenName(*new string("Unknown")); 
+            			continue;
+            		}
             		DOMText* textNode
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		
+            		#ifdef DEBUG_ENABLED
+            		printf("%s\n", rawString);
+            		#endif	
+            		
             		/*Remove last character, holds ugly symbol.*/
             		if(strlen(rawString) > 5)
             			rawString[strlen(rawString)-5] = '\0';
@@ -288,10 +310,18 @@ void TimeLineParser::readData(const char *xmlData)
                 	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
             	if( XMLString::equals(currentElement->getTagName(), TAG_source))
             	{
+            		if(currentElement->getChildNodes()->getLength() < 1) {
+            			tweetPtr[i]->setSourceName(*new string("Unknown")); 
+            			continue;
+            		}
             		DOMText* textNode
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		
+            		#ifdef DEBUG_ENABLED
+            		printf("%s\n", rawString);
+            		#endif
             		
             		/*Remove last character, holds ugly symbol.*/
             		if(strlen(rawString) > 3)
@@ -332,10 +362,18 @@ void TimeLineParser::readData(const char *xmlData)
                 	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
             	if( XMLString::equals(currentElement->getTagName(), TAG_image))
             	{
+            		if(currentElement->getChildNodes()->getLength() < 1) {
+            			continue;
+            		}
             		DOMText* textNode
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		
+            		#ifdef DEBUG_ENABLED
+            		printf("%s\n", rawString);
+            		#endif
+            		
             		/*Remove last character, holds ugly symbol.*/
             		if(strlen(rawString) > 5)
             			rawString[strlen(rawString)-5] = '\0';
@@ -360,10 +398,18 @@ void TimeLineParser::readData(const char *xmlData)
                 	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
             	if( XMLString::equals(currentElement->getTagName(), TAG_date))
             	{
+            		if(currentElement->getChildNodes()->getLength() < 1) {
+            			continue;
+            		}
             		DOMText* textNode
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		
+            		#ifdef DEBUG_ENABLED
+            		printf("%s\n", rawString);
+            		#endif
+            		
             		/*Remove last character, holds ugly symbol.*/
             		if(strlen(rawString) > 3)
             			rawString[strlen(rawString)-3] = '\0';
@@ -388,10 +434,18 @@ void TimeLineParser::readData(const char *xmlData)
                 	        = dynamic_cast< xercesc::DOMElement* >( currentNode );
             	if( XMLString::equals(currentElement->getTagName(), TAG_following))
             	{
+            		if(currentElement->getChildNodes()->getLength() < 1) {
+            			tweetPtr[i]->setFollowing(false); 
+            			continue;
+            		}
             		DOMText* textNode
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
+            		
+            		#ifdef DEBUG_ENABLED
+            		printf("%s\n", rawString);
+            		#endif
             		
             		string textString(rawString);
             		tweetPtr[i]->setFollowing(textString.find("true") != string::npos);
