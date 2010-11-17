@@ -213,7 +213,7 @@ HTTweet::getRelativeDate()
 		diffHour++;
 	
 	if(diffYear > 1)
-		sprintf(tempString, "%i years ago", diffMonth);
+		sprintf(tempString, "%i years ago", diffYear);
 	else if(diffYear == 1)
 		sprintf(tempString, "Last year");
 	else if(diffMonth > 0)
