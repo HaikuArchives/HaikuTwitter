@@ -81,6 +81,7 @@ private:
 	BView *view;
 	thread_id downloadThread;
 	const int stringToMonth(const char *date);
+	const char* monthToString(int month);
 	BBitmap *imageBitmap;
 	string screenName;
 	string text;

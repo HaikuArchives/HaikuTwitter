@@ -50,7 +50,6 @@ HTTweet::HTTweet(HTTweet *originalTweet)
 	this->date = originalTweet->getDate();
 	this->id = string(originalTweet->getId());
 	this->sourceName = originalTweet->getSourceName();
-	this->rawDate = originalTweet->getRawDate();
 	this->view = originalTweet->getView();
 	bitmapDownloadInProgress = false;
 	this->isFollowing = originalTweet->following();
@@ -120,7 +119,9 @@ void
 HTTweet::setDate(string &dateString)
 {
 	if(dateString.length() < 29) { //29
+		#ifdef DEBUG_ENABLED
 		std::cout << "HTTweet::setDate(string &): Got invalid date string" << std::endl;
+		#endif
 		dateString = std::string("Wed Jan 01 00:00:00 +0000 1970");
 	}
 	
@@ -134,7 +135,7 @@ HTTweet::setDate(string &dateString)
 	date.hour = cString[12]-48 + (cString[11]-48)*10;;
 	date.minute = cString[15]-48 + (cString[14]-48)*10;
 	date.second = cString[18]-48 + (cString[17]-48)*10;
-	date.year = cString[29]-48 + (cString[28]-48)*10;
+	date.year = cString[29]-48 + (cString[28]-48)*10 + (cString[27]-48)*100 + (cString[26]-48)*1000;
 }
 
 void
@@ -143,7 +144,7 @@ HTTweet::setDate(time_t unixTime)
 	struct tm* timeinfo;
 
 	timeinfo = localtime(&unixTime);
-	date.year = timeinfo->tm_year;
+	date.year = timeinfo->tm_year +1900;
 	date.month = timeinfo->tm_mon;
 	date.day = timeinfo->tm_mday;
 	date.hour = timeinfo->tm_hour;
@@ -154,7 +155,9 @@ void
 HTTweet::setPublishedDate(string &dateString)
 {
 	if(dateString.length() < 17) {
+		#ifdef DEBUG_ENABLED
 		std::cout << "HTTweet::setPublishedDate(string &): Got invalid date string" << std::endl;
+		#endif
 		dateString = std::string("1970-01-01T00:00:00Z");
 	}
 	
@@ -168,7 +171,7 @@ HTTweet::setPublishedDate(string &dateString)
 	date.hour = cString[12]-48 + (cString[11]-48)*10;;
 	date.minute = cString[15]-48 + (cString[14]-48)*10;
 	date.second = cString[18]-48 + (cString[17]-48)*10;
-	date.year = cString[3]-48 + (cString[2]-48)*10;
+	date.year = cString[3]-48 + (cString[2]-48)*10 + (cString[1]-48)*100 + (cString[0]-48)*1000;
 }
 
 struct DateStruct
@@ -184,12 +187,12 @@ HTTweet::getUnixTime() const
 	struct tm* timeinfo;
 	time(&rawtime);
 	timeinfo = localtime(&rawtime);
-	timeinfo->tm_year = date.year;
+	timeinfo->tm_year = date.year -1900;
 	timeinfo->tm_mon = date.month;
 	timeinfo->tm_mday = date.day;
 	timeinfo->tm_hour = date.hour;
 	timeinfo->tm_min = date.minute;
-	
+		
 	return mktime(timeinfo);
 }
 
@@ -201,13 +204,12 @@ HTTweet::getRelativeDate()
 	timeinfo = gmtime(&currentTime);
 	char tempString[100];
 	
-	//Amazingly, tm_year returns the year 110...
-	int diffYear = timeinfo->tm_year-this->getDate().year -100;
+	int diffYear = timeinfo->tm_year-this->getDate().year +1900;
 	int diffHour = timeinfo->tm_hour-this->getDate().hour;
 	int diffDay = timeinfo->tm_mday-this->getDate().day;
 	int diffMin = timeinfo->tm_min-this->getDate().minute;
 	int diffMonth = timeinfo->tm_mon-this->getDate().month;
-	
+		
 	//Special cases
 	if(diffMin > 45)
 		diffHour++;
@@ -216,8 +218,9 @@ HTTweet::getRelativeDate()
 		sprintf(tempString, "%i years ago", diffYear);
 	else if(diffYear == 1)
 		sprintf(tempString, "Last year");
-	else if(diffMonth > 0)
-		sprintf(tempString, this->rawDate.substr(4, 6).c_str());
+	else if(diffMonth > 0) {
+		sprintf(tempString, "%i %s", this->getDate().day, monthToString(this->getDate().month));
+	}
 	else if(diffDay > 1)
 		sprintf(tempString, "%i days ago", diffDay);
 	else if(diffDay == 1)
@@ -316,8 +319,50 @@ HTTweet::stringToMonth(const char *date)
 		return 10;
 	if(strncmp(date+4, "Dec", 3) == 0)
 		return 11;
+	#ifdef DEBUG_ENABLED
 	std::cout << "HTTweet::stringToMonth: Failed" << std::endl;
+	#endif
 	return 0;
+}
+
+const char*
+HTTweet::monthToString(int month)
+{
+	//jan feb mar apr may jun jul aug sep oct nov dec
+	switch(month) {
+		case 0:
+			return "Jan";
+		case 1:
+			return "Feb";
+		case 2:
+			return "Mar";
+		case 3:
+			return "Apr";
+		case 4:
+			return "May";
+		case 5:
+			return "Jun";
+		case 6:
+			return "Jul";
+		case 7:
+			return "Aug";
+		case 8:
+			return "Sep";
+		case 9:
+			return "Oct";
+		case 10:
+			return "Nov";
+		case 11:
+			return "Dec";
+		default:
+			#ifdef DEBUG_ENABLED
+			std::cout << "HTTweet::stringToMonth: Failed" << std::endl;
+			#endif
+			return "Jan";
+	}
+	
+	
+	//return "Jan";
 }
 
 void
