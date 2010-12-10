@@ -339,12 +339,9 @@ HTGMainWindow::showAbout()
 	text.append("\tWritten by Martin Hebnes Pedersen\n"
 				"\tCopyright 2010, All rights reserved.\n"
 				"\t\n"
-				"\thttp://martinhpedersen.mine.nu/\n"
-				"\t@martinhpedersen\n"
-				"\t\n"
 				"\tIcon by Michele Frau.\n"
 				"\t\n"
-				"\tDistributed under the terms of\n\tthe MIT License.\n");
+				"\tDistributed under the terms of the MIT License.");
 				
 	BAlert *alert = new BAlert("about", text.c_str(), "OK");
 	BTextView *view = alert->TextView();
