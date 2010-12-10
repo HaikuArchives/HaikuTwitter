@@ -472,7 +472,7 @@ HTGTimeLineView::sendNotificationFor(HTTweet *theTweet)
 
 	//Prepare the message
 	std::string title("New tweet from ");
-	title.append(theTweet->getScreenName());
+	title.append(theTweet->getFullName());
 	notification.SetApplication("HaikuTwitter");
 	notification.SetTitle(title.c_str());
 	notification.SetContent(theTweet->getText().c_str());
