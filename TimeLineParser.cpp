@@ -298,7 +298,7 @@ void TimeLineParser::readData(const char *xmlData)
 		}
 		
 		// Parse XML file for tags of interest: "name"
-		statusNodes = elementRoot->getElementsByTagName(TAG_user);
+		/*statusNodes = elementRoot->getElementsByTagName(TAG_user);
 		
 		for(XMLSize_t i = 0; i < nodeCount; i++) {
 			DOMNode* currentNode = statusNodes->item(i);
@@ -324,7 +324,7 @@ void TimeLineParser::readData(const char *xmlData)
             		#endif	
             		
             		/*Remove last character, holds ugly symbol.*/
-            		if(strlen(rawString) > 5)
+            		/*if(strlen(rawString) > 5)
             			rawString[strlen(rawString)-5] = '\0';
             		
             		string textString(rawString);
@@ -332,7 +332,7 @@ void TimeLineParser::readData(const char *xmlData)
             		delete rawString;
             	}
          	}
-		}
+		}*/
 		
 		// Parse XML file for tags of interest: "source"
 		statusNodes = elementRoot->getElementsByTagName(TAG_source);
