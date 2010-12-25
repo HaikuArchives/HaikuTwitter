@@ -347,7 +347,7 @@ _threadDownloadLinkIconURLs(void *data)
 		}
 		
 		/*Parse for url to favIcon*/ //<link rel="shortcut icon" href="http://static.ak.fbcdn.net/rsrc.php/z9Q0Q/hash/8yhim1ep.ico" />
-		queryTag = "shortcut icon\" href=\"";
+		queryTag = "icon\" href=\"";
 		pos = 0;
 		while(pos != std::string::npos) {
 		pos = replyMsg.find(queryTag, pos);
