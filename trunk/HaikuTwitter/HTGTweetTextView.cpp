@@ -368,6 +368,29 @@ _threadDownloadLinkIconURLs(void *data)
 				i++;
 			}
 		}
+		if(currentItem->getLinkIconUrl().length() < 1) {
+			queryTag = "image/ico\" href=\"";
+			pos = 0;
+			while(pos != std::string::npos) {
+			pos = replyMsg.find(queryTag, pos);
+				if(pos != std::string::npos) {
+					int start = pos+strlen(queryTag);
+					int end = replyMsg.find(".ico", start)+4;
+					if(end == std::string::npos+4)
+						break;
+					std::string searchQuery(replyMsg.substr(start, end-start));
+					if(searchQuery[0] != 'h') { //URL is relative, add the guessed location from above
+						searchQuery.insert(0, "/");
+						searchQuery.insert(0, location);
+						std::cout << searchQuery << std::endl;
+					}
+					currentItem->setLinkIconUrl(searchQuery);
+					std::cout << "Detected icon at: " << searchQuery << std::endl;
+					pos = end;
+					i++;
+				}
+			}
+		}
 		if(currentItem->getLinkIconUrl().length() < 1)
 			currentItem->setLinkIconUrl(*new string("-Icon not found-")); //Make the menuItem draw generic icon
 		
