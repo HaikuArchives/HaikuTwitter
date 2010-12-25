@@ -444,23 +444,19 @@ _threadDownloadBitmap(void *data)
 	curl_easy_cleanup(curl_handle);
 	
 	/*Translate downloaded data to bitmap*/
-	super->setBitmap(BTranslationUtils::GetBitmap(mallocIO));
-	if(super->getView() != NULL) {
-		int loopCounter = 1;
-		while(!super->getView()->LockLooper() && loopCounter < 600) {
-			usleep(2000+(100*loopCounter));
-			loopCounter++;
-		}
-		super->getView()->Invalidate();
-		if(loopCounter < 600)
+	if(super->getView() != NULL && super->getView()->LockLooper()) {
+			super->setBitmap(BTranslationUtils::GetBitmap(mallocIO));
+			super->bitmapDownloadInProgress = false;
+			super->getView()->Invalidate();
 			super->getView()->UnlockLooper();
+	}else {
+		super->setBitmap(BTranslationUtils::GetBitmap(mallocIO));
+		super->bitmapDownloadInProgress = false;
 	}
-		
 	
 	/*Delete the buffer*/
 	delete mallocIO;
 	
-	super->bitmapDownloadInProgress = false;
 	return B_OK;
 }
 
