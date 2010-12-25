@@ -74,13 +74,14 @@ HTTweet::getScreenName()
 	return screenName;	
 }
 
+//Note: Real name is unreliable, force screen name (Issue 11)
 const string
 HTTweet::getFullName()
 {
-	if(fullName.length() > 0) //Return screenname if fullname is missing
+	//if(fullName.length() > 0) //Return screenname if fullname is missing
 		return fullName;
-	else
-		return screenName;
+	//else
+	//	return screenName;
 }
 
 const string
