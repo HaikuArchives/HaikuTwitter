@@ -14,6 +14,7 @@
 #include <TranslatorFormats.h>
 #include <DataIO.h>
 #include <Bitmap.h>
+#include <Archivable.h>
 #include <File.h>
 #include <BitmapStream.h>
 #include <TranslatorRoster.h>
@@ -22,7 +23,7 @@
 #include <Roster.h>
 
 #include <ctime>
-#include "curl/curl.h"
+#include <curl/curl.h>
 
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
 status_t _threadDownloadBitmap(void *);
@@ -39,12 +40,15 @@ struct DateStruct {
 	int year;
 };
 
-class HTTweet {
+class HTTweet : public BArchivable {
 public:
 	HTTweet();
 	HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString);
 	HTTweet(HTTweet *originalTweet);
+	HTTweet(BMessage* archive);
 	~HTTweet();
+	status_t Archive(BMessage* archive, bool deep);
+	BArchivable* Instantiate(BMessage* archive);
 	bool operator<(const HTTweet &b) const;
 	BView* getView();
 	const string getScreenName();
@@ -77,22 +81,22 @@ public:
 	void setFollowing(bool);
 	
 	/*This must be public (threads)*/
-	bool bitmapDownloadInProgress;
+	bool bitmapDownloadInProgress;//Archived
 	
 private:
-	BView *view;
-	thread_id downloadThread;
-	const int stringToMonth(const char *date);
+	const int stringToMonth(const char *date);	
 	const char* monthToString(int month);
-	BBitmap *imageBitmap;
-	string screenName;
-	string fullName;
-	string text;
-	string profileImageUrl;
-	string rawDate;
-	string sourceName;
-	struct DateStruct date;
-	string id;
-	bool isFollowing;
+	BView *view;				//Not archived
+	thread_id downloadThread;	//Not archived
+	BBitmap *imageBitmap;		//Archived
+	string screenName;			//Archived
+	string fullName;			//Archived
+	string text;				//Archived
+	string profileImageUrl;		//Archived
+	string rawDate;				//Archived
+	string sourceName;			//Archived
+	struct DateStruct date;		//Not archived
+	string id;					//Archived
+	bool isFollowing;			//Archived
 };
 #endif

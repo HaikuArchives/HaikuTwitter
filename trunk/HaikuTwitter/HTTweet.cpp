@@ -56,6 +56,88 @@ HTTweet::HTTweet(HTTweet *originalTweet)
 	this->isFollowing = originalTweet->following();
 }
 
+HTTweet::HTTweet(BMessage* archive)
+	: BArchivable(archive)
+{
+	/*Unarchive ivars*/
+	char buff[255];
+	archive->FindBool("HTTweet::bitmapDownloadInProgress", &bitmapDownloadInProgress);
+	archive->FindString("HTTweet::screenName", *buff);
+	screenName = std::string(buff);
+	archive->FindString("HTTweet::fullName", *buff);
+	fullName = std::string(buff);
+	archive->FindString("HTTweet::text", *buff);
+	text = std::string(buff);
+	archive->FindString("HTTweet::profileImageUrl", *buff);
+	profileImageUrl = std::string(buff);
+	archive->FindString("HTTweet::rawDate", *buff);
+	rawDate = std::string(buff);
+	setDate(rawDate);
+	archive->FindString("HTTweet::sourceName", *buff);
+	sourceName = std::string(buff);
+	archive->FindString("HTTweet::id", *buff);
+	id = std::string(buff);
+	archive->FindBool("HTTweet::isFollowing", &isFollowing);
+	
+	/*Unarchive profileImage*/
+	BMessage msg;
+	BArchivable* unarchived;
+	if(archive->FindMessage("HTTweet::imageBitmap", &msg) == B_OK) {
+		unarchived = instantiate_object(&msg);
+		if(unarchived)
+			imageBitmap = dynamic_cast<BBitmap *>(unarchived);
+		else {
+			std::cout << "Unable to instantiate archived <HTGTimeLineView::imageBitmap>." << std::endl;
+			imageBitmap = NULL;
+			downloadBitmap();
+		}
+	}
+	
+	view = NULL;
+}
+
+BArchivable*
+HTTweet::Instantiate(BMessage* archive)
+{
+	if(validate_instantiation(archive, "HTTweet"))
+		return new HTTweet(archive);
+	return NULL;
+}
+
+status_t
+HTTweet::Archive(BMessage* archive, bool deep)
+{
+	/*Kill the download thread*/
+	if(bitmapDownloadInProgress)
+		kill_thread(downloadThread);
+	if(bitmapDownloadInProgress)
+		imageBitmap = NULL;
+	
+	/*Archive ivars*/
+	archive->AddBool("HTTweet::bitmapDownloadInProgress", bitmapDownloadInProgress);
+	archive->AddString("HTTweet::screenName", screenName.c_str());
+	archive->AddString("HTTweet::fullName", fullName.c_str());
+	archive->AddString("HTTweet::text", text.c_str());
+	archive->AddString("HTTweet::profileImageUrl", profileImageUrl.c_str());
+	archive->AddString("HTTweet::rawDate", rawDate.c_str());
+	archive->AddString("HTTweet::sourceName", sourceName.c_str());
+	archive->AddString("HTTweet::id", id.c_str());
+	archive->AddBool("HTTweet::isFollowing", isFollowing);
+	
+	/*Archive profileImage*/
+	if(imageBitmap != NULL) {
+		BMessage msg;
+		imageBitmap->Archive(&msg, deep);
+		archive->AddMessage("HTTweet::imageBitmap", &msg);
+	}
+	
+	/*Resume download*/
+	if(bitmapDownloadInProgress)
+		downloadBitmap();
+	
+	return B_OK;
+}
+
 BView*
 HTTweet::getView()
 {
