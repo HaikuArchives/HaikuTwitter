@@ -7,6 +7,8 @@
 #include "ScrollView.h"
 #include "TabView.h"
 #include "Roster.h"
+#include "Dragger.h"
+#include "Archivable.h"
 
 #include <string>
 #include <sstream>
@@ -40,12 +42,15 @@ class HTGTimeLineView : public BView {
 public:
 	HTGTimeLineView(twitCurl *, const int32, BRect, const char * requestInfo = " ", int textSize = BFont().Size(), bool saveTweets = false);
 	HTGTimeLineView(const int32, BRect, BList*, int textSize = BFont().Size());
+	HTGTimeLineView(BMessage* archive);
 	void updateTimeLine();
 	void AttachedToWindow();
 	void SetFont(const BFont*, uint32 = B_FONT_ALL);
 	void AddList(BList *tweets);
 	void setSaveTweets(bool);
 	void clearList();
+	virtual status_t Archive(BMessage* archive, bool deep = true) const;
+	BArchivable* Instantiate(BMessage* archive);
 	~HTGTimeLineView();
 	
 //private:
@@ -55,20 +60,19 @@ public:
 	void savedSearchDestoySelf();
 	void savedSearchCreateSelf();
 	bool _retrieveInfoPopperBoolFromSettings();
-	bool waitingForUpdate;
-	bool wantsNotifications;
-	bool saveTweets;
-	BListView *listView;
-	BList *unhandledList;
-	BScrollView *theScrollView;
-	
-	thread_id previousThread;
-	
-	int32 searchID;
-	TimeLineParser *timeLineParser;
-	twitCurl *twitObj;
-	int32 TYPE;
-	
 	std::string& htmlFormatedString(const char *orig);
+	
+	bool waitingForUpdate;		//Archived
+	bool wantsNotifications;	//Archived
+	bool saveTweets;			//Archived
+	BListView *listView;		//Archived (deep)
+	BList *unhandledList;		//Archived (deep)
+	BScrollView *theScrollView;	//Not archived
+	
+	thread_id previousThread;	//Not archived
+	
+	int32 searchID;				//Archived
+	twitCurl *twitObj;			//Not archived (oauth keys archived instead)
+	int32 TYPE;					//Archived
 };
 #endif
