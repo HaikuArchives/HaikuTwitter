@@ -114,7 +114,7 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		textView->setTweetId(theTweet->getId());
 		textView->SetText(theTweet->getText().c_str());
 	}
-	else {
+	else if(complete) {
 		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
 		textView->SetFontAndColor(&textFont);
