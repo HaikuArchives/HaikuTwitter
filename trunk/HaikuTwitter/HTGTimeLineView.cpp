@@ -52,8 +52,8 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 			SetName("Public");
 	}
 	
-	BDragger *dragger = new BDragger(Bounds(), this);
-	AddChild(dragger);
+	//BDragger *dragger = new BDragger(Bounds(), this);
+	//AddChild(dragger);
 	
 	/*Set up listview*/
 	this->listView = new BListView(BRect(0, 0, Bounds().Width()-15, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
@@ -62,9 +62,9 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	unhandledList = new BList();
 	
 	/*Set up scrollview*/
-	//theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
-	//this->AddChild(theScrollView);
-	this->AddChild(listView);
+	theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
+	this->AddChild(theScrollView);
+	//this->AddChild(listView);
 		
 	/*Load infopopper settings*/
 	wantsNotifications = false; //Default should be false
