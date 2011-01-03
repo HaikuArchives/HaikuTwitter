@@ -107,6 +107,10 @@ HTTweet::Instantiate(BMessage* archive)
 status_t
 HTTweet::Archive(BMessage* archive, bool deep)
 {
+	BArchivable::Archive(archive, deep);
+	
+	archive->AddString("class", "HTTweet");
+	
 	/*Kill the download thread*/
 	if(bitmapDownloadInProgress)
 		kill_thread(downloadThread);

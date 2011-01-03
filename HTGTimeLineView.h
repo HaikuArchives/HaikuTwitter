@@ -62,6 +62,7 @@ public:
 	bool _retrieveInfoPopperBoolFromSettings();
 	std::string& htmlFormatedString(const char *orig);
 	
+	bool isReplicant;			//Not archived
 	bool waitingForUpdate;		//Archived
 	bool wantsNotifications;	//Archived
 	bool saveTweets;			//Archived
