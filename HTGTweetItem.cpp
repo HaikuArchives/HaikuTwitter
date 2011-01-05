@@ -11,6 +11,7 @@ HTGTweetItem::HTGTweetItem(HTTweet *theTweet, bool displayFullName)
 {
 	this->theTweet = theTweet;
 	this->displayFullName = displayFullName;
+	timelineView = NULL;
 	textView = NULL;
 }
 
@@ -54,12 +55,36 @@ void
 HTGTweetItem::Update(BView *owner, const BFont* font)
 {
 	theTweet->setView(owner);
+	
+	/*Set colors*/
+	timelineView = dynamic_cast<HTGTimeLineView*>(owner->Parent());
+	if(timelineView != NULL) { //We're a replicant
+		displayColors.nameColor	=	compileColor(235,235,235);
+		displayColors.textColor	=	compileColor(255,255,255);
+		displayColors.timeColor	=	compileColor(192,192,192);
+		displayColors.sourceColor =	compileColor(192,192,192);
+	}else {
+		displayColors.nameColor	=	compileColor(051,102,152);
+		displayColors.textColor	=	compileColor(000,000,000);
+		displayColors.timeColor	=	compileColor(128,128,128);
+		displayColors.sourceColor =	compileColor(128,128,128);
+	}
 	SetHeight(calculateSize(owner));
+}
+
+rgb_color
+HTGTweetItem::compileColor(uint8 red, uint8 green, uint8 blue){
+	rgb_color color;
+	color.red = red;
+	color.green = green;
+	color.blue = blue;
+	
+	return color;
 }
 
 void
 HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
-{
+{	
 	BFont textFont;
 	owner->GetFont(&textFont);
 	
@@ -68,15 +93,15 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	float lineHeight = (height.ascent + height.descent + height.leading);
 
 	/*Write name*/
-	owner->SetHighColor(051,102,152); //Twitter's color: 000,153,185 , Haiku's color: 051,102,152 , Original color: 100,100,100?
+	owner->SetHighColor(displayColors.nameColor);
 	owner->MovePenTo(frame.left+60+4, frame.top+lineHeight);
 	if(displayFullName)
 		owner->DrawString(theTweet->getFullName().c_str());
 	else
 		owner->DrawString(theTweet->getScreenName().c_str());
-	
+		
 	/*Write time*/
-	owner->SetHighColor(128,128,128);
+	owner->SetHighColor(displayColors.timeColor);
 	owner->MovePenTo(frame.right-textFont.StringWidth(theTweet->getRelativeDate().c_str())-5, frame.top+lineHeight);
 	owner->DrawString(theTweet->getRelativeDate().c_str());
 	
@@ -93,7 +118,7 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
 		owner->SetFont(&textFont, B_FONT_ALL);
-		owner->SetHighColor(128,128,128);
+		owner->SetHighColor(displayColors.sourceColor);
 		owner->MovePenTo(frame.right-textFont.StringWidth(viaString.c_str())-5, frame.bottom-5);
 		
 		owner->DrawString(viaString.c_str());
@@ -107,7 +132,7 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		owner->AddChild(textView);
 		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
-		textView->SetFontAndColor(&textFont);
+		textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
 		textView->SetViewColor(owner->ViewColor());
 		textView->SetWordWrap(true);
 		textView->MakeEditable(false);
@@ -117,7 +142,7 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	else if(complete) {
 		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
-		textView->SetFontAndColor(&textFont);
+		textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
 		textView->SetViewColor(owner->ViewColor());
 		textView->MoveTo(textRect.left, textRect.top);
 		textView->ResizeTo(textRect.Width(), textRect.Height());

@@ -43,12 +43,14 @@ public:
 	HTGTimeLineView(twitCurl *, const int32, BRect, const char * requestInfo = " ", int textSize = BFont().Size(), bool saveTweets = false);
 	HTGTimeLineView(const int32, BRect, BList*, int textSize = BFont().Size());
 	HTGTimeLineView(BMessage* archive);
+	void MessageReceived(BMessage *msg);
 	void updateTimeLine();
 	void AttachedToWindow();
 	void SetFont(const BFont*, uint32 = B_FONT_ALL);
 	void AddList(BList *tweets);
 	void setSaveTweets(bool);
 	void clearList();
+	bool IsReplicant();
 	virtual status_t Archive(BMessage* archive, bool deep = true) const;
 	BArchivable* Instantiate(BMessage* archive);
 	~HTGTimeLineView();
