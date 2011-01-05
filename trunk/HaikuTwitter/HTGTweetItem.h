@@ -15,6 +15,13 @@
 #ifndef HTGTWEET_ITEM_H
 #define HTGTWEET_ITEM_H
 
+struct htg_color {
+	rgb_color nameColor;
+	rgb_color textColor;
+	rgb_color timeColor;
+	rgb_color sourceColor;
+};
+
 class HTGTweetItem : public BListItem {
 public:
 	HTGTweetItem(HTTweet *, bool displayFullName = true);
@@ -23,9 +30,12 @@ public:
 	virtual void Update(BView *owner, const BFont* font);
 	virtual ~HTGTweetItem();
 private:
+	htg_color displayColors;
 	HTTweet *theTweet;
 	HTGTweetTextView *textView;
+	HTGTimeLineView *timelineView;
 	bool displayFullName;
 	int calculateSize(BView *owner);
+	static rgb_color compileColor(uint8 red, uint8 green, uint8 blue);
 };
 #endif

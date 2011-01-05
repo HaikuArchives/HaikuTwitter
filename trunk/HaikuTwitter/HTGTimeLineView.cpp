@@ -52,9 +52,6 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 			SetName("Public");
 	}
 	
-	//BDragger *dragger = new BDragger(Bounds(), this);
-	//AddChild(dragger);
-	
 	/*Set up listview*/
 	this->listView = new BListView(BRect(0, 0, Bounds().Width()-15, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	
@@ -62,9 +59,12 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	unhandledList = new BList();
 	
 	/*Set up scrollview*/
-	theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
-	this->AddChild(theScrollView);
-	//this->AddChild(listView);
+	//theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
+	//this->AddChild(theScrollView);
+	this->AddChild(listView);
+		
+	BDragger *dragger = new BDragger(Bounds(), this);
+	AddChild(dragger);
 		
 	/*Load infopopper settings*/
 	wantsNotifications = false; //Default should be false
@@ -162,10 +162,8 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	twitObj = new twitCurl();
 	archive->FindString("HTGTimeLineView::oauthKey", ptr);
 	std::string key(*ptr);
-	std::cout << key << std::endl;
 	archive->FindString("HTGTimeLineView::oauthSecret", ptr);
 	std::string secret(*ptr);
-		std::cout << "Secret: " << secret << std::endl;
 	twitObj->setAccessKey(key);
 	twitObj->setAccessSecret(secret);
 	
@@ -173,9 +171,9 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	
 	//NOTE: Should we also set the font?
 	AddChild(listView);
+
 	waitingForUpdate = true;
 	updateTimeLine();
-	//NOTE: An unarchived timeline should update itself (with timer).
 }
 
 BArchivable*
@@ -224,6 +222,18 @@ HTGTimeLineView::Archive(BMessage* archive, bool deep) const
 	}
 	
 	return B_OK;
+}
+
+void
+HTGTimeLineView::MessageReceived(BMessage *msg)
+{
+	switch(msg->what) {
+		case REFRESH:
+			this->updateTimeLine();
+			break;
+		default:
+			BView::MessageReceived(msg);
+	}
 }
 
 void
@@ -278,6 +288,12 @@ HTGTimeLineView::getSearchID()
 	return searchID;
 }
 
+bool
+HTGTimeLineView::IsReplicant()
+{
+	return isReplicant;
+}
+
 void
 HTGTimeLineView::SetFont(const BFont *font, uint32 properties)
 {
@@ -293,8 +309,16 @@ HTGTimeLineView::AttachedToWindow()
 	listView->AttachedToWindow();
 	
 	if(isReplicant) {
+		/*Make background transparent*/
 		listView->SetViewColor(Parent()->ViewColor());
 		SetViewColor(Parent()->ViewColor());
+		listView->SetHighColor(ViewColor());
+		
+		/*Setup runner to refresh the timeline*/
+		BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), 3*1000000*60);
+		
+		/*We don't want notifications for replicants*/
+		wantsNotifications = false;
 	}
 	
 	/*Add the unhandled tweets*/
@@ -688,6 +712,8 @@ HTGTimeLineView::~HTGTimeLineView()
 	
 	if(twitObj != NULL)
 		delete twitObj;
-	//theScrollView->RemoveSelf();
-	//delete theScrollView;
+	if(!IsReplicant()) {
+		theScrollView->RemoveSelf();
+		delete theScrollView;
+	}
 }
