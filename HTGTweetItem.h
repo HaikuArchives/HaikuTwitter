@@ -24,10 +24,13 @@ struct htg_color {
 
 class HTGTweetItem : public BListItem {
 public:
-	HTGTweetItem(HTTweet *, bool displayFullName = true);
+	HTGTweetItem(HTTweet* theTweet, bool displayFullName = true);
+	HTGTweetItem(BMessage* archive);
 	HTTweet* getTweetPtr();
 	virtual void DrawItem(BView *owner, BRect frame, bool complete = false);
 	virtual void Update(BView *owner, const BFont* font);
+	virtual BArchivable* Instantiate(BMessage* archive);
+	virtual status_t Archive(BMessage* archive, bool deep = true) const;
 	virtual ~HTGTweetItem();
 private:
 	htg_color displayColors;

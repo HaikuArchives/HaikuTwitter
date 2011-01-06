@@ -15,6 +15,47 @@ HTGTweetItem::HTGTweetItem(HTTweet *theTweet, bool displayFullName)
 	textView = NULL;
 }
 
+HTGTweetItem::HTGTweetItem(BMessage* archive)
+{
+	archive->FindBool("HTGTweetItem::displayFullName", &displayFullName);
+	
+	BMessage msg;
+	BArchivable* unarchived;
+	if(archive->FindMessage("HTGTweetItem::theTweet", &msg) == B_OK) {
+		unarchived = instantiate_object(&msg);
+		if(unarchived)
+			theTweet = dynamic_cast<HTTweet *>(unarchived);
+		else
+			theTweet = new HTTweet();
+	}
+	
+	timelineView = NULL;
+	textView = NULL;
+}
+
+BArchivable*
+HTGTweetItem::Instantiate(BMessage* archive)
+{
+	if(validate_instantiation(archive, "HTGTweetItem"))
+		return new HTGTweetItem(archive);
+	return NULL;
+}
+
+status_t
+HTGTweetItem::Archive(BMessage* archive, bool deep) const
+{
+	BListItem::Archive(archive, deep);
+	archive->AddString("class", "HTGTweetItem");
+
+	/*Archive ivars*/
+	archive->AddBool("HTGTweetItem::displayFullName", displayFullName);
+
+	/*Archive tweet*/
+	BMessage msg;
+	theTweet->Archive(&msg, deep);
+	return archive->AddMessage("HTGTweetItem::theTweet", &msg);
+}
+
 int
 HTGTweetItem::calculateSize(BView *owner)
 {
@@ -87,10 +128,11 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 {	
 	BFont textFont;
 	owner->GetFont(&textFont);
-	
 	font_height height;
 	owner->GetFontHeight(&height);
 	float lineHeight = (height.ascent + height.descent + height.leading);
+	
+	owner->SetDrawingMode(B_OP_OVER);
 
 	/*Write name*/
 	owner->SetHighColor(displayColors.nameColor);
@@ -156,7 +198,6 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	if(!theTweet->isDownloadingBitmap()) {
 		owner->SetDrawingMode(B_OP_ALPHA);
 		owner->DrawBitmapAsync(theTweet->getBitmap(), BRect(frame.left+9, frame.top+5+((Height()-60)/2), frame.left+48+8, frame.top+72-20+((Height()-60)/2)));
-		owner->SetDrawingMode(B_OP_OVER);
 	}
 }
 
