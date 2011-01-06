@@ -181,11 +181,10 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		textView->setTweetId(theTweet->getId());
 		textView->SetText(theTweet->getText().c_str());
 	}
-	else if(complete) {
+	else{
 		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
 		textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
-		textView->SetViewColor(owner->ViewColor());
 		textView->MoveTo(textRect.left, textRect.top);
 		textView->ResizeTo(textRect.Width(), textRect.Height());
 		textView->SetTextRect(BRect(0,0,frame.right-60-4,frame.bottom));
