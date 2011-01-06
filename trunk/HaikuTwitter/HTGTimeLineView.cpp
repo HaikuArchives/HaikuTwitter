@@ -139,11 +139,12 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	/*Set up listView*/
 	if(archive->FindMessage("HTGTimeLineView::listView", &msg) == B_OK) {
 		unarchived = instantiate_object(&msg);
-		if(unarchived)
-			listView = dynamic_cast<BListView *>(unarchived);
-		else {
+		if(unarchived) {
 			std::cout << "Unable to instantiate archived <HTGTimeLineView::listView>." << std::endl;
-			listView = new BListView(BRect(0, 0, Bounds().Width()-15, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+			listView = dynamic_cast<BListView *>(unarchived);
+			listView->ResizeTo(Bounds().Width(), Bounds().Height()); //No scrollview, so resize to fit whole view
+		}else {
+			listView = new BListView(Bounds(), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 		}
 	}
 	
@@ -194,7 +195,7 @@ HTGTimeLineView::Archive(BMessage* archive, bool deep) const
 	BView::Archive(archive, deep);
 	archive->AddString("add_on", "application/x-vnd.HaikuTwitter");
 	archive->AddString("class", "HTGTimeLineView");
-	std::cout << "jadda" << std::endl;
+
 	/*Archive ivars*/
 	archive->AddBool("HTGTimeLineView::waitingForUpdate", waitingForUpdate);
 	archive->AddBool("HTGTimeLineView::wantsNotifications", wantsNotifications);
