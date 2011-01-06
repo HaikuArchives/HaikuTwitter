@@ -58,13 +58,13 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	/*Prepare the list for unhandled tweets*/
 	unhandledList = new BList();
 	
-	/*Set up scrollview*/
-	//theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
-	//this->AddChild(theScrollView);
-	this->AddChild(listView);
-		
 	BDragger *dragger = new BDragger(Bounds(), this);
 	AddChild(dragger);
+	
+	/*Set up scrollview*/
+	theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
+	this->AddChild(theScrollView);
+	//this->AddChild(listView);
 		
 	/*Load infopopper settings*/
 	wantsNotifications = false; //Default should be false
