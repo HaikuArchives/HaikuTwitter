@@ -7,7 +7,7 @@ APP = HaikuTwitter
 CC = gcc
 LIBS += -L/boot/common/lib/ -lbe -ltranslation -lcurl -lxerces-c -lstdc++ -lcrypto
 SVNDEV = -D'SVN_REV="$(shell svnversion -n .)"'
-CFLAGS = $(SVNDEV) ${INFOPOPPER} ${DEBUG}
+CFLAGS = $(SVNDEV) ${DEBUG}
 BDIR = bin
 ODIR = ${BDIR}/obj
 
