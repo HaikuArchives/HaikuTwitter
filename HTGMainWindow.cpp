@@ -401,7 +401,7 @@ HTGMainWindow::_SetupMenu()
 	textSizeSubMenu->AddItem(new BMenuItem("Increase", new BMessage(TEXT_SIZE_INCREASE), '+'));
 	textSizeSubMenu->AddItem(new BMenuItem("Decrease", new BMessage(TEXT_SIZE_DECREASE), '-'));
 	textSizeSubMenu->AddItem(new BMenuItem("Revert", new BMessage(TEXT_SIZE_REVERT)));
-	fSettingsMenu->AddItem(fOpenInTabsMenuItem);
+	//fSettingsMenu->AddItem(fOpenInTabsMenuItem);
 	fSettingsMenu->AddItem(textSizeSubMenu);
 	fOpenInTabsMenuItem->SetMarked(theSettings.useTabs);
 	

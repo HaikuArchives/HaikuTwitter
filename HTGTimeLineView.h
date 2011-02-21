@@ -49,8 +49,10 @@ public:
 	void SetFont(const BFont*, uint32 = B_FONT_ALL);
 	void AddList(BList *tweets);
 	void setSaveTweets(bool);
+	void showScrollbar(bool);
 	void clearList();
 	bool IsReplicant();
+	virtual void FrameResized(float width, float height);
 	virtual status_t Archive(BMessage* archive, bool deep = true) const;
 	BArchivable* Instantiate(BMessage* archive);
 	~HTGTimeLineView();
@@ -73,6 +75,7 @@ public:
 	BScrollView *theScrollView;	//Not archived
 	
 	thread_id previousThread;	//Not archived
+	BDragger *dragger;			//Not archived
 	
 	int32 searchID;				//Archived
 	twitCurl *twitObj;			//Not archived (oauth keys archived instead)
