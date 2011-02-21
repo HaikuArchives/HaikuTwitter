@@ -28,6 +28,7 @@ public:
 	
 private:	
 	HTGTimeLineView *theTimeLine;
+	BView* backgroundView;
 	BMessageRunner *refreshTimer;
 	BWindow *parent;
 };

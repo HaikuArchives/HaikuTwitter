@@ -99,7 +99,7 @@ HTGTweetItem::Update(BView *owner, const BFont* font)
 	
 	/*Set colors*/
 	timelineView = dynamic_cast<HTGTimeLineView*>(owner->Parent());
-	if(timelineView != NULL) { //We're a replicant
+	if(timelineView != NULL && timelineView->IsReplicant()) { //We're a replicant
 		displayColors.nameColor	=	compileColor(235,235,235);
 		displayColors.textColor	=	compileColor(255,255,255);
 		displayColors.timeColor	=	compileColor(192,192,192);

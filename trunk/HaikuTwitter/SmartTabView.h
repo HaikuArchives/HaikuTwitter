@@ -14,6 +14,7 @@
 #include <TabView.h>
 #include "AnimationHelper.h"
 
+class HTGTimeLineWindow;
 class HTGTimeLineView;
 class BPopUpMenu;
 class BScrollView;
@@ -59,6 +60,7 @@ public:
 			
 private:
 			int32				_ClickedTabIndex(const BPoint& point);
+			void				_OpenAsReplicant(HTGTimeLineView* theTimeline);
 
 private:
 			BRect				fInsets;

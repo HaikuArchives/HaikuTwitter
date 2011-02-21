@@ -18,6 +18,7 @@ const int32 kContentsIcon		= 1006;
 HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect, const char* requestInfo, int textSize, bool saveTweets)
 	: BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS)
 {
+	dragger = NULL;
 	isReplicant = false;
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
@@ -58,13 +59,9 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	/*Prepare the list for unhandled tweets*/
 	unhandledList = new BList();
 	
-	BDragger *dragger = new BDragger(Bounds(), this);
-	AddChild(dragger);
-	
 	/*Set up scrollview*/
 	theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
 	this->AddChild(theScrollView);
-	//this->AddChild(listView);
 		
 	/*Load infopopper settings*/
 	wantsNotifications = false; //Default should be false
@@ -83,6 +80,7 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 HTGTimeLineView::HTGTimeLineView(const int32 TYPE, BRect rect, BList* tweets, int textSize)
 	: BView(rect, "ContainerView", B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS)
 {
+	dragger = NULL;
 	isReplicant = false;
 	this->TYPE = TYPE;
 	previousThread = B_NAME_NOT_FOUND;
@@ -122,10 +120,11 @@ HTGTimeLineView::HTGTimeLineView(const int32 TYPE, BRect rect, BList* tweets, in
 HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	: BView(archive)
 {
+	dragger = NULL;
 	const char **ptr;
 	
 	isReplicant = true;
-	
+
 	archive->FindBool("HTGTimeLineView::waitingForUpdate", &waitingForUpdate);
 	archive->FindBool("HTGTimeLineView::wantsNotifications", &wantsNotifications);
 	archive->FindBool("HTGTimeLineView::saveTweets", &saveTweets);
@@ -180,9 +179,9 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 BArchivable*
 HTGTimeLineView::Instantiate(BMessage* archive)
 {
-	if(validate_instantiation(archive, "HTGTimeLineView"))
-		return new HTGTimeLineView(archive);
-	return NULL;
+	if(!validate_instantiation(archive, "HTGTimeLineView"))
+		return NULL;
+	return new HTGTimeLineView(archive);
 }
 
 status_t
@@ -192,37 +191,59 @@ HTGTimeLineView::Archive(BMessage* archive, bool deep) const
 	if(previousThread != B_NAME_NOT_FOUND)
 		kill_thread(previousThread);
 	
-	BView::Archive(archive, deep);
-	archive->AddString("add_on", "application/x-vnd.HaikuTwitter");
-	archive->AddString("class", "HTGTimeLineView");
+	status_t status = BView::Archive(archive, deep);
+	if(status == B_OK)
+		status = archive->AddString("add_on", "application/x-vnd.HaikuTwitter");
+	if(status == B_OK)
+		status = archive->AddString("class", "HTGTimeLineView");
 
 	/*Archive ivars*/
-	archive->AddBool("HTGTimeLineView::waitingForUpdate", waitingForUpdate);
-	archive->AddBool("HTGTimeLineView::wantsNotifications", wantsNotifications);
-	archive->AddBool("HTGTimeLineView::saveTweets", saveTweets);
-	archive->AddInt32("HTGTimeLineView::searchID", searchID);
-	archive->AddInt32("HTGTimeLineView::TYPE", TYPE);
-	archive->AddString("HTGTimeLineView::name", Name());
+	if(status == B_OK)
+		status = archive->AddBool("HTGTimeLineView::waitingForUpdate", waitingForUpdate);
+	if(status == B_OK)
+		status = archive->AddBool("HTGTimeLineView::wantsNotifications", wantsNotifications);
+	if(status == B_OK)
+		status = archive->AddBool("HTGTimeLineView::saveTweets", saveTweets);
+	if(status == B_OK)
+		status = archive->AddInt32("HTGTimeLineView::searchID", searchID);
+	if(status == B_OK)
+		status = archive->AddInt32("HTGTimeLineView::TYPE", TYPE);
+	if(status == B_OK)
+		status = archive->AddString("HTGTimeLineView::name", Name());
 	
 	/*Archive login information*/
-	archive->AddString("HTGTimeLineView::oauthSecret", twitObj->getAccessSecret().c_str());
-	archive->AddString("HTGTimeLineView::oauthKey", twitObj->getAccessKey().c_str());
+	if(status == B_OK)
+		status = archive->AddString("HTGTimeLineView::oauthSecret", twitObj->getAccessSecret().c_str());
+	if(status == B_OK)
+		status = archive->AddString("HTGTimeLineView::oauthKey", twitObj->getAccessKey().c_str());
 	
 	if(deep) {	
 		BMessage listViewArchive;
-		if(listView->Archive(&listViewArchive, deep) == B_OK)
-			archive->AddMessage("HTGTimeLineView::listView", &listViewArchive);
+		if(listView->Archive(&listViewArchive, deep) == B_OK) {
+			if(status == B_OK)
+				status = archive->AddMessage("HTGTimeLineView::listView", &listViewArchive);
+		}
 		
 		BMessage unhandled;
 		HTGTweetItem* currentItem;
 		for(int i; i < unhandledList->CountItems(); i++) {
 			currentItem = (HTGTweetItem* )(unhandledList->ItemAt(i));
-			if(currentItem->Archive(&unhandled, deep) == B_OK)
-				archive->AddMessage("HTGTimeLineView::unhandled", &unhandled);
+			if(currentItem->Archive(&unhandled, deep) == B_OK) {
+				if(status == B_OK)
+					status = archive->AddMessage("HTGTimeLineView::unhandled", &unhandled);
+			}
 		}
 	}
 	
-	return B_OK;
+	return status;
+}
+
+void
+HTGTimeLineView::FrameResized(float width, float height)
+{
+	if(dragger != NULL) {
+		dragger->Invalidate();
+	}
 }
 
 void
@@ -234,6 +255,27 @@ HTGTimeLineView::MessageReceived(BMessage *msg)
 			break;
 		default:
 			BView::MessageReceived(msg);
+	}
+}
+
+void
+HTGTimeLineView::showScrollbar(bool show)
+{
+	if(show) {
+		listView->RemoveSelf();
+		dragger->RemoveSelf();
+		delete dragger;
+		dragger = NULL;
+		AddChild(theScrollView);
+		listView->ResizeTo(Bounds().Width()-15, Bounds().Height());
+	}
+	else {
+		theScrollView->RemoveSelf();
+		listView->RemoveSelf();
+		listView->ResizeTo(Bounds().Size());
+		dragger = new BDragger(Bounds(), this, B_FOLLOW_ALL);
+		AddChild(dragger);
+		AddChild(listView);
 	}
 }
 
@@ -309,7 +351,7 @@ HTGTimeLineView::AttachedToWindow()
 	BView::AttachedToWindow();
 	listView->AttachedToWindow();
 	
-	if(isReplicant) {
+	if(IsReplicant()) {
 		/*Make background transparent*/
 		listView->SetViewColor(Parent()->ViewColor());
 		SetViewColor(Parent()->ViewColor());

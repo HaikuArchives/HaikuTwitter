@@ -30,6 +30,7 @@
 
 
 const static uint32 kCloseTab = 'ClTb';
+const static uint32 kMakeReplicant = 'MkRp';
 
 
 SmartTabView::SmartTabView(BRect frame, const char* name, button_width width,
@@ -69,24 +70,26 @@ SmartTabView::MouseDown(BPoint point)
 
 	if (CountTabs() > 1) {
 		int32 tabIndex = _ClickedTabIndex(point);
-		if (tabIndex >= 2) { //Modified (By Martin H. Pedersen for HaikuTwitter) so user don't close any hardcoded tabs.
-			int32 buttons;
-			Window()->CurrentMessage()->FindInt32("buttons", &buttons);
-			if ((buttons & B_SECONDARY_MOUSE_BUTTON) != 0) {
-				BMessage* message = new BMessage(kCloseTab);
-				message->AddInt32("index", tabIndex);
+		int32 buttons;
+		Window()->CurrentMessage()->FindInt32("buttons", &buttons);
+		if ((buttons & B_SECONDARY_MOUSE_BUTTON) != 0) {
+			BMessage* closeMessage = new BMessage(kCloseTab);
+			BMessage* replicantMessage = new BMessage(kMakeReplicant);
+			closeMessage->AddInt32("index", tabIndex);
+			replicantMessage->AddInt32("index", tabIndex);
 
-				BPopUpMenu* popUpMenu = new BPopUpMenu("tab menu");
-				popUpMenu->AddItem(new BMenuItem("Close tab", message));
-				popUpMenu->SetAsyncAutoDestruct(true);
-				popUpMenu->SetTargetForItems(BMessenger(this));
-				popUpMenu->Go(ConvertToScreen(point+BPoint(1, 1)), true, true, true);
+			BPopUpMenu* popUpMenu = new BPopUpMenu("tab menu");
+			popUpMenu->AddItem(new BMenuItem("Make replicant...", replicantMessage));
+			if (tabIndex >= 2)
+				popUpMenu->AddItem(new BMenuItem("Close tab", closeMessage));
+			popUpMenu->SetAsyncAutoDestruct(true);
+			popUpMenu->SetTargetForItems(BMessenger(this));
+			popUpMenu->Go(ConvertToScreen(point+BPoint(1, 1)), true, true, true);
 
-				handled = true;
-			} else if ((buttons & B_TERTIARY_MOUSE_BUTTON) != 0) {
-				RemoveAndDeleteTab(tabIndex);
-				handled = true;
-			}
+			handled = true;
+		} else if ((buttons & B_TERTIARY_MOUSE_BUTTON) != 0) {
+			RemoveAndDeleteTab(tabIndex);
+			handled = true;
 		}
 	}
 
@@ -120,12 +123,32 @@ SmartTabView::MessageReceived(BMessage *message)
 				RemoveAndDeleteTab(tabIndex);
 			break;
 		}
+		case kMakeReplicant:
+		{
+			int32 tabIndex = 0;
+			if (message->FindInt32("index", &tabIndex) == B_OK) {
+				HTGTimeLineView* theTimeline = dynamic_cast<HTGTimeLineView *>(ViewForTab(tabIndex));
+				_OpenAsReplicant(theTimeline);
+			}
+			break;
+		}
 		default:
 			BTabView::MessageReceived(message);
 			break;
 	}
 }
 
+void
+SmartTabView::_OpenAsReplicant(HTGTimeLineView* theTimeline)
+{
+	string key = theTimeline->twitObj->getAccessKey();
+	string secret = theTimeline->twitObj->getAccessSecret();
+	int refreshTime = 5;
+	const int32 TYPE = theTimeline->TYPE;
+	const char* requestInfo = theTimeline->Name();
+	HTGTimeLineWindow* theWindow = new HTGTimeLineWindow(Window(), key, secret, refreshTime, TYPE, requestInfo);
+	theWindow->Show();
+}
 
 void
 SmartTabView::Select(int32 index)
