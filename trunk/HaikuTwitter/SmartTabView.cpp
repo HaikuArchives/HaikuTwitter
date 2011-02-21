@@ -62,6 +62,14 @@ SmartTabView::SetInsets(float left, float top, float right, float bottom)
 	fInsets.bottom = bottom;
 }
 
+bool
+SmartTabView::SystemIsGccFourHybrid()
+{
+	BEntry gccFourHybrid("/boot/system/lib/gcc2/libstdc++.r4.so");
+	BEntry gccTwoHybrid("/boot/system/lib/gcc4/libsupc++.so");
+	
+	return gccFourHybrid.Exists();
+}
 
 void
 SmartTabView::MouseDown(BPoint point)
@@ -126,6 +134,15 @@ SmartTabView::MessageReceived(BMessage *message)
 		case kMakeReplicant:
 		{
 			int32 tabIndex = 0;
+			if(!SystemIsGccFourHybrid()) {
+				string gcc2Error = ("I'm guessing you're not running a gcc4 hybrid system?\n\n");
+				gcc2Error.append("Chances are, you are running a gcc2 hybrid version of Haiku.");
+				gcc2Error.append("Replicating a timeline from HaikuTwitter (gcc4) on a gcc2 system ");
+				gcc2Error.append("will probably bring your system to it's knees...\n\nIf you on the ");
+				gcc2Error.append("other hand are running a pure gcc4 system, ");
+				gcc2Error.append("you can go-ahead and ignore this warning:-)");
+				HTGErrorHandling::displayError(gcc2Error.c_str());
+			}
 			if (message->FindInt32("index", &tabIndex) == B_OK) {
 				HTGTimeLineView* theTimeline = dynamic_cast<HTGTimeLineView *>(ViewForTab(tabIndex));
 				_OpenAsReplicant(theTimeline);
