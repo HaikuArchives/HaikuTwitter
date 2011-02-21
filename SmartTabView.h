@@ -16,6 +16,7 @@
 
 class HTGTimeLineWindow;
 class HTGTimeLineView;
+class HTGErrorHandling;
 class BPopUpMenu;
 class BScrollView;
 
@@ -61,6 +62,7 @@ public:
 private:
 			int32				_ClickedTabIndex(const BPoint& point);
 			void				_OpenAsReplicant(HTGTimeLineView* theTimeline);
+			bool				SystemIsGccFourHybrid();
 
 private:
 			BRect				fInsets;
