@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
+ * Copyright 2010-2011 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
@@ -337,7 +337,7 @@ HTGMainWindow::showAbout()
 	text.append(SVN_REV);
 	text.append(")\n");
 	text.append("\tWritten by Martin Hebnes Pedersen\n"
-				"\tCopyright 2010, All rights reserved.\n"
+				"\tCopyright 2010-2011, All rights reserved.\n"
 				"\t\n"
 				"\tIcon by Michele Frau.\n"
 				"\t\n"
@@ -351,7 +351,7 @@ HTGMainWindow::showAbout()
 	
 	view->GetFont(&font);
 	font.SetSize(10);
-	view->SetFontAndColor(text.length()-48, text.length(), &font);
+	view->SetFontAndColor(text.length()-48-5, text.length(), &font);
 	font.SetSize(18);
 	font.SetFace(B_BOLD_FACE);
 	view->SetFontAndColor(0, 18, &font);

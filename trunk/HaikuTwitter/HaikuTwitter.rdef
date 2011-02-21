@@ -14,7 +14,7 @@ resource app_version {
 	internal = 0,
 
 	short_info = "HaikuTwitter",
-	long_info  = "HaikuTwitter © 2010 Martin Hebnes Pedersen."
+	long_info  = "HaikuTwitter © 2010-2011 Martin Hebnes Pedersen."
 };
 
 //Icon by Michele Frau
