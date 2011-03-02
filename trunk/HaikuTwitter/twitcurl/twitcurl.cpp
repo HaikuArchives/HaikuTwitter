@@ -1597,7 +1597,7 @@ void twitCurl::prepareCurlUserPass()
 *
 *--*/
 void twitCurl::prepareStandardParams()
-{
+{	
     /* Clear callback and error buffers */
     clearCurlCallbackBuffers();
 
@@ -1608,7 +1608,7 @@ void twitCurl::prepareStandardParams()
     prepareCurlCallback();
 
     /* Prepare username and password for twitter */
-    prepareCurlUserPass();
+    //prepareCurlUserPass(); NOTE: We use oauth now.
 }
 
 /*++
