@@ -337,7 +337,8 @@ HTGMainWindow::showAbout()
 	text.append(SVN_REV);
 	text.append(")\n");
 	text.append("\tWritten by Martin Hebnes Pedersen\n"
-				"\tCopyright 2010-2011, All rights reserved.\n"
+				"\tCopyright 2010-2011\n"
+				"\tAll rights reserved.\n"
 				"\t\n"
 				"\tIcon by Michele Frau.\n"
 				"\t\n"
