@@ -7,6 +7,7 @@
 
 HTTweet::HTTweet()
 {
+	bitmapData = NULL;
 	imageBitmap = NULL;
 	date.day = 1;
 	date.month = 0;
@@ -25,6 +26,7 @@ HTTweet::HTTweet()
 HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString)
 {
 	HTTweet::HTTweet();
+	bitmapData = NULL;
 	this->screenName = screenName;
 	this->text = text;
 	this->profileImageUrl = profileImageUrl;
@@ -41,6 +43,8 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 HTTweet::HTTweet(HTTweet *originalTweet)
 {
 	HTTweet::HTTweet();
+	bitmapData = NULL;
+	imageBitmap = NULL;
 	this->screenName = originalTweet->getScreenName();
 	this->fullName = originalTweet->getFullName();
 	this->text = originalTweet->getText();
@@ -59,6 +63,7 @@ HTTweet::HTTweet(HTTweet *originalTweet)
 HTTweet::HTTweet(BMessage* archive)
 	: BArchivable(archive)
 {
+	bitmapData = NULL;
 	/*Unarchive ivars*/
 	char buff[255];
 	archive->FindBool("HTTweet::bitmapDownloadInProgress", &bitmapDownloadInProgress);
@@ -476,6 +481,11 @@ HTTweet::setProfileImageUrl(string &profileImageUrl)
 BBitmap*
 HTTweet::getBitmap()
 {
+	if(!bitmapDownloadInProgress && bitmapData != NULL) {
+		imageBitmap = BTranslationUtils::GetBitmap(bitmapData);
+		delete bitmapData;
+		bitmapData = NULL;
+	}
 	return imageBitmap;
 }
 
@@ -531,17 +541,14 @@ _threadDownloadBitmap(void *data)
 	
 	/*Translate downloaded data to bitmap*/
 	if(super->getView() != NULL && super->getView()->LockLooper()) {
-			super->setBitmap(BTranslationUtils::GetBitmap(mallocIO));
+			super->bitmapData = mallocIO;
 			super->bitmapDownloadInProgress = false;
 			super->getView()->Invalidate();
 			super->getView()->UnlockLooper();
 	}else {
-		super->setBitmap(BTranslationUtils::GetBitmap(mallocIO));
+		super->bitmapData = mallocIO;
 		super->bitmapDownloadInProgress = false;
 	}
-	
-	/*Delete the buffer*/
-	delete mallocIO;
 	
 	return B_OK;
 }
@@ -565,9 +572,11 @@ HTTweet::~HTTweet()
 	if(bitmapDownloadInProgress)
 		kill_thread(downloadThread);
 	
+	if(bitmapData != NULL)
+		delete bitmapData;
+	
 	if(imageBitmap != NULL)
 		delete imageBitmap;
-	imageBitmap == NULL;
 }
 
 /*Callback function for cURL (userIcon download)*/

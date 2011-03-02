@@ -641,7 +641,7 @@ updateTimeLineThread(void *data)
 	}
 	
 	/*Sort the list*/
-	//newList->SortItems(HTGTweetItem::sortByDateFunc);
+	newList->SortItems(HTGTweetItem::sortByDateFunc);
 	
 	/*Update the view*/
 	listView->AddList(newList); //Must lock looper before we do this!
