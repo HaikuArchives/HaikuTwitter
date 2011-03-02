@@ -352,7 +352,7 @@ HTGMainWindow::showAbout()
 	
 	view->GetFont(&font);
 	font.SetSize(10);
-	view->SetFontAndColor(text.length()-48-5, text.length(), &font);
+	view->SetFontAndColor(text.length()-48-3, text.length(), &font);
 	font.SetSize(18);
 	font.SetFace(B_BOLD_FACE);
 	view->SetFontAndColor(0, 18, &font);
