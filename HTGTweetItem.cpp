@@ -57,6 +57,26 @@ HTGTweetItem::Archive(BMessage* archive, bool deep) const
 }
 
 int
+HTGTweetItem::sortByDateFunc(const void* va, const void* vb)
+{	
+	if(va == NULL || vb == NULL)
+		return 0;
+
+	const HTGTweetItem** ia = (const HTGTweetItem**)(va);
+	const HTGTweetItem** ib = (const HTGTweetItem**)(vb);
+
+	HTTweet* a = (*ia)->getTweetPtr();
+	HTTweet* b = (*ib)->getTweetPtr();
+	
+	if(a->getUnixTime() < b->getUnixTime())
+		return 1;
+	if(a->getUnixTime() > b->getUnixTime())
+		return -1;
+	else
+		return 0;
+}
+
+int
 HTGTweetItem::calculateSize(BView *owner)
 {
 	BFont textFont;
@@ -201,7 +221,7 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 }
 
 HTTweet*
-HTGTweetItem::getTweetPtr()
+HTGTweetItem::getTweetPtr() const
 {
 	return theTweet;
 }

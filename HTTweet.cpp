@@ -155,7 +155,7 @@ HTTweet::getRawDate()
 }
 
 const string
-HTTweet::getScreenName()
+HTTweet::getScreenName() const
 {
 	return screenName;	
 }
@@ -294,12 +294,12 @@ HTTweet::getUnixTime() const
 	timeinfo->tm_mday = date.day;
 	timeinfo->tm_hour = date.hour;
 	timeinfo->tm_min = date.minute;
-		
+
 	return mktime(timeinfo);
 }
 
 const string
-HTTweet::getRelativeDate()
+HTTweet::getRelativeDate() const
 {
 	time_t currentTime = time(NULL);
 	tm *timeinfo;
@@ -428,7 +428,7 @@ HTTweet::stringToMonth(const char *date)
 }
 
 const char*
-HTTweet::monthToString(int month)
+HTTweet::monthToString(int month) const
 {
 	//jan feb mar apr may jun jul aug sep oct nov dec
 	switch(month) {
@@ -581,7 +581,21 @@ WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data)
 }
 
 BBitmap*
-defaultBitmap()
+HTTweet::defaultBitmap()
 {
 	return BTranslationUtils::GetBitmap(B_VECTOR_ICON_TYPE, "twitter_icon");
+}
+
+int
+HTTweet::sortByDateFunc(const void* voida, const void* voidb)
+{
+	const HTTweet** a = (const HTTweet**) voida;
+	const HTTweet** b = (const HTTweet**) voidb;
+	
+	if((*a)->getUnixTime() < (*b)->getUnixTime())
+		return 1;
+	if((*a)->getUnixTime() > (*b)->getUnixTime())
+		return -1;
+	else
+		return 0;
 }
