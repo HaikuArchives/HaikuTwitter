@@ -26,11 +26,15 @@ class HTGTweetItem : public BListItem {
 public:
 	HTGTweetItem(HTTweet* theTweet, bool displayFullName = true);
 	HTGTweetItem(BMessage* archive);
-	HTTweet* getTweetPtr();
+	
+	HTTweet* getTweetPtr() const;
 	virtual void DrawItem(BView *owner, BRect frame, bool complete = false);
 	virtual void Update(BView *owner, const BFont* font);
 	virtual BArchivable* Instantiate(BMessage* archive);
 	virtual status_t Archive(BMessage* archive, bool deep = true) const;
+	
+	static int sortByDateFunc(const void*, const void*);
+	
 	virtual ~HTGTweetItem();
 private:
 	htg_color displayColors;

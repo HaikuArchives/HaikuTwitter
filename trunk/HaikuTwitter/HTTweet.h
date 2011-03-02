@@ -27,7 +27,6 @@
 
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
 status_t _threadDownloadBitmap(void *);
-BBitmap* defaultBitmap();
 
 using namespace std;
 
@@ -51,17 +50,19 @@ public:
 	BArchivable* Instantiate(BMessage* archive);
 	bool operator<(const HTTweet &b) const;
 	BView* getView();
-	const string getScreenName();
+	const string getScreenName() const;
 	const string getFullName();
 	const string getText();
 	const string getProfileImageUrl();
-	const string getRelativeDate();
+	const string getRelativeDate() const;
 	const string getRawDate();
 	const string getSourceName();
 	time_t getUnixTime() const;
 	BBitmap* getBitmap();
 	BBitmap getBitmapCopy();
 	struct DateStruct getDate() const;
+	static int sortByDateFunc(const void*, const void*);
+	static BBitmap* defaultBitmap();
 	void setView(BView *);
 	void downloadBitmap();
 	void setScreenName(string&);
@@ -85,7 +86,7 @@ public:
 	
 private:
 	const int stringToMonth(const char *date);	
-	const char* monthToString(int month);
+	const char* monthToString(int month) const;
 	BView *view;				//Not archived
 	thread_id downloadThread;	//Not archived
 	BBitmap *imageBitmap;		//Archived

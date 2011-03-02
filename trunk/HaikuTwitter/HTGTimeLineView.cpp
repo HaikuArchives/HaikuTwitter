@@ -102,6 +102,7 @@ HTGTimeLineView::HTGTimeLineView(const int32 TYPE, BRect rect, BList* tweets, in
 		currentTweet->downloadBitmap();
 		unhandledList->AddItem(new HTGTweetItem(currentTweet));
 	}
+	unhandledList->SortItems(*HTGTweetItem::sortByDateFunc);
 	
 	/*Set up scrollview*/
 	theScrollView = new BScrollView("scrollView", listView, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS, false, true);
@@ -297,6 +298,7 @@ HTGTimeLineView::AddList(BList *tweets)
 		currentTweet->downloadBitmap();
 		unhandledList->AddItem(new HTGTweetItem(currentTweet));
 	}
+	
 	if(LockLooper()) {
 		this->AttachedToWindow();
 		UnlockLooper();
@@ -373,12 +375,13 @@ HTGTimeLineView::AttachedToWindow()
 		HTGTweetItem *currentItem;
 		while(!listView->IsEmpty()) {
 			currentItem = (HTGTweetItem *)listView->FirstItem();
-			listView->RemoveItem(currentItem); //Must lock looper before we do this!
+			listView->RemoveItem(currentItem);
 			if(newList->CountItems() < 30) //Only allow 30 tweets to be displayed at once... for now.
 				newList->AddItem(currentItem);
 			else
 				delete currentItem;
 		}
+		newList->SortItems(*HTGTweetItem::sortByDateFunc);
 		listView->AddList(newList);
 		unhandledList->MakeEmpty();
 	}
@@ -636,6 +639,9 @@ updateTimeLineThread(void *data)
 			
 		delete currentItem;
 	}
+	
+	/*Sort the list*/
+	//newList->SortItems(HTGTweetItem::sortByDateFunc);
 	
 	/*Update the view*/
 	listView->AddList(newList); //Must lock looper before we do this!
