@@ -83,6 +83,7 @@ public:
 	
 	/*This must be public (threads)*/
 	bool bitmapDownloadInProgress;//Archived
+	BMallocIO* bitmapData;
 	
 private:
 	const int stringToMonth(const char *date);	
