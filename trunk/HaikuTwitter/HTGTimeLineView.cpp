@@ -300,7 +300,7 @@ HTGTimeLineView::AddList(BList *tweets)
 	}
 	
 	if(LockLooper()) {
-		this->AttachedToWindow();
+		this->addUnhandledTweets();
 		UnlockLooper();
 	}
 }
@@ -366,25 +366,42 @@ HTGTimeLineView::AttachedToWindow()
 		wantsNotifications = false;
 	}
 	
-	/*Add the unhandled tweets*/
-	if(!unhandledList->IsEmpty()) {
-		BList *newList = new BList();
-		newList->AddList(unhandledList);
-		unhandledList->MakeEmpty();
-		
-		HTGTweetItem *currentItem;
-		while(!listView->IsEmpty()) {
-			currentItem = (HTGTweetItem *)listView->FirstItem();
-			listView->RemoveItem(currentItem);
-			if(newList->CountItems() < 30) //Only allow 30 tweets to be displayed at once... for now.
-				newList->AddItem(currentItem);
-			else
-				delete currentItem;
+	/*Add all unhandled tweets to timeline*/
+	addUnhandledTweets(); 
+}
+
+void
+HTGTimeLineView::addUnhandledTweets()
+{
+	if(unhandledList->IsEmpty())
+		return;
+
+	BList *newList = new BList();
+
+	newList->AddList(unhandledList);
+	unhandledList->MakeEmpty();
+	
+	HTGTweetItem *currentItem;
+	while(!listView->IsEmpty()) {
+		currentItem = (HTGTweetItem *)listView->FirstItem();
+		listView->RemoveItem(currentItem);
+		if(newList->CountItems() < 30) {//Only allow 30 tweets to be displayed at once... for now.
+			newList->AddItem(currentItem);
+			currentItem->ClearView(); //No need to keep everything in memory
+									//if the view is at the bottom of the scrollbar (invisible)
 		}
-		newList->SortItems(*HTGTweetItem::sortByDateFunc);
-		listView->AddList(newList);
-		unhandledList->MakeEmpty();
+		else
+			delete currentItem;
 	}
+	
+	/*Sort tweets by date*/
+	newList->SortItems(*HTGTweetItem::sortByDateFunc);
+	
+	/*Add our new list*/
+	listView->AddList(newList);
+	
+	/*Clean up*/
+	unhandledList->MakeEmpty();
 }
 
 void
@@ -400,7 +417,6 @@ htmlFormatedString(const char *orig)
 {
 	std::string newString(orig);
 	if(orig[0] == '#') {
-		//newString = std::string(orig+1); THIS IS NOT NEEDED ANYMORE.
 		newString = std::string(orig);
 	}
 	std::string *returnPtr = new std::string(newString);
@@ -462,8 +478,6 @@ updateTimeLineThread(void *data)
 	wait_for_thread(find_thread("UpdateThread"), &junkId);
 	
 	BListView *listView = super->listView;
-	BView *containerView;
-	char *tabName;
 	bool saveTweets = super->saveTweets;
 	
 	int32 TYPE = super->TYPE;
@@ -568,14 +582,14 @@ updateTimeLineThread(void *data)
 		mostRecentTweet = mostRecentItem->getTweetPtr();
 		currentTweet = timeLineParser->getTweets()[0];
 	
-		/*If we are up to date: redraw, clean up and return*/
+		/*If we are up to date: redraw, clean up and return - Note this should not be done here,
+		rather as a result of some BPulse I guess...*/
 		if(!(*mostRecentTweet < *currentTweet)) {
 			if(listView->LockLooper()) {
-				for(int i = 0; i < listView->CountItems(); i++) {
+				for(int i = 0; i < listView->CountItems(); i++)
 					listView->InvalidateItem(i); //Update date
-				}
 				listView->UnlockLooper();
-			}
+			}	
 			delete timeLineParser;
 			timeLineParser = NULL;
 			return B_OK;
@@ -613,38 +627,21 @@ updateTimeLineThread(void *data)
 			break;
 	}
 	
+	super->unhandledList->AddList(newList, 0);
+	
 	/*Try to lock listView*/
 	if(!listView->LockLooper()) {
-		/*Not active view: Copy tweetptrs to unhandledList and return*/
-		super->unhandledList->AddList(newList, 0); //Add new tweets to the top
+		/*Not active view: return*/
 		super->waitingForUpdate = true;
 		delete timeLineParser;
 		timeLineParser = NULL;
-		if(newList->IsEmpty())
-			delete newList;
+		delete newList;
+		
 		return B_OK;
 	}
 	
-	/*Add the unhandled tweets to newList*/
-	newList->AddList(super->unhandledList);
-	super->unhandledList->MakeEmpty();
-	
-	HTGTweetItem *currentItem;
-	while(!listView->IsEmpty()) {
-		currentItem = (HTGTweetItem *)listView->FirstItem();
-		currentTweet = currentItem->getTweetPtr();
-		listView->RemoveItem(currentItem); //Must lock looper before we do this!
-		if(newList->CountItems() < 20) //Only allow 20 tweets to be displayed at once... for now.
-			newList->AddItem(new HTGTweetItem(new HTTweet(currentTweet)));
-			
-		delete currentItem;
-	}
-	
-	/*Sort the list*/
-	newList->SortItems(HTGTweetItem::sortByDateFunc);
-	
-	/*Update the view*/
-	listView->AddList(newList); //Must lock looper before we do this!
+	/*Add the tweets to timeline*/
+	super->addUnhandledTweets();
 			
 	/*Cleanup*/
 	super->waitingForUpdate = false;

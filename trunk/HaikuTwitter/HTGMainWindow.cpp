@@ -61,7 +61,7 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	/*Add the current trends*/
 	_addTrending();
 	trendingRefreshCounter = 0;
-
+	
 	/*Fire a REFRESH message every 'refreshTime' minute*/
 	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }

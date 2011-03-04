@@ -145,7 +145,7 @@ HTGTweetItem::compileColor(uint8 red, uint8 green, uint8 blue){
 
 void
 HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
-{	
+{
 	BFont textFont;
 	owner->GetFont(&textFont);
 	font_height height;
@@ -217,6 +217,16 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	if(!theTweet->isDownloadingBitmap()) {
 		owner->SetDrawingMode(B_OP_ALPHA);
 		owner->DrawBitmapAsync(theTweet->getBitmap(), BRect(frame.left+9, frame.top+5+((Height()-60)/2), frame.left+48+8, frame.top+72-20+((Height()-60)/2)));
+	}
+}
+
+void
+HTGTweetItem::ClearView()
+{
+	if(textView != NULL) {
+		textView->RemoveSelf();
+		delete textView;
+		textView = NULL;
 	}
 }
 

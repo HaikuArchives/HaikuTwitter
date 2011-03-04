@@ -18,7 +18,7 @@ HaikuTwitter::HaikuTwitter()
 	struct oauth_settings oauth = retrieveOAuth();
     std::string key(oauth.key);
     std::string secret(oauth.secret);
-		
+    		
 	/*Display timeline or authorize*/
 	if(key.length() < 5 || secret.length() < 5)
 			createAndShowAuthWindow();
