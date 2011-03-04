@@ -28,6 +28,7 @@ public:
 	HTGTweetItem(BMessage* archive);
 	
 	HTTweet* getTweetPtr() const;
+	virtual void ClearView();
 	virtual void DrawItem(BView *owner, BRect frame, bool complete = false);
 	virtual void Update(BView *owner, const BFont* font);
 	virtual BArchivable* Instantiate(BMessage* archive);

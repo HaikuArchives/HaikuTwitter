@@ -61,6 +61,7 @@ public:
 	void sendNotificationFor(HTTweet *theTweet);
 	int32 getSearchID();
 	void setSearchID(int32 id);
+	void addUnhandledTweets();
 	void savedSearchDestoySelf();
 	void savedSearchCreateSelf();
 	bool _retrieveInfoPopperBoolFromSettings();
