@@ -87,7 +87,7 @@ SmartTabView::MouseDown(BPoint point)
 			replicantMessage->AddInt32("index", tabIndex);
 
 			BPopUpMenu* popUpMenu = new BPopUpMenu("tab menu");
-			popUpMenu->AddItem(new BMenuItem("Make replicant...", replicantMessage));
+			popUpMenu->AddItem(new BMenuItem("Replicate...", replicantMessage));
 			if (tabIndex >= 2)
 				popUpMenu->AddItem(new BMenuItem("Close tab", closeMessage));
 			popUpMenu->SetAsyncAutoDestruct(true);
