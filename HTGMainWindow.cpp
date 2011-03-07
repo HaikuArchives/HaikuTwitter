@@ -566,14 +566,23 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 				timeLineWindow->Show();
 			}
 			else if (LockLooper()) {
-				newTabObj = new twitCurl();
-				newTabObj->setAccessKey( key );
-				newTabObj->setAccessSecret( secret );
-				HTGTimeLineView *newTimeline = new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0), theSettings.textSize, true);
-				tabView->AddTab(newTimeline, true); //Add the new timeline
-				if(theSettings.saveSearches)
-					newTimeline->savedSearchCreateSelf(); //Save the search on twitter
-				tabView->Select(tabView->CountTabs()-1); //Select the new tab
+				bool excists = false;
+				for(int i = 0; i < tabView->CountTabs(); i++)
+					 if(strcmp(tabView->TabAt(i)->Label(), msg->FindString(text_label, (int32)0)) == 0) {
+					 	excists = true;
+					 	tabView->Select(i);
+					 	break;
+					 }
+				if(!excists) {
+					newTabObj = new twitCurl();
+					newTabObj->setAccessKey( key );
+					newTabObj->setAccessSecret( secret );
+					HTGTimeLineView *newTimeline = new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0), theSettings.textSize, true);
+					tabView->AddTab(newTimeline, true); //Add the new timeline
+					if(theSettings.saveSearches)
+						newTimeline->savedSearchCreateSelf(); //Save the search on twitter
+					tabView->Select(tabView->CountTabs()-1); //Select the new tab
+				}
 				UnlockLooper();
 			}
 			break;
