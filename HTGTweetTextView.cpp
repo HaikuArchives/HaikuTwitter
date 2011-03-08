@@ -141,7 +141,7 @@ HTGTweetTextView::MakeHyperText()
 			pos = end;
 		}
 	}
-	return; //# tags and screen name hyperlinks not supported yet.
+
 	/*# tags*/
 	pos = 0;
 	while(pos != std::string::npos) {
@@ -154,32 +154,33 @@ HTGTweetTextView::MakeHyperText()
 			}
 			if(end == theText.length()-2) //For some reason, we have to do this.
 				end--;
-			BMessage *theMessage = new BMessage(GO_SEARCH);
-			theMessage->AddString("text", theText.substr(start, end-start).c_str());
+			BMessage theMessage(GO_SEARCH);
+			theMessage.AddString("text", theText.substr(start, end-start).c_str());
 			BFont font;
 			GetFont(&font);
 			font.SetSize(font.Size()-2);
 			SetFontAndColor(start, end, &font, B_FONT_ALL, &kLinkBlue);
-			AddHyperTextAction(start, end, new URLAction("foo"));
+			AddHyperTextAction(start, end, new MessageAction(theMessage));
 			pos = end;
 		}
 	}
 	
 	/*Screen names*/
 	for(int i = 0; Text()[i] != '\0'; i++) {
+		string newName;
 		if(Text()[i] == '@') {
 			i++;
 			int start = i;
-			while(isValidScreenNameChar(Text()[i])) 
+			while(isValidScreenNameChar(Text()[i]))
 				i++;
 			int end = i;
-			BMessage *theMessage = new BMessage(GO_USER);
-			theMessage->AddString("text", "foo");
 			BFont font;
 			GetFont(&font);
 			font.SetSize(font.Size()-2);
 			SetFontAndColor(start, end, &font, B_FONT_ALL, &kLinkBlue);
-			AddHyperTextAction(start, end, new URLAction("foo"));
+			BMessage theMessage(GO_USER);
+			theMessage.AddString("text", theText.substr(start, end-start).c_str());
+			AddHyperTextAction(start, end, new MessageAction(theMessage));
 		}
 	}
 }

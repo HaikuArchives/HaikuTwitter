@@ -72,3 +72,26 @@ OpenFileAction::Clicked(HTGTweetTextView* view, BPoint where, BMessage* message)
 	} else
         be_roster->Launch(&ref);
 }
+
+// #pragma mark - MessageAction
+
+
+MessageAction::MessageAction(const BMessage& msg)
+	:
+	fMsg(new BMessage(msg))
+{
+}
+
+
+MessageAction::~MessageAction()
+{
+		delete fMsg;
+}
+
+
+void
+MessageAction::Clicked(HTGTweetTextView* view, BPoint where, BMessage* message)
+{
+    view->MessageReceived(fMsg);
+}
+
