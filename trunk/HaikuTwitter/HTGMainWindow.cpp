@@ -10,7 +10,6 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	: BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE)
 {
 	quitOnClose = false; //This is default false
-	
 	this->key = key;
 	this->secret = secret;
 	this->refreshTime = refreshTime;
