@@ -77,38 +77,35 @@ HTGTweetItem::sortByDateFunc(const void* va, const void* vb)
 }
 
 int
-HTGTweetItem::calculateSize(BView *owner)
+HTGTweetItem::calculateSize(BRect frame, BView *owner)
 {
-	BFont textFont;
-	owner->GetFont(&textFont);
-	
 	float calculatedSize = 0;
 	float sizeOfTextView = 0;
 	string tweetContent = theTweet->getText();
 	
-	/*Create a testView for the text, so we can calculate the number of line breaks*/
-	BRect textRect(72,0, owner->Frame().right, 0);
-	HTGTweetTextView *calcView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,owner->Frame().right-72,300), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
-	calcView->setTweetId(theTweet->getId());
+	BFont textFont;
+	owner->GetFont(&textFont);
 	textFont.SetEncoding(B_UNICODE_UTF8);
 	textFont.SetSize(textFont.Size()-2);
-	calcView->SetFontAndColor(&textFont);
-	calcView->SetWordWrap(true);
-	calcView->MakeEditable(false);
-	calcView->SetText(theTweet->getText().c_str());
-	
 	font_height height;
-	calcView->GetFontHeight(&height);
+	owner->GetFontHeight(&height);
 	float lineHeight = (height.ascent + height.descent + height.leading);
-	if(textFont.Size() > 10)
-		lineHeight += (textFont.Size()-11)*1.8f;
-	sizeOfTextView = calcView->CountLines()*lineHeight;
+	
+	BRect textRect(kTextPoint.x,frame.top+lineHeight+kTextPoint.y, frame.right, frame.bottom-lineHeight);
+	HTGTweetTextView* textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-kAvatarRect.right-kMargin,frame.bottom-lineHeight-kMargin*2), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
+	textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
+	textView->SetWordWrap(true);
+	textView->MakeEditable(false);
+	textView->setTweetId(theTweet->getId());
+	textView->SetText(theTweet->getText().c_str());
+	
+	sizeOfTextView = textView->CountLines()*(lineHeight+3);
 
-	calculatedSize = sizeOfTextView+(lineHeight+3)*1.8;
-	if(calculatedSize < 60)
-		calculatedSize = 60;
+	calculatedSize = sizeOfTextView+(lineHeight+3)*1.5;
+	if(calculatedSize < kAvatarRect.top+kAvatarRect.bottom)
+		calculatedSize = kAvatarRect.top+kAvatarRect.bottom;
 		
-	delete calcView;
+	delete textView;
 	return (int)(calculatedSize + 0.5f);
 }
 
@@ -130,7 +127,7 @@ HTGTweetItem::Update(BView *owner, const BFont* font)
 		displayColors.timeColor	=	compileColor(128,128,128);
 		displayColors.sourceColor =	compileColor(128,128,128);
 	}
-	SetHeight(calculateSize(owner));
+	SetHeight(calculateSize(owner->Bounds(), owner));
 }
 
 rgb_color
@@ -145,26 +142,25 @@ HTGTweetItem::compileColor(uint8 red, uint8 green, uint8 blue){
 
 void
 HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
-{
+{	
+	owner->SetDrawingMode(B_OP_OVER);
+	
 	BFont textFont;
 	owner->GetFont(&textFont);
 	font_height height;
 	owner->GetFontHeight(&height);
 	float lineHeight = (height.ascent + height.descent + height.leading);
-	
-	owner->SetDrawingMode(B_OP_OVER);
 
 	/*Write name*/
+	BRect nameBounds = NameBounds(frame, owner, lineHeight, theTweet->getScreenName().c_str());
 	owner->SetHighColor(displayColors.nameColor);
-	owner->MovePenTo(frame.left+60+4, frame.top+lineHeight);
-	if(displayFullName)
-		owner->DrawString(theTweet->getFullName().c_str());
-	else
-		owner->DrawString(theTweet->getScreenName().c_str());
+	owner->MovePenTo(nameBounds.left, nameBounds.top);	
+	owner->DrawString(theTweet->getScreenName().c_str());
 		
 	/*Write time*/
+	BRect timeBounds = TimeBounds(frame, owner, lineHeight, theTweet->getRelativeDate().c_str());
 	owner->SetHighColor(displayColors.timeColor);
-	owner->MovePenTo(frame.right-textFont.StringWidth(theTweet->getRelativeDate().c_str())-5, frame.top+lineHeight);
+	owner->MovePenTo(timeBounds.left, timeBounds.top);
 	owner->DrawString(theTweet->getRelativeDate().c_str());
 	
 	/*Write source name*/
@@ -181,16 +177,21 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		textFont.SetSize(textFont.Size()-2);
 		owner->SetFont(&textFont, B_FONT_ALL);
 		owner->SetHighColor(displayColors.sourceColor);
-		owner->MovePenTo(frame.right-textFont.StringWidth(viaString.c_str())-5, frame.bottom-5);
+		owner->GetFontHeight(&height);
+		lineHeight = (height.ascent + height.descent + height.leading);
+		BRect sourceBounds = SourceBounds(frame, owner, lineHeight, viaString.c_str());
+		owner->MovePenTo(sourceBounds.left, sourceBounds.top);
 		
 		owner->DrawString(viaString.c_str());
 		owner->SetFont(&currentFont);
 	}
 	
 	/*Write text*/
-	BRect textRect(60+4,frame.top+lineHeight+3, frame.right, frame.bottom-lineHeight);
+	owner->GetFontHeight(&height);
+	lineHeight = (height.ascent + height.descent + height.leading);
+	BRect textRect(kTextPoint.x,frame.top+lineHeight+kTextPoint.y, frame.right, frame.bottom-lineHeight+1);
 	if(textView == NULL) {
-		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-60-4,frame.bottom-lineHeight), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
+		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-kAvatarRect.right-kMargin,frame.bottom-lineHeight-kMargin), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
 		owner->AddChild(textView);
 		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
@@ -206,8 +207,8 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		textFont.SetSize(textFont.Size()-2);
 		textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
 		textView->MoveTo(textRect.left, textRect.top);
-		textView->ResizeTo(textRect.Width(), textRect.Height());
-		textView->SetTextRect(BRect(0,0,frame.right-60-4,frame.bottom));
+		textView->ResizeTo(textRect.Width()+2, textRect.Height()+1);
+		textView->SetTextRect(BRect(0,0,frame.right-kAvatarRect.right,frame.bottom-lineHeight-kMargin));
 	}
 	
 	/*Draw seperator*/
@@ -216,8 +217,60 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	/*Draw userIcon*/
 	if(!theTweet->isDownloadingBitmap()) {
 		owner->SetDrawingMode(B_OP_ALPHA);
-		owner->DrawBitmapAsync(theTweet->getBitmap(), BRect(frame.left+9, frame.top+5+((Height()-60)/2), frame.left+48+8, frame.top+72-20+((Height()-60)/2)));
+		owner->DrawBitmapAsync(theTweet->getBitmap(), AvatarBounds(frame));
 	}
+}
+
+BRect
+HTGTweetItem::NameBounds(BRect frame, BView* view, float lineHeight, const char* name)
+{
+	BRect bounds = BRect();
+	
+	bounds.left = kNamePoint.x+frame.left;
+	bounds.top = kNamePoint.y+frame.top+lineHeight;
+	bounds.right = bounds.left+view->StringWidth(name);
+	bounds.bottom = bounds.top+lineHeight;
+	
+	return bounds;
+}
+
+BRect
+HTGTweetItem::TimeBounds(BRect frame, BView* view, float lineHeight, const char* time)
+{
+	BRect bounds = BRect();
+	
+	bounds.left = frame.right-view->StringWidth(time)-kMargin;
+	bounds.top = frame.top+lineHeight;
+	bounds.right = frame.right-kMargin;
+	bounds.bottom = bounds.top+lineHeight;
+	
+	return bounds;
+}
+
+BRect
+HTGTweetItem::SourceBounds(BRect frame, BView* view, float lineHeight, const char* source)
+{
+	BRect bounds = BRect();
+
+	bounds.left = kSourcePoint.x+frame.right-view->StringWidth(source)-kMargin;
+	bounds.top = kSourcePoint.y+frame.bottom-kMargin;
+	bounds.right = frame.right-kMargin;
+	bounds.bottom = frame.top+lineHeight;
+	
+	return bounds;
+}
+
+BRect
+HTGTweetItem::AvatarBounds(BRect frame)
+{
+	BRect bounds = BRect();
+	
+	bounds.left = kAvatarRect.left+frame.left;
+	bounds.top = kAvatarRect.top+frame.top+((Height()-60)/2);
+	bounds.right = kAvatarRect.right+frame.left;
+	bounds.bottom = kAvatarRect.bottom+frame.top+((Height()-60)/2);
+			
+	return bounds;
 }
 
 void
