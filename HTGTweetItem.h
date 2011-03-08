@@ -54,6 +54,7 @@ private:
 	HTGTweetTextView *textView;
 	HTGTimeLineView *timelineView;
 	bool displayFullName;
+	bool isReplicant;
 	int calculateSize(BRect frame, BView *owner);
 	static rgb_color compileColor(uint8 red, uint8 green, uint8 blue);
 };

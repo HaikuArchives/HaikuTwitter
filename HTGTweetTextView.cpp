@@ -6,27 +6,198 @@
  
 #include "HTGTweetTextView.h"
 
+HyperTextAction::HyperTextAction()
+{
+}
+
+
+HyperTextAction::~HyperTextAction()
+{
+}
+
+
+void
+HyperTextAction::MouseOver(HTGTweetTextView* view, BPoint where, BMessage* message)
+{
+	BCursor linkCursor(B_CURSOR_ID_FOLLOW_LINK);
+	view->SetViewCursor(&linkCursor);
+}
+
+
+void
+HyperTextAction::Clicked(HTGTweetTextView* view, BPoint where, BMessage* message)
+{
+}
+
+struct HTGTweetTextView::ActionInfo {
+	ActionInfo(int32 startOffset, int32 endOffset, HyperTextAction* action)
+		:
+		startOffset(startOffset),
+		endOffset(endOffset),
+		action(action)
+	{
+	}
+
+	~ActionInfo()
+	{
+		delete action;
+	}
+
+	static int Compare(const ActionInfo* a, const ActionInfo* b)
+	{
+		return a->startOffset - b->startOffset;
+	}
+
+	static int CompareEqualIfIntersecting(const ActionInfo* a,
+		const ActionInfo* b)
+	{
+		if (a->startOffset < b->endOffset && b->startOffset < a->endOffset)
+			return 0;
+		return a->startOffset - b->startOffset;
+	}
+
+	int32				startOffset;
+	int32				endOffset;
+	HyperTextAction*	action;
+};
+
 static size_t WriteUrlCallback(void *ptr, size_t size, size_t nmemb, void *data);
 status_t _threadDownloadLinkIconURLs(void *data);
 
 HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, uint32 resizingMode, uint32 flags)
-	: BTextView(frame, name, textRect, resizingMode, flags)
+	: BTextView(frame, name, textRect, resizingMode, flags),
+	fActionInfos(new ActionInfoList(100, true))
 {
 		tweetId = std::string("");
 		urls = new BList();
 		currentThread = B_NAME_NOT_FOUND;
+		SetWordWrap(true);
+		MakeEditable(false);
+		SetStylable(true);
 }
 	
 HTGTweetTextView::HTGTweetTextView(BRect frame, const char *name, BRect textRect, const BFont* font, const rgb_color* color, uint32 resizingMode, uint32 flags)
-	: BTextView(frame, name, textRect, font, color, resizingMode, flags)
+	: BTextView(frame, name, textRect, font, color, resizingMode, flags),
+	fActionInfos(new ActionInfoList(100, true))
 {
 		tweetId = std::string("");
+		SetWordWrap(true);
+		MakeEditable(false);
+		SetStylable(true);
+}
+
+void
+HTGTweetTextView::MakeHyperText()
+{
+	size_t pos = 0;
+	std::string theText(this->Text());
+	
+	/*Search for :// (URIs)*/
+	while(pos != std::string::npos) {
+		pos = theText.find("://", pos);
+		if(pos != std::string::npos) {
+			int start = pos;
+			int end = pos;
+			while(start >= 0 && theText[start] != ' ' && theText[start] != '\n' && theText[start] > 0) {
+				start--;
+			}
+			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n')
+				end++;
+			
+			BMessage *theMessage = new BMessage(GO_TO_URL);
+			theMessage->AddString("url", theText.substr(start+1, end-start-1).c_str());
+			
+			BFont font;
+			GetFont(&font);
+			font.SetSize(font.Size()-2);
+			SetFontAndColor(start+1, end, &font, B_FONT_ALL, &kLinkBlue);
+			AddHyperTextAction(start+1, end, new URLAction(theText.substr(start+1, end-start-1).c_str()));
+			pos = end;
+		}
+	}
+	
+	/*Search for www.*/
+	pos = 0;
+	while(pos != std::string::npos) {
+		pos = theText.find("www.", pos);
+		if(theText.find("://", pos-3, 3) != std::string::npos) //So we don't add URL's detected from the method above.
+			pos++;
+		else if (pos != std::string::npos) {
+			int start = pos;
+			int end = pos;
+			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n')
+				end++;
+			
+			BMessage *theMessage = new BMessage(GO_TO_URL);
+			std::string httpString(theText.substr(start, end-start).c_str());
+			httpString.insert(0, "http://"); //Add the http:// prefix.
+			theMessage->AddString("url", httpString.c_str());
+			
+			BFont font;
+			GetFont(&font);
+			font.SetSize(font.Size()-2);
+			SetFontAndColor(start, end, &font, B_FONT_ALL, &kLinkBlue);
+			AddHyperTextAction(start, end, new URLAction(httpString.c_str()));
+			pos = end;
+		}
+	}
+	return; //# tags and screen name hyperlinks not supported yet.
+	/*# tags*/
+	pos = 0;
+	while(pos != std::string::npos) {
+		pos = theText.find("#", pos);
+		if(pos != std::string::npos) {
+			int start = pos;
+			int end = pos;
+			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n') {
+				end++;
+			}
+			if(end == theText.length()-2) //For some reason, we have to do this.
+				end--;
+			BMessage *theMessage = new BMessage(GO_SEARCH);
+			theMessage->AddString("text", theText.substr(start, end-start).c_str());
+			BFont font;
+			GetFont(&font);
+			font.SetSize(font.Size()-2);
+			SetFontAndColor(start, end, &font, B_FONT_ALL, &kLinkBlue);
+			AddHyperTextAction(start, end, new URLAction("foo"));
+			pos = end;
+		}
+	}
+	
+	/*Screen names*/
+	for(int i = 0; Text()[i] != '\0'; i++) {
+		if(Text()[i] == '@') {
+			i++;
+			int start = i;
+			while(isValidScreenNameChar(Text()[i])) 
+				i++;
+			int end = i;
+			BMessage *theMessage = new BMessage(GO_USER);
+			theMessage->AddString("text", "foo");
+			BFont font;
+			GetFont(&font);
+			font.SetSize(font.Size()-2);
+			SetFontAndColor(start, end, &font, B_FONT_ALL, &kLinkBlue);
+			AddHyperTextAction(start, end, new URLAction("foo"));
+		}
+	}
 }
 
 void
 HTGTweetTextView::setTweetId(const char* tweetId)
 {
 	this->tweetId = std::string(tweetId);
+}
+
+bool
+HTGTweetTextView::CanEndLine(int32 offset)
+{
+	char symbol = ByteAt(offset);
+	if ( symbol == ' ' || symbol == ',' )
+		return true;
+	
+	return false;
 }
 
 void
@@ -74,7 +245,7 @@ HTGTweetTextView::MouseDown(BPoint point)
 		myPopUp->SetAsyncAutoDestruct(true);
 		myPopUp->SetTargetForItems(BMessenger(this));
 		myPopUp->Go(point+BPoint(1,1), true, true, false); //Do this synchronously
-		/*Kill the update thread so it does not try to access an allready freed object*/
+		//Kill the update thread so it does not try to access an allready freed object*
 		if(currentThread != B_NAME_NOT_FOUND)
 			kill_thread(currentThread);
 	}
@@ -135,6 +306,11 @@ HTGTweetTextView::getUrls()
 			BMessage *theMessage = new BMessage(GO_TO_URL);
 			theMessage->AddString("url", theText.substr(start+1, end-start-1).c_str());
 			theList->AddItem(new HTGTweetMenuItem(theText.substr(start+1, end-start-1).c_str(), theMessage));
+			BFont font;
+			GetFont(&font);
+			font.SetSize(font.Size()-2);
+			SetFontAndColor(start+1, end, &font, B_FONT_ALL, &kLinkBlue);
+			AddHyperTextAction(start+1, end, new URLAction(theText.substr(start+1, end-start-1).c_str()));
 			pos = end;
 		}
 	}
@@ -156,6 +332,11 @@ HTGTweetTextView::getUrls()
 			httpString.insert(0, "http://"); //Add the http:// prefix.
 			theMessage->AddString("url", httpString.c_str());
 			theList->AddItem(new HTGTweetMenuItem(httpString.c_str(), theMessage));
+			BFont font;
+			GetFont(&font);
+			font.SetSize(font.Size()-2);
+			SetFontAndColor(start+1, end, &font, B_FONT_ALL, &kLinkBlue);
+			AddHyperTextAction(start+1, end, new URLAction(httpString.c_str()));
 			pos = end;
 		}
 	}
@@ -269,6 +450,8 @@ HTGTweetTextView::~HTGTweetTextView()
 	/*Kill the update thread*/
 	if(currentThread != B_NAME_NOT_FOUND)
 		kill_thread(currentThread);
+	
+	//delete fActionInfos;
 }
 
 status_t
@@ -421,4 +604,76 @@ WriteUrlCallback(void *ptr, size_t size, size_t nmemb, void *data)
 	}
 	else
 		return written;
+}
+
+/*void
+HTGTweetTextView::MouseDown(BPoint where)
+{
+	// We eat all mouse button events.
+
+	BTextView::MouseDown(where);
+}*/
+
+void
+HTGTweetTextView::MouseUp(BPoint where)
+{
+	BMessage* message = Window()->CurrentMessage();
+
+	HyperTextAction* action = _ActionAt(where);
+	if (action != NULL)
+		action->Clicked(this, where, message);
+
+	BTextView::MouseUp(where);
+}
+
+void
+HTGTweetTextView::MouseMoved(BPoint where, uint32 transit,
+	const BMessage* dragMessage)
+{
+	BMessage* message = Window()->CurrentMessage();
+
+	uint32 buttons;
+	HyperTextAction* action;
+	if (message->FindInt32("buttons", (int32*)&buttons) == B_OK
+		&& buttons == 0 && (action = _ActionAt(where)) != NULL) {
+		action->MouseOver(this, where, message);
+		return;
+	}
+
+	BTextView::MouseMoved(where, transit, dragMessage);
+}
+
+void
+HTGTweetTextView::AddHyperTextAction(int32 startOffset, int32 endOffset,
+	HyperTextAction* action)
+{
+	if (action == NULL || startOffset >= endOffset) {
+		delete action;
+		return;
+	}
+
+	fActionInfos->BinaryInsert(new ActionInfo(startOffset, endOffset, action),
+		ActionInfo::Compare);
+
+	// TODO: Of course we should check for overlaps...
+}
+
+HyperTextAction*
+HTGTweetTextView::_ActionAt(const BPoint& where) const
+{
+	int32 offset = OffsetAt(where);
+
+	ActionInfo pointer(offset, offset + 1, NULL);
+
+    const ActionInfo* action = fActionInfos->BinarySearch(pointer,
+			ActionInfo::CompareEqualIfIntersecting);
+	if (action != NULL) {
+		// verify that the text region was hit
+		BRegion textRegion;
+		GetTextRegion(action->startOffset, action->endOffset, &textRegion);
+		if (textRegion.Contains(where))
+			return action->action;
+	}
+
+	return NULL;
 }

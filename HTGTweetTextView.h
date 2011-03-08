@@ -17,36 +17,84 @@
 #include "HTGMainWindow.h"
 #include "HTGTweetMenuItem.h"
 
+#include <Cursor.h>
+#include <Region.h>
+#include <Font.h>
+#include <Window.h>
+#include <ObjectList.h>
+#include "HyperTextActions.h"
+
 #ifndef HTG_TWEETTEXTVIEW_H
 #define HTG_TWEETTEXTVIEW_H
 
 const int32 GO_TO_URL = 'GURL';
 const int32 GO_RETWEET = 'GRT';
 const int32 GO_REPLY = 'GRPL';
+const struct rgb_color kLinkBlue = {80, 80, 200, 255 };
+
+class HTGTweetTextView;
+
+class HyperTextAction {
+public:
+								HyperTextAction();
+	virtual						~HyperTextAction();
+
+	virtual	void				MouseOver(HTGTweetTextView* view, BPoint where,
+									BMessage* message);
+	virtual	void				Clicked(HTGTweetTextView* view, BPoint where,
+									BMessage* message);
+};
 
 class HTGTweetTextView : public BTextView {
 public:
-	HTGTweetTextView(BRect frame, const char *name, BRect textRect, uint32 resizingMode, uint32 flags);
-	HTGTweetTextView(BRect frame, const char *name, BRect textRect, const BFont* font, const rgb_color* color, uint32 resizingMode, uint32 flags);
-	void MessageReceived(BMessage *msg);
-	virtual void MouseDown(BPoint point);
-	void setTweetId(const char* tweetId);
+								HTGTweetTextView(BRect frame, const char *name,
+									BRect textRect, uint32 resizingMode, uint32 flags);
+								HTGTweetTextView(BRect frame, const char *name,
+									BRect textRect, const BFont* font, const rgb_color* color,
+									uint32 resizingMode, uint32 flags);
+	virtual	void				MessageReceived(BMessage *msg);
+			void				setTweetId(const char* tweetId);
 
-	BList* getUrls(); //A thread needs this
-	BList* urls; //A thread needs this
+	virtual	void				MouseDown(BPoint where);
+	virtual	void				MouseUp(BPoint where);
+	virtual	void				MouseMoved(BPoint where, uint32 transit,
+									const BMessage* dragMessage);
+			void				AddHyperTextAction(int32 startOffset,
+									int32 endOffset, HyperTextAction* action);
+
+	virtual	bool				CanEndLine(int32 offset);
+			void				MakeHyperText();
+
+			BList*				getUrls();
+			BList*				urls;
 		
-	~HTGTweetTextView();
+								~HTGTweetTextView();
 		
 private:
-	std::string tweetId;
+			std::string			tweetId;
+			
+			struct				ActionInfo;
+			class				ActionInfoList;
+			HyperTextAction*	_ActionAt(const BPoint& where) const;
+			ActionInfoList*		fActionInfos;
 	
-	thread_id currentThread;
+			thread_id			currentThread;
 
-	void openUrl(const char *);
-	bool isValidScreenNameChar(const char &);
-	void sendRetweetMsgToParent();
-	void sendReplyMsgToParent();
-	BList* getScreenNames();
-	BList* getTags();
+			void				openUrl(const char *);
+			bool				isValidScreenNameChar(const char &);
+			void				sendRetweetMsgToParent();
+			void				sendReplyMsgToParent();
+			
+			BList*				getScreenNames();
+			BList*				getTags();
+};
+
+class HTGTweetTextView::ActionInfoList
+	: public BObjectList<HTGTweetTextView::ActionInfo> {
+public:
+	ActionInfoList(int32 itemsPerBlock = 20, bool owning = false)
+		: BObjectList<HTGTweetTextView::ActionInfo>(itemsPerBlock, owning)
+	{
+	}
 };
 #endif
