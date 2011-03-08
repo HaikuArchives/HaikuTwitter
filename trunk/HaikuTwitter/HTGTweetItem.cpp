@@ -94,16 +94,14 @@ HTGTweetItem::calculateSize(BRect frame, BView *owner)
 	float lineHeight = (height.ascent + height.descent + height.leading);
 	
 	BRect textRect(kTextPoint.x,frame.top+lineHeight+kTextPoint.y, frame.right, frame.bottom-lineHeight);
-	HTGTweetTextView* textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-kAvatarRect.right-kMargin,frame.bottom-lineHeight-kMargin*2), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
+	HTGTweetTextView* textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-kAvatarRect.right-kMargin*2,frame.bottom-lineHeight-kMargin*2), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
 	textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
 	textView->SetWordWrap(true);
 	textView->MakeEditable(false);
 	textView->setTweetId(theTweet->getId());
 	textView->SetText(theTweet->getText().c_str());
 	
-	sizeOfTextView = textView->CountLines()*(lineHeight+3);
-
-	calculatedSize = sizeOfTextView+(lineHeight+3)*1.5;
+	calculatedSize = textView->TextHeight(0,999)+kMargin*6;
 	if(calculatedSize < kAvatarRect.top+kAvatarRect.bottom)
 		calculatedSize = kAvatarRect.top+kAvatarRect.bottom;
 		
@@ -195,7 +193,7 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	lineHeight = (height.ascent + height.descent + height.leading);
 	BRect textRect(kTextPoint.x,frame.top+lineHeight+kTextPoint.y, frame.right, frame.bottom-lineHeight+1);
 	if(textView == NULL) {
-		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-kAvatarRect.right-kMargin,frame.bottom-lineHeight-kMargin), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
+		textView = new HTGTweetTextView(textRect, theTweet->getScreenName().c_str(), BRect(0,0,frame.right-kAvatarRect.right-kMargin*2,frame.bottom-lineHeight-kMargin), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
 		owner->AddChild(textView);
 		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
@@ -209,10 +207,9 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	else{
 		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
-		//textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
 		textView->MoveTo(textRect.left, textRect.top);
 		textView->ResizeTo(textRect.Width()+2, textRect.Height()+1);
-		textView->SetTextRect(BRect(0,0,frame.right-kAvatarRect.right,frame.bottom-lineHeight-kMargin));
+		textView->SetTextRect(BRect(0,0,frame.right-kAvatarRect.right-kMargin*2,frame.bottom-lineHeight-kMargin));
 	}
 	
 	/*Draw seperator*/
