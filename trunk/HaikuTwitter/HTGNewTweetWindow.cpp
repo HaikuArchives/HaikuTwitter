@@ -7,7 +7,7 @@
 #include "HTGNewTweetWindow.h"
 
 HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj)
-	: BWindow(BRect(100, 100, 500, 200), "New tweet...", B_TITLED_WINDOW, B_NOT_RESIZABLE)
+	: BWindow(BRect(100, 100, 500, 200), "What's Happening?", B_TITLED_WINDOW, B_NOT_RESIZABLE)
 {
 	this->twitObj = twitObj;
 	this->tweetId = string("");
@@ -23,7 +23,7 @@ HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj)
 	message->WindowActivated(true);
 	
 	/*Set up buttons*/
-	postButton = new BButton(BRect(3, 70, 90, 90), NULL, "Post", new BMessage(POST));
+	postButton = new BButton(BRect(3, 70, 90, 90), NULL, "Tweet", new BMessage(POST));
 	cancelButton = new BButton(BRect(93, 70, 180, 90), NULL, "Cancel", new BMessage(CANCEL));
 	shortenButton = new BButton(BRect(203, 70, 313, 90), NULL, "Shorten URLs", new BMessage(SHORTEN));
 	postButton->SetEnabled(false);
