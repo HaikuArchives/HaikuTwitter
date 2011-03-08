@@ -13,6 +13,7 @@ HTGTweetItem::HTGTweetItem(HTTweet *theTweet, bool displayFullName)
 	this->displayFullName = displayFullName;
 	timelineView = NULL;
 	textView = NULL;
+	isReplicant = false;
 }
 
 HTGTweetItem::HTGTweetItem(BMessage* archive)
@@ -31,6 +32,7 @@ HTGTweetItem::HTGTweetItem(BMessage* archive)
 	
 	timelineView = NULL;
 	textView = NULL;
+	isReplicant = false;
 }
 
 BArchivable*
@@ -113,10 +115,12 @@ void
 HTGTweetItem::Update(BView *owner, const BFont* font)
 {
 	theTweet->setView(owner);
+	timelineView = dynamic_cast<HTGTimeLineView*>(owner->Parent());
+
+	isReplicant = (timelineView != NULL && timelineView->IsReplicant());
 	
 	/*Set colors*/
-	timelineView = dynamic_cast<HTGTimeLineView*>(owner->Parent());
-	if(timelineView != NULL && timelineView->IsReplicant()) { //We're a replicant
+	if(isReplicant) { //We're a replicant
 		displayColors.nameColor	=	compileColor(235,235,235);
 		displayColors.textColor	=	compileColor(255,255,255);
 		displayColors.timeColor	=	compileColor(192,192,192);
@@ -197,15 +201,15 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		textFont.SetSize(textFont.Size()-2);
 		textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
 		textView->SetViewColor(owner->ViewColor());
-		textView->SetWordWrap(true);
-		textView->MakeEditable(false);
 		textView->setTweetId(theTweet->getId());
 		textView->SetText(theTweet->getText().c_str());
+		if(!isReplicant)
+			textView->MakeHyperText();
 	}
 	else{
 		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
-		textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
+		//textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
 		textView->MoveTo(textRect.left, textRect.top);
 		textView->ResizeTo(textRect.Width()+2, textRect.Height()+1);
 		textView->SetTextRect(BRect(0,0,frame.right-kAvatarRect.right,frame.bottom-lineHeight-kMargin));
