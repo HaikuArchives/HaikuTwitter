@@ -536,7 +536,7 @@ updateTimeLineThread(void *data)
 	if(TYPE == TIMELINE_SEARCH) {
 			try {
 				searchParser->readData(replyMsg.c_str());
-			} catch( xercesc::XMLException& e ) {
+			} catch( ... ) {
 				std::cout << super->Name() << ": Error while parsing data." << std::endl;
 				delete timeLineParser;
 				timeLineParser = NULL;
@@ -548,7 +548,7 @@ updateTimeLineThread(void *data)
 	else if(TYPE == TIMELINE_DIRECT) {
 			try {
 				directParser->readData(replyMsg.c_str());
-			} catch( xercesc::XMLException& e ) {
+			} catch( ... ) {
 				std::cout << super->Name() << ": Error while parsing data." << std::endl;
 				delete timeLineParser;
 				timeLineParser = NULL;
@@ -560,7 +560,7 @@ updateTimeLineThread(void *data)
 	else {
 		try {
 			timeLineParser->readData(replyMsg.c_str());
-		} catch( xercesc::XMLException& e ) {
+		} catch( ... ) {
 				std::cout << super->Name() << ": Error while parsing data." << std::endl;
 				delete timeLineParser;
 				timeLineParser = NULL;
