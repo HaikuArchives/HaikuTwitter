@@ -149,7 +149,7 @@ HTGTweetTextView::MakeHyperText()
 		if(pos != std::string::npos) {
 			int start = pos;
 			int end = pos;
-			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n') {
+			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n' && theText[end] != ',' && theText[end] != '.') {
 				end++;
 			}
 			if(end == theText.length()-2) //For some reason, we have to do this.
@@ -357,7 +357,7 @@ HTGTweetTextView::getTags()
 		if(pos != std::string::npos) {
 			int start = pos;
 			int end = pos;
-			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n') {
+			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n' && theText[end] != ',' && theText[end] != '.') {
 				end++;
 			}
 			if(end == theText.length()-2) //For some reason, we have to do this.
