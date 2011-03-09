@@ -96,9 +96,9 @@ HTGTweetTextView::MakeHyperText()
 	while(pos != std::string::npos) {
 		pos = theText.find("://", pos);
 		if(pos != std::string::npos) {
-			int start = pos;
+			int start = pos-1;
 			int end = pos;
-			while(start >= 0 && theText[start] != ' ' && theText[start] != '\n' && theText[start] > 0) {
+			while(start > -1 && (theText[start] >= 'A' && theText[start] <= 'z')) {
 				start--;
 			}
 			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n')
@@ -298,7 +298,7 @@ HTGTweetTextView::getUrls()
 		if(pos != std::string::npos) {
 			int start = pos;
 			int end = pos;
-			while(start >= 0 && theText[start] != ' ' && theText[start] != '\n' && theText[start] > 0) {
+			while(start > -1 && (theText[start] >= 'A' && theText[start] <= 'z')) {
 				start--;
 			}
 			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n') {
