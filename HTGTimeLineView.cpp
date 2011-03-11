@@ -538,7 +538,7 @@ updateTimeLineThread(void *data)
 				searchParser->readData(replyMsg.c_str());
 			} catch( ... ) {
 				std::cout << super->Name() << ": Error while parsing data." << std::endl;
-				delete timeLineParser;
+				//delete timeLineParser;
 				timeLineParser = NULL;
 				return B_OK;
 			}
@@ -550,7 +550,7 @@ updateTimeLineThread(void *data)
 				directParser->readData(replyMsg.c_str());
 			} catch( ... ) {
 				std::cout << super->Name() << ": Error while parsing data." << std::endl;
-				delete timeLineParser;
+				//delete timeLineParser;
 				timeLineParser = NULL;
 				return B_OK;
 			}
@@ -562,7 +562,7 @@ updateTimeLineThread(void *data)
 			timeLineParser->readData(replyMsg.c_str());
 		} catch( ... ) {
 				std::cout << super->Name() << ": Error while parsing data." << std::endl;
-				delete timeLineParser;
+				//delete timeLineParser;
 				timeLineParser = NULL;
 				return B_OK;
 		}

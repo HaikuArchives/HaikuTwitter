@@ -176,11 +176,13 @@ HTGNewTweetWindow::updateCounter()
 		counterView->SetHighColor(255, 0, 0);
 		postButton->SetEnabled(false);
 	}
-	else {
+	else if(symbolsLeft < 140) {
 		counterView->SetHighColor(128, 128, 128);
 		if(symbolsLeft < 140)
 			postButton->SetEnabled(true);
 	}
+	else if(symbolsLeft >= 140)
+		postButton->SetEnabled(false);
 	
 	counterView->SetText(counterString);
 }
