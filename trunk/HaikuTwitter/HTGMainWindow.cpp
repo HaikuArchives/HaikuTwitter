@@ -23,8 +23,11 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	/*Set up the menu bar*/
 	_SetupMenu();
 	
+	/*Set up avatar view*/
+	_SetupAvatarView();
+	
 	/*Set up tab view*/
-	BRect tabViewRect(Bounds().left, fMenuBar->Bounds().bottom, Bounds().right, Bounds().bottom);
+	BRect tabViewRect(Bounds().left, fAvatarView->Bounds().bottom+19, Bounds().right+2, Bounds().bottom);
 	tabView = new SmartTabView(tabViewRect, "TabView", B_WIDTH_FROM_LABEL, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	this->AddChild(tabView);
 	
@@ -357,6 +360,31 @@ HTGMainWindow::showAbout()
 	view->SetFontAndColor(0, 18, &font);
 
 	alert->Go();
+}
+
+void
+HTGMainWindow::AvatarViewResized()
+{
+	BRect tabViewRect(Bounds().left, fAvatarView->Bounds().bottom+19, Bounds().right+2, Bounds().bottom);
+	
+	tabView->ResizeTo(tabViewRect.Width(), tabViewRect.Height());
+	tabView->MoveTo(tabViewRect.left, tabViewRect.top);
+}
+
+void
+HTGMainWindow::_SetupAvatarView()
+{
+	HTTweet* avatar = new HTTweet();
+	std::string imageUrl("http://a3.twimg.com/profile_images/150453603/twitter_normal.jpg");
+	std::string screenName("martinhpedersen");
+	avatar->setProfileImageUrl(imageUrl);
+	avatar->setScreenName(screenName);
+	avatar->downloadBitmap();
+	
+	BRect viewRect(Bounds().left, fMenuBar->Bounds().bottom, Bounds().right, fMenuBar->Bounds().bottom+1+51);
+	fAvatarView = new HTGAvatarView(viewRect);
+	fAvatarView->SetAvatarTweet(avatar);
+	AddChild(fAvatarView);
 }
 
 void

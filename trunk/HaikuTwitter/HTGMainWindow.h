@@ -33,6 +33,7 @@
 #include "HTGTimeLineView.h"
 #include "HTGTimeLineWindow.h"
 #include "HTGErrorHandling.h"
+#include "HTGAvatarView.h"
 
 const int32 NEW_TWEET = 'NWTW';
 const int32 REFRESH = 'REFR';
@@ -61,6 +62,7 @@ public:
 	virtual void MessageReceived(BMessage *msg);
 	bool QuitRequested();
 	void setQuitOnClose(bool);
+	void AvatarViewResized();
 	~HTGMainWindow();
 	
 private:
@@ -74,6 +76,7 @@ private:
 	bool _isAutoStarted();
 	void _setAutoStarted(bool autostarted);
 	void _SetupMenu();
+	void _SetupAvatarView();
 	void _addPublicTimeLine();
 	void _removePublicTimeLine();
 	void _addSavedSearches();
@@ -103,7 +106,9 @@ private:
 	HTGTimeLineWindow *timeLineWindow;
 	HTGAccountSettingsWindow *accountSettingsWindow;
 	HTGInfoPopperSettingsWindow *infopopperSettingsWindow;
-				
+	
+	HTGAvatarView *fAvatarView;
+	
 	BMenuBar *fMenuBar;
 	BMenu *fTwitterMenu;
 	BMenu *fEditMenu;

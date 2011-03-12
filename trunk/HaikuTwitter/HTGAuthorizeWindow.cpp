@@ -41,7 +41,7 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	headerText->SetViewColor(theView->ViewColor());
 	theView->AddChild(headerText);
 	
-	openButton = new BButton(BRect(100, 120, 260, 150), NULL, "Log in to twitter.com", new BMessage(GO_TO_AUTH_URL));
+	openButton = new BButton(BRect(100, 120, 260, 150), NULL, "Connect with Twitter", new BMessage(GO_TO_AUTH_URL));
 	theView->AddChild(openButton);
 	
 	
