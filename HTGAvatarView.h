@@ -17,7 +17,7 @@
 class HTGAvatarView : public BView {
 public:
 							HTGAvatarView();
-							HTGAvatarView(BRect frame, uint32 resizingMode = B_FOLLOW_LEFT_RIGHT);
+							HTGAvatarView(twitCurl* twitObj, BRect frame, uint32 resizingMode = B_FOLLOW_LEFT_RIGHT);
 	virtual					~HTGAvatarView();
 
 			void			SetAvatarTweet(HTTweet*);
@@ -28,14 +28,17 @@ public:
 
 private:
 			BRect			_AvatarBounds();
-			BBitmap*		fLogo;
 			BButton*		fPostButton;
 			BStringView*	fCounterView;
 			
 			void			_UpdateCounter();
+			void			postTweet();
+			std::string		urlEncode(const char*);
 			
 			
 			HTGTextView*	fMessage;
 			HTTweet*		avatarTweet;
+			bool			displayAvatar;
+			twitCurl*		twitObj;
 };
 #endif

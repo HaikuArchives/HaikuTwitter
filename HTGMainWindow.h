@@ -34,6 +34,7 @@
 #include "HTGTimeLineWindow.h"
 #include "HTGErrorHandling.h"
 #include "HTGAvatarView.h"
+#include "HTGStatusBar.h"
 
 const int32 NEW_TWEET = 'NWTW';
 const int32 REFRESH = 'REFR';
@@ -45,6 +46,7 @@ const int32 SEARCH_FOR = 'SFOR';
 const int32 GO_SEARCH = 'SRCH';
 const int32 ABOUT = 'BOUT';
 const int32 CLOSE_TAB = 'CTAB';
+const int32 TOGGLE_AVATARVIEW = 'TATR';
 const int32 TOGGLE_TABS = 'TTAB';
 const int32 TOGGLE_PUBLIC = 'TPUB';
 const int32 TOGGLE_AUTOSTART = 'ASTT';
@@ -109,12 +111,14 @@ private:
 	
 	HTGAvatarView *fAvatarView;
 	
+	HTGStatusBar *statusBar;
+	
 	BMenuBar *fMenuBar;
 	BMenu *fTwitterMenu;
-	BMenu *fEditMenu;
+	BMenu *fViewMenu;
 	BMenu *fSettingsMenu;
 	BMenu *fTrendingSubMenu;
-	BMenuItem *fOpenInTabsMenuItem;
+	BMenuItem *fHideAvatarViewMenuItem;
 	BMenuItem *fEnablePublicMenuItem;
 	BMenuItem *fAutoStartMenuItem;
 	BMenuItem *fSaveTweetsMenuItem;
