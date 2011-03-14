@@ -7,7 +7,7 @@
 #include "HTGMainWindow.h"
 
 HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint position, int height)
-	: BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter", B_TITLED_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE)
+	: BWindow(BRect(position.x, position.y, position.x+315, position.y+height), "HaikuTwitter", B_DOCUMENT_WINDOW, B_NOT_H_RESIZABLE | B_NOT_ZOOMABLE)
 {
 	quitOnClose = false; //This is default false
 	this->key = key;
@@ -24,25 +24,31 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	_SetupMenu();
 	
 	/*Set up avatar view*/
+	fAvatarView = NULL;
 	_SetupAvatarView();
 	
 	/*Set up tab view*/
-	BRect tabViewRect(Bounds().left, fAvatarView->Bounds().bottom+19, Bounds().right+2, Bounds().bottom);
+	BRect tabViewRect(Bounds().left, fAvatarView->Bounds().bottom+19, Bounds().right, Bounds().bottom - 14);
 	tabView = new SmartTabView(tabViewRect, "TabView", B_WIDTH_FROM_LABEL, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	this->AddChild(tabView);
+	
+	/*Set up statusbar*/
+	statusBar = new HTGStatusBar(Bounds());
+	AddChild(statusBar);
+	statusBar->SetStatus("martinhpedersen");
 	
 	/*Set up friends timeline*/
 	twitCurl *timelineTwitObj = new twitCurl();
 	timelineTwitObj->setAccessKey( key );
 	timelineTwitObj->setAccessSecret( secret );
-	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
+	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 	tabView->AddTab(friendsTimeLine);
 	
 	/*Set up mentions timeline*/
 	twitCurl *mentionsTwitObj = new twitCurl();
 	mentionsTwitObj->setAccessKey( key );
 	mentionsTwitObj->setAccessSecret( secret );
-	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
+	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 	tabView->AddTab(mentionsTimeLine);
 	
 	/*Set up direct messages timeline - This should not be a normal timelineview!*/
@@ -57,7 +63,7 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 		_addPublicTimeLine();
 	
 	/*Add the saved searches as tabs - if tabs are enabled*/
-	if(fOpenInTabsMenuItem->IsMarked() && theSettings.saveSearches)
+	if(theSettings.saveSearches)
 		_addSavedSearches();
 		
 	/*Add the current trends*/
@@ -285,7 +291,7 @@ HTGMainWindow::_retrieveSettings()
 	theSettings.refreshTime = 5; //Default refresh time: 5 minutes.
 	theSettings.position = BPoint(300, 300);
 	theSettings.height = 600;
-	theSettings.useTabs = true;
+	theSettings.hideAvatar = false;
 	theSettings.enablePublic = false;
 	theSettings.saveSearches = false;
 	theSettings.saveTweets = true;
@@ -313,7 +319,7 @@ HTGMainWindow::_saveSettings()
 {
 	theSettings.height = this->Bounds().Height() -23;
 	theSettings.position = BPoint(this->Frame().left, this->Frame().top);
-	theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
+	theSettings.hideAvatar = fHideAvatarViewMenuItem->IsMarked();
 	theSettings.enablePublic = fEnablePublicMenuItem->IsMarked();
 	theSettings.saveTweets = fSaveTweetsMenuItem->IsMarked();
 	BFont font;
@@ -365,8 +371,8 @@ HTGMainWindow::showAbout()
 void
 HTGMainWindow::AvatarViewResized()
 {
-	BRect tabViewRect(Bounds().left, fAvatarView->Bounds().bottom+19, Bounds().right+2, Bounds().bottom);
-	
+	BRect tabViewRect(Bounds().left, fAvatarView->Bounds().bottom+19, Bounds().right, Bounds().bottom - 14);
+		
 	tabView->ResizeTo(tabViewRect.Width(), tabViewRect.Height());
 	tabView->MoveTo(tabViewRect.left, tabViewRect.top);
 }
@@ -382,9 +388,17 @@ HTGMainWindow::_SetupAvatarView()
 	avatar->downloadBitmap();
 	
 	BRect viewRect(Bounds().left, fMenuBar->Bounds().bottom, Bounds().right, fMenuBar->Bounds().bottom+1+51);
-	fAvatarView = new HTGAvatarView(viewRect);
-	fAvatarView->SetAvatarTweet(avatar);
-	AddChild(fAvatarView);
+	if(fHideAvatarViewMenuItem->IsMarked())
+		viewRect.bottom = fMenuBar->Bounds().bottom;
+	if(fAvatarView == NULL) {
+		fAvatarView = new HTGAvatarView(newTweetObj, viewRect);
+		fAvatarView->SetAvatarTweet(avatar);
+		AddChild(fAvatarView);
+	}
+	else {
+		fAvatarView->ResizeTo(viewRect.Width(), viewRect.Height());
+		AvatarViewResized();
+	}
 }
 
 void
@@ -412,9 +426,19 @@ HTGMainWindow::_SetupMenu()
 	fMenuBar->AddItem(fTwitterMenu);
 	
 	/*Make Edit Menu*/
-	fEditMenu = new BMenu("Edit");
-	//fEditMenu->AddItem(new BMenuItem("Copy", new BMessage(B_COPY), 'C')); //This is not implemented yet.
-	fMenuBar->AddItem(fEditMenu);
+	fViewMenu = new BMenu("View");
+	
+	fHideAvatarViewMenuItem = new BMenuItem("Hide \"What's Happening\"", new BMessage(TOGGLE_AVATARVIEW));
+	fHideAvatarViewMenuItem->SetMarked(theSettings.hideAvatar); 
+	fViewMenu->AddItem(fHideAvatarViewMenuItem);
+
+	BMenu *textSizeSubMenu = new BMenu("Text Size");
+	textSizeSubMenu->AddItem(new BMenuItem("Increase", new BMessage(TEXT_SIZE_INCREASE), '+'));
+	textSizeSubMenu->AddItem(new BMenuItem("Decrease", new BMessage(TEXT_SIZE_DECREASE), '-'));
+	textSizeSubMenu->AddItem(new BMenuItem("Revert", new BMessage(TEXT_SIZE_REVERT)));
+	fViewMenu->AddItem(textSizeSubMenu);
+	
+	fMenuBar->AddItem(fViewMenu);
 	
 	/*Make Settings Menu*/
 	fSettingsMenu = new BMenu("Settings");
@@ -422,16 +446,6 @@ HTGMainWindow::_SetupMenu()
 	fEnablePublicMenuItem = new BMenuItem("Show public stream", new BMessage(TOGGLE_PUBLIC));
 	fSettingsMenu->AddItem(fEnablePublicMenuItem);
 	fEnablePublicMenuItem->SetMarked(theSettings.enablePublic);
-	
-	fSettingsMenu->AddSeparatorItem();
-	fOpenInTabsMenuItem = new BMenuItem("Use tabs", new BMessage(TOGGLE_TABS));
-	BMenu *textSizeSubMenu = new BMenu("Text Size");
-	textSizeSubMenu->AddItem(new BMenuItem("Increase", new BMessage(TEXT_SIZE_INCREASE), '+'));
-	textSizeSubMenu->AddItem(new BMenuItem("Decrease", new BMessage(TEXT_SIZE_DECREASE), '-'));
-	textSizeSubMenu->AddItem(new BMenuItem("Revert", new BMessage(TEXT_SIZE_REVERT)));
-	//fSettingsMenu->AddItem(fOpenInTabsMenuItem);
-	fSettingsMenu->AddItem(textSizeSubMenu);
-	fOpenInTabsMenuItem->SetMarked(theSettings.useTabs);
 	
 	fSettingsMenu->AddSeparatorItem();
 	fAutoStartMenuItem = new BMenuItem("Auto start at login", new BMessage(TOGGLE_AUTOSTART));
@@ -521,13 +535,17 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 	const char* text_label = "text";
 	const char* id_label = "reply_to_id";
 	switch(msg->what) {
+		case POST:
+			fAvatarView->MessageReceived(msg);
+			break;
 		case TOGGLE_AUTOSTART:
 			_setAutoStarted(!fAutoStartMenuItem->IsMarked());
 			fAutoStartMenuItem->SetMarked(_isAutoStarted());
 			break;
-		case TOGGLE_TABS:
-			fOpenInTabsMenuItem->SetMarked(!fOpenInTabsMenuItem->IsMarked());
-			theSettings.useTabs = fOpenInTabsMenuItem->IsMarked();
+		case TOGGLE_AVATARVIEW:
+			fHideAvatarViewMenuItem->SetMarked(!fHideAvatarViewMenuItem->IsMarked());
+			theSettings.hideAvatar = fHideAvatarViewMenuItem->IsMarked();
+			_SetupAvatarView();
 			break;
 		case TOGGLE_SAVETWEETS:
 			fSaveTweetsMenuItem->SetMarked(!fSaveTweetsMenuItem->IsMarked());
@@ -574,7 +592,7 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 			searchForWindow->Show();
 			break;
 		case GO_USER:
-			if(!fOpenInTabsMenuItem->IsMarked()) {
+			if(false) {
 				timeLineWindow = new HTGTimeLineWindow(this, key, secret, refreshTime, TIMELINE_USER, msg->FindString(text_label, (int32)0));
 				timeLineWindow->Show();
 			}
@@ -588,7 +606,7 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 			}
 			break;
 		case GO_SEARCH:
-			if(!fOpenInTabsMenuItem->IsMarked()) {
+			if(false) {
 				timeLineWindow = new HTGTimeLineWindow(this, key, secret, refreshTime, TIMELINE_SEARCH, msg->FindString(text_label, (int32)0));
 				timeLineWindow->Show();
 			}

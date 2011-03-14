@@ -39,7 +39,7 @@ struct twitter_settings {
 	int refreshTime;
 	BPoint position;
 	int height;
-	bool useTabs;
+	bool hideAvatar;
 	bool enablePublic;
 	bool saveSearches;
 	int textSize;
