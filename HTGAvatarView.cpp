@@ -6,7 +6,7 @@
 #include "HTGAvatarView.h"
 
 HTGAvatarView::HTGAvatarView(twitCurl* twitObj, BRect frame, uint32 resizingMode)
-	: BView(frame, "AvatarView", resizingMode, B_WILL_DRAW)
+	: BView(frame, "AvatarView", resizingMode, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE)
 {	
 	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	avatarTweet = NULL;
@@ -85,6 +85,10 @@ HTGAvatarView::_UpdateCounter()
 			AddChild(fPostButton);
 			AddChild(fCounterView);
 			ResizeTo(Bounds().Width(), 83);
+			BPoint buttonPoint(Frame().right-55, Frame().top+1+kMargin);
+			BPoint counterPoint(Frame().right-40, Frame().top+1+kMargin+fPostButton->Bounds().Height());
+			fPostButton->MoveTo(buttonPoint);
+			fCounterView->MoveTo(counterPoint);
 			((HTGMainWindow *)Window())->AvatarViewResized();
 			BRect textRect(5,22,Bounds().right-60,65);
 			fMessage->ResizeTo(textRect.Width(), textRect.Height());
