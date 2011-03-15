@@ -17,7 +17,7 @@
 class HTGAvatarView : public BView {
 public:
 							HTGAvatarView();
-							HTGAvatarView(twitCurl* twitObj, BRect frame, uint32 resizingMode = B_FOLLOW_LEFT_RIGHT);
+							HTGAvatarView(twitCurl* twitObj, BRect frame = BRect(), uint32 resizingMode = B_FOLLOW_LEFT_RIGHT);
 	virtual					~HTGAvatarView();
 
 			void			SetAvatarTweet(HTTweet*);

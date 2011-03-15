@@ -19,11 +19,19 @@ HTAccountCredentials::HTAccountCredentials(twitCurl* twitObj, BHandler* msgHandl
 {
 	this->twitObj = twitObj;
 	this->msgHandler = msgHandler;
+	
+	verified = false;
 }
 
 HTAccountCredentials::~HTAccountCredentials()
 {
 	delete twitObj;
+}
+
+bool
+HTAccountCredentials::Verified() const
+{
+	return verified;
 }
 
 status_t
@@ -38,11 +46,7 @@ HTAccountCredentials::Fetch(int32 id)
 status_t
 HTAccountCredentials::FetchSelf()
 {	
-	status_t status;
-	
-	if(twitObj->verifyCredentials())
-		status = B_OK;
-	else
+	if(!twitObj->verifyCredentials())
 		return B_ERROR;
 		
 	std::string reply(" ");
@@ -55,6 +59,10 @@ HTAccountCredentials::FetchSelf()
 	description = _FindValue(CredentialTags::DESCRIPTION_TAG, reply);
 	profileImageUrl = _FindValue(CredentialTags::PROFILEIMAGEURL_TAG, reply);
 	countFollowers = atoi(_FindValue(CredentialTags::COUNTFOLLOWERS_TAG, reply));
+	
+	verified = true;
+	
+	return B_OK;
 }
 
 const char*

@@ -29,7 +29,8 @@ public:
 			const char*	Description() const;
 			const char*	ProfileImageUrl() const;
 			int32		CountFollowers() const;
-			int32		Id() const;	
+			int32		Id() const;
+			bool		Verified() const;	
 private:
 			BString		screenName;
 			BString		realName;
@@ -38,6 +39,7 @@ private:
 			BString		profileImageUrl;
 			int32		countFollowers;
 			int32		id;
+			bool		verified;
 			
 			twitCurl*	twitObj;
 			BHandler*	msgHandler;

@@ -6,7 +6,7 @@
 #include "HTGStatusBar.h"
 
 HTGStatusBar::HTGStatusBar(BRect frame)
-	: BView(BRect(frame.left, frame.Height()-13, frame.right-14, frame.Height()), "StatusBar", B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM,  B_WILL_DRAW | B_FRAME_EVENTS)
+	: BView(BRect(frame.left, frame.Height()+1-B_H_SCROLL_BAR_HEIGHT, frame.right-B_V_SCROLL_BAR_WIDTH, frame.Height()), "StatusBar", B_FOLLOW_LEFT_RIGHT | B_FOLLOW_BOTTOM,  B_WILL_DRAW | B_FRAME_EVENTS)
 {
 	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	

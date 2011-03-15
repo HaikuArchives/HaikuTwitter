@@ -4,10 +4,7 @@
  */ 
 
 #include <View.h>
-#include <TranslationUtils.h>
-#include <Roster.h>
-#include <Bitmap.h>
-#include <iostream>
+#include <ScrollBar.h>
 
 #ifndef HTG_STATUSBAR_H
 #define HTG_STATUSBAR_H
