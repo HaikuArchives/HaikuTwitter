@@ -29,6 +29,7 @@ HTStorage::saveTweet(HTTweet *theTweet)
 	string fileContent = string(theTweet->getScreenName());
 	fileContent.append(":\n");
 	fileContent.append(theTweet->getText());
+	fileContent.append("\n\nContent from Twitter");
 
 	/*Write the file*/
 	BFile file(path.Path(), B_READ_WRITE | B_CREATE_FILE | B_FAIL_IF_EXISTS);
