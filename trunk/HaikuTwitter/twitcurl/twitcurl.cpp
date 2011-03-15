@@ -1092,6 +1092,31 @@ bool twitCurl::accountRateLimitGet()
 }
 
 /*++
+* @method: twitCurl::verifyCredentials
+*
+* @description: verifies the account credentials and gets account information
+*
+* @input: none
+*
+* @output: true if authentication was success, otherwise false. This does not check http
+*          response by twitter. Use getLastWebResponse() for that.
+*
+*--*/
+bool twitCurl::verifyCredentials( )
+{
+    bool retVal = false;
+    if( isCurlInit() )
+    {
+        /* Prepare standard params */
+        prepareStandardParams();
+
+        /* Perform GET */
+        retVal = performGet( twitterDefaults::TWITCURL_VERIFYCREDENTIALS_URL );
+    }
+    return retVal;
+}
+
+/*++
 * @method: twitCurl::favoriteGet
 *
 * @description: method to get favorite users' statuses
