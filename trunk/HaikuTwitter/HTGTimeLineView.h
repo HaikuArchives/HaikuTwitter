@@ -3,7 +3,6 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
-#include "ListView.h"
 #include "ScrollView.h"
 #include "TabView.h"
 #include "Roster.h"
@@ -15,6 +14,7 @@
 
 #include <Notification.h>
 
+#include "HTGListView.h"
 #include "HTStorage.h"
 #include "TimeLineParser.h"
 #include "DirectMessageParser.h"
@@ -71,7 +71,7 @@ public:
 	bool waitingForUpdate;		//Archived
 	bool wantsNotifications;	//Archived
 	bool saveTweets;			//Archived
-	BListView *listView;		//Archived (deep)
+	HTGListView *listView;		//Archived (deep)
 	BList *unhandledList;		//Archived (deep)
 	BScrollView *theScrollView;	//Not archived
 	
