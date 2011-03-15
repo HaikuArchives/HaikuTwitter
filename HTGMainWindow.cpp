@@ -20,6 +20,10 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	newTweetObj->setAccessKey( key );
 	newTweetObj->setAccessSecret( secret );
 	
+	/*Get account credentials*/
+	accountCredentials = new HTAccountCredentials(newTweetObj, this);
+	accountCredentials->Fetch();
+	
 	/*Set up the menu bar*/
 	_SetupMenu();
 	
@@ -35,7 +39,10 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	/*Set up statusbar*/
 	statusBar = new HTGStatusBar(Bounds());
 	AddChild(statusBar);
-	statusBar->SetStatus("martinhpedersen");
+	if(accountCredentials->Verified())
+		statusBar->SetStatus(accountCredentials->ScreenName());
+	else
+		statusBar->SetStatus("Authentication failed");
 	
 	/*Set up friends timeline*/
 	twitCurl *timelineTwitObj = new twitCurl();
@@ -379,10 +386,16 @@ HTGMainWindow::AvatarViewResized()
 
 void
 HTGMainWindow::_SetupAvatarView()
-{
+{	
 	HTTweet* avatar = new HTTweet();
-	std::string imageUrl("http://a3.twimg.com/profile_images/150453603/twitter_normal.jpg");
-	std::string screenName("martinhpedersen");
+	
+	std::string imageUrl("error");
+	std::string screenName("---");
+	if(accountCredentials->Verified()) {
+		imageUrl = std::string(accountCredentials->ProfileImageUrl());
+		screenName = std::string(accountCredentials->ScreenName());
+	}
+	
 	avatar->setProfileImageUrl(imageUrl);
 	avatar->setScreenName(screenName);
 	avatar->downloadBitmap();
@@ -390,15 +403,22 @@ HTGMainWindow::_SetupAvatarView()
 	BRect viewRect(Bounds().left, fMenuBar->Bounds().bottom, Bounds().right, fMenuBar->Bounds().bottom+1+51);
 	if(fHideAvatarViewMenuItem->IsMarked())
 		viewRect.bottom = fMenuBar->Bounds().bottom;
-	if(fAvatarView == NULL) {
-		fAvatarView = new HTGAvatarView(newTweetObj, viewRect);
-		fAvatarView->SetAvatarTweet(avatar);
-		AddChild(fAvatarView);
-	}
-	else {
-		fAvatarView->ResizeTo(viewRect.Width(), viewRect.Height());
-		AvatarViewResized();
-	}
+	
+	fAvatarView = new HTGAvatarView(newTweetObj, viewRect);
+	fAvatarView->SetAvatarTweet(avatar);
+	AddChild(fAvatarView);
+}
+
+void
+HTGMainWindow::_ResizeAvatarView()
+{
+	BRect viewRect(Bounds().left, fMenuBar->Bounds().bottom, Bounds().right, fMenuBar->Bounds().bottom+1+51);
+	if(fHideAvatarViewMenuItem->IsMarked())
+		viewRect.bottom = fMenuBar->Frame().bottom;
+	
+	fAvatarView->ResizeTo(viewRect.Width(), viewRect.Height());
+	
+	AvatarViewResized();
 }
 
 void
@@ -545,7 +565,7 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 		case TOGGLE_AVATARVIEW:
 			fHideAvatarViewMenuItem->SetMarked(!fHideAvatarViewMenuItem->IsMarked());
 			theSettings.hideAvatar = fHideAvatarViewMenuItem->IsMarked();
-			_SetupAvatarView();
+			_ResizeAvatarView();
 			break;
 		case TOGGLE_SAVETWEETS:
 			fSaveTweetsMenuItem->SetMarked(!fSaveTweetsMenuItem->IsMarked());

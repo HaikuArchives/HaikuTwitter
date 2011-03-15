@@ -35,6 +35,7 @@
 #include "HTGErrorHandling.h"
 #include "HTGAvatarView.h"
 #include "HTGStatusBar.h"
+#include "HTAccountCredentials.h"
 
 const int32 NEW_TWEET = 'NWTW';
 const int32 REFRESH = 'REFR';
@@ -79,6 +80,7 @@ private:
 	void _setAutoStarted(bool autostarted);
 	void _SetupMenu();
 	void _SetupAvatarView();
+	void _ResizeAvatarView();
 	void _addPublicTimeLine();
 	void _removePublicTimeLine();
 	void _addSavedSearches();
@@ -101,6 +103,8 @@ private:
 	HTGTimeLineView *mentionsTimeLine;
 	HTGTimeLineView *publicTimeLine;
 	HTGTimeLineView *directTimeLine;
+	
+	HTAccountCredentials* accountCredentials;
 	
 	HTGGoToUserWindow *goToUserWindow;
 	HTGSearchForWindow *searchForWindow;

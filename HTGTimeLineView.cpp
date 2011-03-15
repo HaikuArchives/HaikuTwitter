@@ -54,7 +54,7 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	}
 	
 	/*Set up listview*/
-	this->listView = new BListView(BRect(0, 0, Bounds().Width()-14, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+	this->listView = new BListView(BRect(0, 0, Bounds().Width()+1-B_V_SCROLL_BAR_WIDTH, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	
 	/*Prepare the list for unhandled tweets*/
 	unhandledList = new BList();
@@ -88,7 +88,7 @@ HTGTimeLineView::HTGTimeLineView(const int32 TYPE, BRect rect, BList* tweets, in
 	twitObj = NULL;
 	
 	/*Set up listview*/
-	this->listView = new BListView(BRect(0, 0, Bounds().Width()-15, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+	this->listView = new BListView(BRect(0, 0, Bounds().Width()+1-B_V_SCROLL_BAR_WIDTH, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	
 	/*Prepare the list for unhandled tweets*/
 	unhandledList = new BList();
