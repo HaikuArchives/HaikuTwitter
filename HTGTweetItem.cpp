@@ -143,6 +143,43 @@ HTGTweetItem::compileColor(uint8 red, uint8 green, uint8 blue){
 }
 
 void
+HTGTweetItem::RightClicked(BPoint point, BView* owner, BRect frame)
+{
+	if(textView != NULL)
+		textView->MouseDown(textView->ConvertFromParent(point));
+}
+
+void
+HTGTweetItem::LeftClicked(BPoint point, BView* owner, BRect frame)
+{
+	BFont textFont;
+	owner->GetFont(&textFont);
+	font_height height;
+	owner->GetFontHeight(&height);
+	float lineHeight = (height.ascent + height.descent + height.leading);
+	
+	BRect avatarBounds = AvatarBounds(frame);
+	BRect nameBounds = NameBounds(frame, owner, lineHeight, theTweet->getScreenName().c_str());
+	nameBounds.top = nameBounds.top-lineHeight;
+	nameBounds.bottom = nameBounds.bottom+lineHeight;
+	
+	if(avatarBounds.Contains(point) || nameBounds.Contains(point))
+	{	
+		//Open URL to Twitter profile for current screen name
+		std::string url(theTweet->getScreenName());
+		url.insert(0, "http://twitter.com/#!/");
+		
+		// be lazy and let /bin/open open the URL
+		entry_ref ref;
+		if (get_ref_for_path("/bin/open", &ref))
+			return;
+		
+		const char* args[] = { "/bin/open", url.c_str(), NULL };
+		be_roster->Launch(&ref, 2, args);
+	}
+}
+
+void
 HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 {	
 	owner->SetDrawingMode(B_OP_OVER);

@@ -607,14 +607,6 @@ WriteUrlCallback(void *ptr, size_t size, size_t nmemb, void *data)
 		return written;
 }
 
-/*void
-HTGTweetTextView::MouseDown(BPoint where)
-{
-	// We eat all mouse button events.
-
-	BTextView::MouseDown(where);
-}*/
-
 void
 HTGTweetTextView::MouseUp(BPoint where)
 {

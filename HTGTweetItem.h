@@ -39,6 +39,8 @@ public:
 	BRect NameBounds(BRect frame, BView* view, float lineHeight, const char* name);
 	BRect TimeBounds(BRect frame, BView* view, float lineHeight, const char* time);
 	BRect SourceBounds(BRect frame, BView* view, float lineHeight, const char* source);
+	void LeftClicked(BPoint point, BView* owner, BRect frame);
+	void RightClicked(BPoint point, BView* owner, BRect frame);
 	virtual void ClearView();
 	virtual void DrawItem(BView *owner, BRect frame, bool complete = false);
 	virtual void Update(BView *owner, const BFont* font);

@@ -54,7 +54,7 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	}
 	
 	/*Set up listview*/
-	this->listView = new BListView(BRect(0, 0, Bounds().Width()+1-B_V_SCROLL_BAR_WIDTH, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+	this->listView = new HTGListView(BRect(0, 0, Bounds().Width()+1-B_V_SCROLL_BAR_WIDTH, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	
 	/*Prepare the list for unhandled tweets*/
 	unhandledList = new BList();
@@ -88,7 +88,7 @@ HTGTimeLineView::HTGTimeLineView(const int32 TYPE, BRect rect, BList* tweets, in
 	twitObj = NULL;
 	
 	/*Set up listview*/
-	this->listView = new BListView(BRect(0, 0, Bounds().Width()+1-B_V_SCROLL_BAR_WIDTH, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+	this->listView = new HTGListView(BRect(0, 0, Bounds().Width()+1-B_V_SCROLL_BAR_WIDTH, Bounds().Height()), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 	
 	/*Prepare the list for unhandled tweets*/
 	unhandledList = new BList();
@@ -141,10 +141,10 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 		unarchived = instantiate_object(&msg);
 		if(unarchived) {
 			std::cout << "Unable to instantiate archived <HTGTimeLineView::listView>." << std::endl;
-			listView = dynamic_cast<BListView *>(unarchived);
+			listView = dynamic_cast<HTGListView *>(unarchived);
 			listView->ResizeTo(Bounds().Width(), Bounds().Height()); //No scrollview, so resize to fit whole view
 		}else {
-			listView = new BListView(Bounds(), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
+			listView = new HTGListView(Bounds(), "ListView", B_SINGLE_SELECTION_LIST, B_FOLLOW_ALL, B_WILL_DRAW | B_FRAME_EVENTS);
 		}
 	}
 	
@@ -477,7 +477,7 @@ updateTimeLineThread(void *data)
 	status_t junkId;
 	wait_for_thread(find_thread("UpdateThread"), &junkId);
 	
-	BListView *listView = super->listView;
+	HTGListView *listView = super->listView;
 	bool saveTweets = super->saveTweets;
 	
 	int32 TYPE = super->TYPE;
