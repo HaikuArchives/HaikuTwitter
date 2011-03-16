@@ -133,7 +133,6 @@ void TimeLineParser::readData(const char *xmlData)
    		const char *chId = std::string("TimeLineData").c_str();
    		MemBufInputSource memSource((XMLByte *)xmlData, (XMLSize_t)strlen(xmlData)*sizeof(char), chId);
    		
-   		std::cout << "Passing buffer to parser" << std::endl;
       m_ConfigFileParser->parse( memSource );
 
       // no need to free this pointer - owned by the parent parser object
@@ -498,5 +497,4 @@ void TimeLineParser::readData(const char *xmlData)
       errBuf << "Error parsing file: " << message << flush;
       XMLString::release( &message );
    }
-   std::cout << "Done parsing XML" << std::endl;
 }
