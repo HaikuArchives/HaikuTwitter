@@ -592,7 +592,7 @@ WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data)
 BBitmap*
 HTTweet::defaultBitmap()
 {
-	return BTranslationUtils::GetBitmap(B_VECTOR_ICON_TYPE, "twitter_icon");
+	return BTranslationUtils::GetBitmap('PNG ', "logo_48");
 }
 
 int

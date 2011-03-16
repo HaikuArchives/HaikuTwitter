@@ -140,10 +140,10 @@ HTGAvatarView::_AvatarBounds()
 	BRect frame = Bounds();
 	BRect bounds = BRect();
 	
-	bounds.left = frame.right-1-kMargin-47;
-	bounds.top = frame.top+1+kMargin;
-	bounds.right = frame.right-1-kMargin;
-	bounds.bottom = bounds.top+47;
+	bounds.left = frame.right-kMargin-48;
+	bounds.top = frame.top+kMargin;
+	bounds.right = bounds.left+48;
+	bounds.bottom = bounds.top+48;
 			
 	return bounds;
 }
