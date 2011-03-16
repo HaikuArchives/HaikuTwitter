@@ -147,6 +147,9 @@ void SearchParser::readData(const char *xmlData)
       		string theDate("");
       		tweetPtr = new HTTweet*[1];
       		tweetPtr[0] = new HTTweet(theName, theText, theUrl, theDate);
+      		time_t rawtime;
+      		time(&rawtime);
+      		tweetPtr[0]->setDate(rawtime);
       		numberOfEntries++;
       		return;
       }
