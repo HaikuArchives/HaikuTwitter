@@ -633,7 +633,7 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 			else if (LockLooper()) {
 				bool excists = false;
 				for(int i = 0; i < tabView->CountTabs(); i++)
-					 if(strcmp(tabView->TabAt(i)->Label(), msg->FindString(text_label, (int32)0)) == 0) {
+					 if(strcmp(tabView->TabAt(i)->Label(), msg->FindString(text_label, (int32)0)) == 0) { //Parse for excisting tab
 					 	excists = true;
 					 	tabView->Select(i);
 					 	break;
