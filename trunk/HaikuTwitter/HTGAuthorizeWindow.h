@@ -28,6 +28,7 @@
 const int32 GO_TO_AUTH_URL 		= 'URL';
 const int32 GO_AUTH 			= 'GO';
 const int32 AUTHORIZATION_DONE 	= 'ATHD';
+const int32 USE_WITHOUT_ACCOUNT = 'NOGO';
 
 struct oauth_settings {
 	char key[255];
@@ -56,6 +57,7 @@ private:
 			BTextView*		headerText;
 			BButton*		goButton;
 			BButton*		openButton;
+			BButton*		cancelButton;
 			BView*			theView;
 			BWindow*		delegate;
 };
