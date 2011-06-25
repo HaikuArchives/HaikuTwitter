@@ -44,6 +44,8 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	openButton = new BButton(BRect(100, 120, 260, 150), NULL, "Connect with Twitter", new BMessage(GO_TO_AUTH_URL));
 	theView->AddChild(openButton);
 	
+	cancelButton = new BButton(BRect(100, 160, 260, 190), NULL, "Use without account", new BMessage(USE_WITHOUT_ACCOUNT));
+	theView->AddChild(cancelButton);
 	
 	/*Set up text control*/
 	query = new BTextControl(BRect(100,120,260,150), "Enter PIN", "Enter PIN:", NULL, NULL);
@@ -126,6 +128,7 @@ HTGAuthorizeWindow::MessageReceived(BMessage *msg)
 			else {
 				openUrl(url);
 				openButton->RemoveSelf();
+				cancelButton->RemoveSelf();
 				theView->AddChild(query);
 				theView->AddChild(goButton);
 				query->WindowActivated(true);
@@ -145,6 +148,12 @@ HTGAuthorizeWindow::MessageReceived(BMessage *msg)
 				this->Close();
 			}
 		}
+		case USE_WITHOUT_ACCOUNT: {
+			storeTokens("NOAUTH", "NOAUTH");
+			be_app->PostMessage(new BMessage(AUTHORIZATION_DONE));
+			this->Close();
+			break;	
+		}	
 		default:
 			BWindow::MessageReceived(msg);
 	}

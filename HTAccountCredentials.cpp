@@ -60,7 +60,7 @@ HTAccountCredentials::FetchSelf()
 	profileImageUrl = _FindValue(CredentialTags::PROFILEIMAGEURL_TAG, reply);
 	countFollowers = atoi(_FindValue(CredentialTags::COUNTFOLLOWERS_TAG, reply));
 	
-	verified = true;
+	verified = (screenName.Length() > 1);
 	
 	return B_OK;
 }

@@ -44,31 +44,33 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	else
 		statusBar->SetStatus("Authentication failed");
 	
-	/*Set up friends timeline*/
-	twitCurl *timelineTwitObj = new twitCurl();
-	timelineTwitObj->setAccessKey( key );
-	timelineTwitObj->setAccessSecret( secret );
-	friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
-	tabView->AddTab(friendsTimeLine);
+	if(accountCredentials->Verified()) {
+		/*Set up friends timeline*/
+		twitCurl *timelineTwitObj = new twitCurl();
+		timelineTwitObj->setAccessKey( key );
+		timelineTwitObj->setAccessSecret( secret );
+		friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
+		tabView->AddTab(friendsTimeLine);
 	
-	/*Set up mentions timeline*/
-	twitCurl *mentionsTwitObj = new twitCurl();
-	mentionsTwitObj->setAccessKey( key );
-	mentionsTwitObj->setAccessSecret( secret );
-	mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
-	tabView->AddTab(mentionsTimeLine);
-	
-	/*Set up direct messages timeline - This should not be a normal timelineview!*/
-	/*twitCurl *directTwitObj = new twitCurl();
-	directTwitObj->setAccessKey( key );
-	directTwitObj->setAccessSecret( secret );
-	directTimeLine = new HTGTimeLineView(directTwitObj, TIMELINE_DIRECT, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
-	tabView->AddTab(directTimeLine);*/
-	
+		/*Set up mentions timeline*/
+		twitCurl *mentionsTwitObj = new twitCurl();
+		mentionsTwitObj->setAccessKey( key );
+		mentionsTwitObj->setAccessSecret( secret );
+		mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
+		tabView->AddTab(mentionsTimeLine);
+	}
 	/*Set up public timeline - if enabled*/
-	if(fEnablePublicMenuItem->IsMarked())
+	if(fEnablePublicMenuItem->IsMarked() || !accountCredentials->Verified())
 		_addPublicTimeLine();
+		
+	if(!accountCredentials->Verified()) { //Open a search for #haikuos
+		BMessage *newMsg = new BMessage('SRCH');
+		newMsg->AddString("text", "#haikuos");
 	
+		MessageReceived(newMsg);
+	}
+		
+		
 	/*Add the saved searches as tabs - if tabs are enabled*/
 	if(theSettings.saveSearches)
 		_addSavedSearches();
