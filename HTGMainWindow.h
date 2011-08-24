@@ -92,6 +92,8 @@ private:
 	void showAbout();
 
 	bool quitOnClose;
+	
+	bool noAuth;
 
 	SmartTabView *tabView;
 	
