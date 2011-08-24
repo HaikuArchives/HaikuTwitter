@@ -439,20 +439,27 @@ HTGMainWindow::_SetupMenu()
 	fTrendingSubMenu = new BMenu("Trending");
 	fTwitterMenu->AddItem(fTrendingSubMenu); //We fill this menu later (see BMessage: REFRESH)
 	fTwitterMenu->AddSeparatorItem();
-	fTwitterMenu->AddItem(new BMenuItem("Refresh", new BMessage(REFRESH), 'R'));
-	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("About HaikuTwitter...", new BMessage(ABOUT)));
 	fTwitterMenu->AddSeparatorItem();
 	fTwitterMenu->AddItem(new BMenuItem("Close active tab", new BMessage(CLOSE_TAB), 'W', B_SHIFT_KEY));
 	fTwitterMenu->AddItem(new BMenuItem("Quit", new BMessage(B_QUIT_REQUESTED), 'Q'));
 	fMenuBar->AddItem(fTwitterMenu);
 	
-	/*Make Edit Menu*/
+	/*Make View Menu*/
 	fViewMenu = new BMenu("View");
+	fViewMenu->AddItem(new BMenuItem("Refresh", new BMessage(REFRESH), 'R'));
+	
+	fViewMenu->AddSeparatorItem();
 	
 	fHideAvatarViewMenuItem = new BMenuItem("Hide \"What's Happening\"", new BMessage(TOGGLE_AVATARVIEW));
 	fHideAvatarViewMenuItem->SetMarked(theSettings.hideAvatar); 
 	fViewMenu->AddItem(fHideAvatarViewMenuItem);
+	
+	fEnablePublicMenuItem = new BMenuItem("Show public stream", new BMessage(TOGGLE_PUBLIC));
+	fViewMenu->AddItem(fEnablePublicMenuItem);
+	fEnablePublicMenuItem->SetMarked(theSettings.enablePublic);
+	
+	fViewMenu->AddSeparatorItem();
 
 	BMenu *textSizeSubMenu = new BMenu("Text Size");
 	textSizeSubMenu->AddItem(new BMenuItem("Increase", new BMessage(TEXT_SIZE_INCREASE), '+'));
@@ -465,11 +472,6 @@ HTGMainWindow::_SetupMenu()
 	/*Make Settings Menu*/
 	fSettingsMenu = new BMenu("Settings");
 	fMenuBar->AddItem(fSettingsMenu);
-	fEnablePublicMenuItem = new BMenuItem("Show public stream", new BMessage(TOGGLE_PUBLIC));
-	fSettingsMenu->AddItem(fEnablePublicMenuItem);
-	fEnablePublicMenuItem->SetMarked(theSettings.enablePublic);
-	
-	fSettingsMenu->AddSeparatorItem();
 	fAutoStartMenuItem = new BMenuItem("Auto start at login", new BMessage(TOGGLE_AUTOSTART));
 	fAutoStartMenuItem->SetMarked(_isAutoStarted());
 	fSettingsMenu->AddItem(fAutoStartMenuItem);
