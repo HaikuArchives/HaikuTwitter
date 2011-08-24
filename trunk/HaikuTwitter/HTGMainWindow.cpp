@@ -16,6 +16,8 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 		
 	_retrieveSettings();
 	
+	this->noAuth = (key.find("NOAUTH") != std::string::npos);
+	
 	newTweetObj = new twitCurl();
 	newTweetObj->setAccessKey( key );
 	newTweetObj->setAccessSecret( secret );
@@ -41,6 +43,8 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	AddChild(statusBar);
 	if(accountCredentials->Verified())
 		statusBar->SetStatus(accountCredentials->ScreenName());
+	else if(noAuth)
+		statusBar->SetStatus("Not authenticated");
 	else
 		statusBar->SetStatus("Authentication failed");
 	
@@ -452,7 +456,11 @@ HTGMainWindow::_SetupMenu()
 	fViewMenu->AddSeparatorItem();
 	
 	fHideAvatarViewMenuItem = new BMenuItem("Hide \"What's Happening\"", new BMessage(TOGGLE_AVATARVIEW));
-	fHideAvatarViewMenuItem->SetMarked(theSettings.hideAvatar); 
+	fHideAvatarViewMenuItem->SetMarked(theSettings.hideAvatar);
+	if(!accountCredentials->Verified()) {
+		fHideAvatarViewMenuItem->SetMarked(true);
+		fHideAvatarViewMenuItem->SetEnabled(false);
+	}
 	fViewMenu->AddItem(fHideAvatarViewMenuItem);
 	
 	fEnablePublicMenuItem = new BMenuItem("Show public stream", new BMessage(TOGGLE_PUBLIC));
