@@ -216,7 +216,6 @@ void SearchParser::readData(const char *xmlData)
             		delete t;
             		            		
             		string textString((char *)utf8String);
-            		textString.erase(textString.length()-5, 5); //Last three chars is garbage!
             		tweetPtr[numberOfEntries] = new HTTweet();
             		tweetPtr[numberOfEntries]->setText(textString);
             		numberOfEntries++;
@@ -266,12 +265,6 @@ void SearchParser::readData(const char *xmlData)
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
-            		
-            		/*Remove last 11 or 9 characters, junk.*/
-            		if(i < nodeCount-1 && strlen(rawString) > 11)
-            			rawString[strlen(rawString)-11] = '\0';
-            		else if(strlen(rawString) > 9)
-            			rawString[strlen(rawString)-9] = '\0';
             		
             		string textString(rawString+19); //Skip "http://twitter.com/"... and we've got the username:)
             		
@@ -361,9 +354,6 @@ void SearchParser::readData(const char *xmlData)
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
-            		//Remove last character, holds ugly symbol.
-            		if(strlen(rawString) > 3)
-            			rawString[strlen(rawString)-3] = '\0';
             		
             		string textString(rawString);
             		tweetPtr[i]->setPublishedDate(textString);
@@ -389,9 +379,6 @@ void SearchParser::readData(const char *xmlData)
             				= dynamic_cast< xercesc::DOMText* >( currentElement->getChildNodes()->item(0) );
             		
             		char *rawString = XMLString::transcode(textNode->getWholeText());
-            		//Remove last character, holds ugly symbol.
-            		if(strlen(rawString) > 3)
-            			rawString[strlen(rawString)-3] = '\0';
             		std::string sourceName(rawString);
             		
             		// Parse the data for Application name

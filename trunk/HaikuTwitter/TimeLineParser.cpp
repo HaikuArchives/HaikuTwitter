@@ -224,7 +224,6 @@ void TimeLineParser::readData(const char *xmlData)
             		printf("%s\n", utf8String);
             		#endif		
             		string textString((char *)utf8String);
-            		textString.erase(textString.length()-3, 3); //Last three chars is garbage!
             		tweetPtr[numberOfEntries] = new HTTweet();
             		tweetPtr[numberOfEntries]->setText(textString);
             		numberOfEntries++;
@@ -255,8 +254,6 @@ void TimeLineParser::readData(const char *xmlData)
             		#ifdef DEBUG_ENABLED
             		std::cout << rawString << std::endl;
             		#endif	
-            		if(rawString.length() > 3)
-            			rawString[rawString.length()-3] = '\0';
             		tweetPtr[i/2]->setId(rawString.c_str());
             	}
          	}
@@ -287,10 +284,6 @@ void TimeLineParser::readData(const char *xmlData)
             		#ifdef DEBUG_ENABLED
             		printf("%s\n", rawString);
             		#endif	
-            		
-            		/*Remove last character, holds ugly symbol.*/
-            		if(strlen(rawString) > 5)
-            			rawString[strlen(rawString)-5] = '\0';
             		
             		string textString(rawString);
             		tweetPtr[i]->setScreenName(textString);
@@ -362,10 +355,6 @@ void TimeLineParser::readData(const char *xmlData)
             		printf("%s\n", rawString);
             		#endif
             		
-            		/*Remove last character, holds ugly symbol.*/
-            		if(strlen(rawString) > 3)
-            			rawString[strlen(rawString)-3] = '\0';
-            		
             		std::string sourceName(rawString);
             		
             		// Parse the data for Application name
@@ -413,10 +402,6 @@ void TimeLineParser::readData(const char *xmlData)
             		printf("%s\n", rawString);
             		#endif
             		
-            		/*Remove last character, holds ugly symbol.*/
-            		if(strlen(rawString) > 5)
-            			rawString[strlen(rawString)-5] = '\0';
-            		
             		string textString(rawString);
             		tweetPtr[i]->setProfileImageUrl(textString);
             		delete rawString;
@@ -448,10 +433,6 @@ void TimeLineParser::readData(const char *xmlData)
             		#ifdef DEBUG_ENABLED
             		printf("%s\n", rawString);
             		#endif
-            		
-            		/*Remove last character, holds ugly symbol.*/
-            		if(strlen(rawString) > 3)
-            			rawString[strlen(rawString)-3] = '\0';
             		
             		string textString(rawString);
             		tweetPtr[i/2]->setDate(textString);
