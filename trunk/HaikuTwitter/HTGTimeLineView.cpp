@@ -531,13 +531,14 @@ updateTimeLineThread(void *data)
 	 #endif
 
 	if(replyMsg.length() < 100)   //Length of data is less than 100 characters. Clearly,
-		replyMsg = "error";			//something is wrong...;
+		replyMsg = "error";			//something is wrong... abort.;
 
 	if(TYPE == TIMELINE_SEARCH) {
 			try {
 				searchParser->readData(replyMsg.c_str());
 			} catch( ... ) {
 				std::cout << super->Name() << ": Error while parsing data." << std::endl;
+				//delete timeLineParser;
 				timeLineParser = NULL;
 				return B_OK;
 			}
@@ -549,6 +550,7 @@ updateTimeLineThread(void *data)
 				directParser->readData(replyMsg.c_str());
 			} catch( ... ) {
 				std::cout << super->Name() << ": Error while parsing data." << std::endl;
+				//delete timeLineParser;
 				timeLineParser = NULL;
 				return B_OK;
 			}
@@ -560,6 +562,7 @@ updateTimeLineThread(void *data)
 			timeLineParser->readData(replyMsg.c_str());
 		} catch( ... ) {
 				std::cout << super->Name() << ": Error while parsing data." << std::endl;
+				//delete timeLineParser;
 				timeLineParser = NULL;
 				return B_OK;
 		}
