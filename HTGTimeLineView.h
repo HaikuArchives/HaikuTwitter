@@ -36,6 +36,8 @@ const int32 TIMELINE_SEARCH = 'TSCH';
 const int32 TIMELINE_DIRECT = 'DMSG';
 const int32 TIMELINE_HDD = 'THDD';
 
+const int32 kMaximumRetries = 5;
+
 status_t updateTimeLineThread(void *data);
 
 class HTGTimeLineView : public BView {
@@ -66,6 +68,8 @@ public:
 	void savedSearchCreateSelf();
 	bool _retrieveInfoPopperBoolFromSettings();
 	std::string& htmlFormatedString(const char *orig);
+	
+	int32 errorCount;			//Not archived
 	
 	bool isReplicant;			//Not archived
 	bool waitingForUpdate;		//Archived

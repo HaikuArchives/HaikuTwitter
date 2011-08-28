@@ -347,27 +347,7 @@ HTTweet::getRelativeDate() const
 bool
 HTTweet::operator<(const HTTweet &b) const
 {
-	struct DateStruct bDate = b.getDate();
-	struct DateStruct aDate = this->getDate();
-	if(aDate.month < bDate.month)
-		return true;
-	if(aDate.month > bDate.month)
-		return false;
-	if(aDate.day < bDate.day)
-		return true;
-	if(aDate.day > bDate.day)
-		return false;
-	if(aDate.hour < bDate.hour)
-		return true;
-	if(aDate.hour > bDate.hour)
-		return false;
-	if(aDate.minute < bDate.minute)
-		return true;
-	if(aDate.minute > bDate.minute)
-		return false;
-	if(aDate.second < bDate.second)
-		return true;
-	return false;	
+	return (this->getUnixTime() < b.getUnixTime());
 }
 
 const char*
