@@ -3,11 +3,12 @@
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
-#include "SearchParser.h"
+#include "HTSearchParser.h"
 
 #include <string>
 #include <iostream>
 #include <sstream>
+#include <List.h>
 
 using namespace std;
 
@@ -20,6 +21,7 @@ namespace TwitterTags {
 	const char* NAME_TAG		 	= "<name>";
 	const char* WHERE_TAG			= "<uri>";
 	const char* ID_TAG				= "<id>";
+	const char* PROFILEIMAGEURL_TAG	= "<link>";
 }
 
 //Define some constants for using the twitter api
@@ -36,7 +38,7 @@ HTSearchParser::HTSearchParser()
 HTSearchParser::~HTSearchParser()
 {
 	while(!fTweets->IsEmpty())
-		delete fTweets->RemoveItem((int32)0);
+		delete (HTTweet *)fTweets->RemoveItem((int32)0);
 	delete fTweets;
 }
 
@@ -47,13 +49,13 @@ HTSearchParser::Tweets() {
 }
 
 status_t
-HTSearchParser::Parse(const string& data)
+HTSearchParser::Parse(const std::string& data)
 {
 	//text, id, screen_name, fullname, profileimageurl, published, source
     
     status_t status = B_OK;
 	
-	if(str.length() < 30)
+	if(data.length() < 30)
 		return B_ERROR;
 	
 	//Devide data into nodes.
@@ -61,7 +63,7 @@ HTSearchParser::Parse(const string& data)
 	string buffer("");
 	size_t pos = 0;
 	while(true) {
-		pos = FindValue(&buffer, TwitterTags::ENTRY_TAG, str, pos);
+		pos = FindValue(&buffer, TwitterTags::ENTRY_TAG, data, pos);
 		if(pos == string::npos)
 			break;
 		nodeList->AddItem(new string(buffer));
@@ -70,7 +72,7 @@ HTSearchParser::Parse(const string& data)
 		return B_OK;
 	
 	//Parse nodes
-	status = _ParseNodes(nodeList, fPosts);
+	status = _ParseNodes(nodeList, fTweets);
 	
 	//Delete all nodes
 	while(!nodeList->IsEmpty())
@@ -86,7 +88,7 @@ HTSearchParser::_ParseNodes(BList* nodeList, BList* resultList)
 	status_t status = B_OK;
 	
 	string* parsingNode;
-	SPost* currentTweet;
+	HTTweet* currentTweet;
 	string buffer("");
 	
 	while(!nodeList->IsEmpty()) {
@@ -95,39 +97,39 @@ HTSearchParser::_ParseNodes(BList* nodeList, BList* resultList)
 		parsingNode = (string *)nodeList->RemoveItem((int32)0);
 		if(parsingNode == NULL)
 			return B_BAD_INDEX;	
-		currentTweet = new SPost(S_TWITTER_TYPE);
+		currentTweet = new HTTweet();
 		
 		//Content
 		if(FindValue(&buffer, TwitterTags::CONTENT_TAG, *parsingNode, 0) == string::npos)
 			status = B_ERROR;
 		else
-			currentTweet->SetContent(buffer.c_str());
-		
-		//Where
-		if(status == B_OK && FindValue(&buffer, TwitterTags::WHERE_TAG, *parsingNode, 0) == string::npos)
-			status = B_ERROR;
-		else
-			currentTweet->SetWhere(buffer.c_str());
+			currentTweet->setText(buffer);
 			
 		//Author
 		if(status == B_OK && FindValue(&buffer, TwitterTags::NAME_TAG, *parsingNode, 0) == string::npos)
 			status = B_ERROR;
 		else
-			currentTweet->SetAuthor(buffer.c_str());
+			currentTweet->setScreenName(buffer);
+			
+		//Author
+		if(status == B_OK && FindValue(&buffer, TwitterTags::PROFILEIMAGEURL_TAG, *parsingNode, 0) == string::npos)
+			status = B_ERROR;
+		else
+			currentTweet->setProfileImageUrl(buffer);
 		
 		//When
 		if(status == B_OK && FindValue(&buffer, TwitterTags::WHEN_TAG, *parsingNode, 0) == string::npos)
 			status = B_ERROR;
 		else
-			currentTweet->SetWhen( _StrToTime(buffer.c_str()) );
+			currentTweet->setDate( _StrToTime(buffer.c_str()) );
 			
 		//ExternalId
-		if(status == B_OK && FindValue(&buffer, TwitterTags::ID_TAG, *parsingNode, 0) == string::npos)
+		/*if(status == B_OK && FindValue(&buffer, TwitterTags::ID_TAG, *parsingNode, 0) == string::npos)
 			status = B_ERROR;
 		else
-			currentTweet->SetExternalId( _StrToId(buffer.c_str()) );
+			currentTweet->SetExternalId( _StrToId(buffer.c_str()) );*/
 		
-		if(status == S_OK)
+		if(status == B_OK)
 			resultList->AddItem(currentTweet);
 		else
 			delete currentTweet;
@@ -156,7 +158,7 @@ HTSearchParser::_StrToTime(const char* str)
 }
 
 //Convert from Twitter id string to uint64
-uint64
+/*uint64
 HTSearchParser::_StrToId(const char* str)
 {
 	uint64 id = 0;
@@ -164,4 +166,26 @@ HTSearchParser::_StrToId(const char* str)
 	sscanf(str, TwitterAPI::ID_FORMAT.c_str(), &id);
 		
 	return id;
+}*/
+
+size_t
+HTSearchParser::FindValue(std::string* buffer, const char* tag, const std::string& data, size_t pos)
+{
+	std::string endTag(tag);
+	endTag.insert(1, "/");
+	
+	size_t start = data.find(tag, pos);
+	size_t end;
+	if(start == std::string::npos)
+		return std::string::npos;
+		
+	start += strlen(tag);
+	end = data.find(endTag, start);
+	
+	if(end != std::string::npos)
+		*buffer = data.substr(start, end-start).c_str();
+	else
+		*buffer = std::string("");
+
+	return end;
 }
