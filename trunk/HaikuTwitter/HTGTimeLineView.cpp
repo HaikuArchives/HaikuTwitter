@@ -23,6 +23,7 @@ HTGTimeLineView::HTGTimeLineView(twitCurl *twitObj, const int32 TYPE, BRect rect
 	this->twitObj = twitObj;
 	this->TYPE = TYPE;
 	this->saveTweets = saveTweets;
+	this->errorCount = 0;
 	previousThread = B_NAME_NOT_FOUND;
 	searchID = 0;
 	
@@ -83,6 +84,7 @@ HTGTimeLineView::HTGTimeLineView(const int32 TYPE, BRect rect, BList* tweets, in
 	dragger = NULL;
 	isReplicant = false;
 	this->TYPE = TYPE;
+	this->errorCount = 0;
 	previousThread = B_NAME_NOT_FOUND;
 	searchID = 0;
 	twitObj = NULL;
@@ -125,6 +127,7 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	const char **ptr;
 	
 	isReplicant = true;
+	errorCount = 0;
 
 	archive->FindBool("HTGTimeLineView::waitingForUpdate", &waitingForUpdate);
 	archive->FindBool("HTGTimeLineView::wantsNotifications", &wantsNotifications);
@@ -479,6 +482,7 @@ updateTimeLineThread(void *data)
 	
 	HTGListView *listView = super->listView;
 	bool saveTweets = super->saveTweets;
+	int32 errorCount = super->errorCount;
 	
 	int32 TYPE = super->TYPE;
 	twitCurl *twitObj = super->twitObj;
@@ -530,8 +534,19 @@ updateTimeLineThread(void *data)
 	 	std::cout << "---End of reply---" << std::endl;
 	 #endif
 
-	if(replyMsg.length() < 100)   //Length of data is less than 100 characters. Clearly,
-		replyMsg = "error";			//something is wrong... abort.;
+	if(replyMsg.length() < 100) {
+		errorCount++;
+		if(errorCount < kMaximumRetries) {
+			super->waitingForUpdate = true;
+			super->updateTimeLine();
+			std::cout << "No connection, retry: " << errorCount << "/" << kMaximumRetries << std::endl;
+			return B_ERROR;
+		}
+		else
+			replyMsg= string("error");
+	}
+	else
+		errorCount = 0;
 
 	if(TYPE == TIMELINE_SEARCH) {
 			try {
