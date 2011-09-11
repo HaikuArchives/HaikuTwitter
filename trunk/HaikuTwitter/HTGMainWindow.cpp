@@ -48,7 +48,7 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	else
 		statusBar->SetStatus("Authentication failed");
 	
-	if(accountCredentials->Verified()) {
+	if(!noAuth) {
 		/*Set up friends timeline*/
 		twitCurl *timelineTwitObj = new twitCurl();
 		timelineTwitObj->setAccessKey( key );
@@ -64,10 +64,10 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 		tabView->AddTab(mentionsTimeLine);
 	}
 	/*Set up public timeline - if enabled*/
-	if(fEnablePublicMenuItem->IsMarked() || !accountCredentials->Verified())
+	if(fEnablePublicMenuItem->IsMarked() || noAuth)
 		_addPublicTimeLine();
 		
-	if(!accountCredentials->Verified()) { //Open a search for #haikuos
+	if(noAuth) { //Open a search for #haikuos
 		BMessage *newMsg = new BMessage('SRCH');
 		newMsg->AddString("text", "#haikuos");
 	
@@ -76,7 +76,7 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 		
 		
 	/*Add the saved searches as tabs - if tabs are enabled*/
-	if(theSettings.saveSearches)
+	if(theSettings.saveSearches && !noAuth)
 		_addSavedSearches();
 		
 	/*Add the current trends*/

@@ -13,46 +13,35 @@
 using namespace std;
 
 //Define some constants for parsing
-namespace TwitterTags {
+namespace TwitterSearchTags {
 	const char* ENTRY_TAG 			= "<entry>";
 	const char* WHEN_TAG			= "<published>";
 	const char* CONTENT_TAG			= "<title>";
-	const char* AUTHOR_TAG			= "<author>";
 	const char* NAME_TAG		 	= "<name>";
 	const char* WHERE_TAG			= "<uri>";
+	const char* SOURCE_TAG			= "<twitter:source>";
 	const char* ID_TAG				= "<id>";
 	const char* PROFILEIMAGEURL_TAG	= "<link>";
 }
 
 //Define some constants for using the twitter api
-namespace TwitterAPI {	
+namespace TwitterSearchAPI {	
 	const string TIME_FORMAT			= "%d-%d-%dT%d:%d:%dZ";//2011-04-02T13:37:57Z
 	const string ID_FORMAT				= "tag:search.twitter.com,2005:%llu";//tag:search.twitter.com,2005:50093060641656832
 }
 
 HTSearchParser::HTSearchParser()
+	: HTTimelineParser()
 {
    fTweets = new BList();
 }
 
 HTSearchParser::~HTSearchParser()
-{
-	while(!fTweets->IsEmpty())
-		delete (HTTweet *)fTweets->RemoveItem((int32)0);
-	delete fTweets;
-}
-
-BList*
-HTSearchParser::Tweets() {
-	
-	return fTweets;
-}
+{ }
 
 status_t
 HTSearchParser::Parse(const std::string& data)
-{
-	//text, id, screen_name, fullname, profileimageurl, published, source
-    
+{    
     status_t status = B_OK;
 	
 	if(data.length() < 30)
@@ -63,14 +52,15 @@ HTSearchParser::Parse(const std::string& data)
 	string buffer("");
 	size_t pos = 0;
 	while(true) {
-		pos = FindValue(&buffer, TwitterTags::ENTRY_TAG, data, pos);
+		pos = FindValue(&buffer, TwitterSearchTags::ENTRY_TAG, data, pos, false); //We don't want to bother with decoding html right now
 		if(pos == string::npos)
 			break;
 		nodeList->AddItem(new string(buffer));
 	}
-	if(nodeList->IsEmpty())	
+	if(nodeList->IsEmpty()) {	
 		return B_OK;
-	
+	}
+		
 	//Parse nodes
 	status = _ParseNodes(nodeList, fTweets);
 	
@@ -90,7 +80,7 @@ HTSearchParser::_ParseNodes(BList* nodeList, BList* resultList)
 	string* parsingNode;
 	HTTweet* currentTweet;
 	string buffer("");
-	
+		
 	while(!nodeList->IsEmpty()) {
 		status = B_OK;
 		buffer = string("");
@@ -98,33 +88,58 @@ HTSearchParser::_ParseNodes(BList* nodeList, BList* resultList)
 		if(parsingNode == NULL)
 			return B_BAD_INDEX;	
 		currentTweet = new HTTweet();
-		
+								
 		//Content
-		if(FindValue(&buffer, TwitterTags::CONTENT_TAG, *parsingNode, 0) == string::npos)
+		if(FindValue(&buffer, TwitterSearchTags::CONTENT_TAG, *parsingNode, 0) == string::npos)
 			status = B_ERROR;
 		else
-			currentTweet->setText(buffer);
+			currentTweet->setText(buffer.c_str());
 			
-		//Author
-		if(status == B_OK && FindValue(&buffer, TwitterTags::NAME_TAG, *parsingNode, 0) == string::npos)
+		//Screen name & real name
+		if(status == B_OK && FindValue(&buffer, TwitterSearchTags::NAME_TAG, *parsingNode, 0) == string::npos)
 			status = B_ERROR;
-		else
-			currentTweet->setScreenName(buffer);
+		else {
+			//Parse (Format: "martinhpedersen (Martin H. Pedersen)"
+			int screenNameEndIndex = buffer.find(" (");
+			int fullNameEndIndex = buffer.find(")");
+			if(fullNameEndIndex < buffer.length())
+				currentTweet->setFullName(buffer.substr(screenNameEndIndex+2, fullNameEndIndex-2-screenNameEndIndex).c_str());
+			currentTweet->setScreenName(buffer.substr(0, screenNameEndIndex).c_str());
+		}
 			
-		//Author
-		if(status == B_OK && FindValue(&buffer, TwitterTags::PROFILEIMAGEURL_TAG, *parsingNode, 0) == string::npos)
+		//Profile image url
+		if(status == B_OK && _FindProfileImage(&buffer, *parsingNode) == string::npos, false)
 			status = B_ERROR;
 		else
-			currentTweet->setProfileImageUrl(buffer);
+			currentTweet->setProfileImageUrl(buffer.c_str());
 		
 		//When
-		if(status == B_OK && FindValue(&buffer, TwitterTags::WHEN_TAG, *parsingNode, 0) == string::npos)
+		if(status == B_OK && FindValue(&buffer, TwitterSearchTags::WHEN_TAG, *parsingNode, 0) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->setDate( _StrToTime(buffer.c_str()) );
 			
+		//Source
+		if(status == B_OK && FindValue(&buffer, TwitterSearchTags::SOURCE_TAG, *parsingNode, 0) == string::npos)
+			status = B_ERROR;
+		else {
+			// Parse the data for Application name
+            int pos = buffer.find(">", 0); //<a href="http://www.tweetdeck.com/" rel="nofollow">TweetDeck</a>
+			if(pos != std::string::npos) {
+				int start = pos;
+				int end = pos;
+				while(end < buffer.length() && buffer[end] != '<') {
+					end++;
+				}
+				string sourceName = buffer.substr(start+1, end-start-1);
+				currentTweet->setSourceName(sourceName.c_str());
+			}
+			else
+				currentTweet->setSourceName(buffer.c_str());
+		}
+			
 		//ExternalId
-		/*if(status == B_OK && FindValue(&buffer, TwitterTags::ID_TAG, *parsingNode, 0) == string::npos)
+		/*if(status == B_OK && FindValue(&buffer, TwitterSearchTags::ID_TAG, *parsingNode, 0) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->SetExternalId( _StrToId(buffer.c_str()) );*/
@@ -138,6 +153,26 @@ HTSearchParser::_ParseNodes(BList* nodeList, BList* resultList)
 	return status;
 }
 
+size_t
+HTSearchParser::_FindProfileImage(std::string* buffer, const std::string& data)
+{
+	const char* tag = "<link type=\"image/png\" href=\"";
+	std::string endTag("\" rel=\"image\"/>");
+	
+	size_t start = data.find(tag, 0);
+	size_t end;
+	if(start == std::string::npos)
+		return std::string::npos;
+		
+	start += strlen(tag);
+	end = data.find(endTag, start);
+	
+	if(end != std::string::npos)
+		*buffer = data.substr(start, end-start).c_str();
+
+	return end;
+}
+
 //Convert from Twitter format to time_t
 time_t
 HTSearchParser::_StrToTime(const char* str)
@@ -145,7 +180,7 @@ HTSearchParser::_StrToTime(const char* str)
 	struct tm when;	
 	int32 yyyy=0, mm=0, dd=0, hour=0, min=0, sec=0;
 	
-	sscanf(str, TwitterAPI::TIME_FORMAT.c_str(), &yyyy, &mm, &dd, &hour, &min, &sec);
+	sscanf(str, TwitterSearchAPI::TIME_FORMAT.c_str(), &yyyy, &mm, &dd, &hour, &min, &sec);
 		
 	when.tm_year = yyyy-1900;	//tm_year is year since 1900
 	when.tm_mon = mm-1;			//tm_mon range:		0-11
@@ -163,29 +198,7 @@ HTSearchParser::_StrToId(const char* str)
 {
 	uint64 id = 0;
 		
-	sscanf(str, TwitterAPI::ID_FORMAT.c_str(), &id);
+	sscanf(str, TwitterSearchAPI::ID_FORMAT.c_str(), &id);
 		
 	return id;
 }*/
-
-size_t
-HTSearchParser::FindValue(std::string* buffer, const char* tag, const std::string& data, size_t pos)
-{
-	std::string endTag(tag);
-	endTag.insert(1, "/");
-	
-	size_t start = data.find(tag, pos);
-	size_t end;
-	if(start == std::string::npos)
-		return std::string::npos;
-		
-	start += strlen(tag);
-	end = data.find(endTag, start);
-	
-	if(end != std::string::npos)
-		*buffer = data.substr(start, end-start).c_str();
-	else
-		*buffer = std::string("");
-
-	return end;
-}

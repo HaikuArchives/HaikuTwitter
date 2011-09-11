@@ -11,7 +11,6 @@
 
 #include <string>
 
-#include "TimeLineParser.h"
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
 #include "HTGTweetItem.h"

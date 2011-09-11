@@ -16,9 +16,8 @@
 
 #include "HTGListView.h"
 #include "HTStorage.h"
-#include "TimeLineParser.h"
-#include "DirectMessageParser.h"
-#include "SearchParser.h"
+#include "HTTimelineParser.h"
+#include "HTSearchParser.h"
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
 #include "HTGTweetItem.h"
