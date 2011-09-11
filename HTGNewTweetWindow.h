@@ -13,7 +13,6 @@
 
 #include "twitcurl/twitcurl.h"
 
-#include "TimeLineParser.h"
 #include "HTTweet.h"
 #include "HTGErrorHandling.h"
 

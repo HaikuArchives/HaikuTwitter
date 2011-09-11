@@ -21,7 +21,6 @@
 
 #include "AnimationHelper.h"
 #include "SmartTabView.h"
-#include "TimeLineParser.h"
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
 #include "HTGNewTweetWindow.h"

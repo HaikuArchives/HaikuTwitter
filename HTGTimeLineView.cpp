@@ -486,9 +486,7 @@ updateTimeLineThread(void *data)
 	
 	int32 TYPE = super->TYPE;
 	twitCurl *twitObj = super->twitObj;
-	TimeLineParser *timeLineParser = new TimeLineParser();
-	SearchParser *searchParser = new SearchParser();
-	DirectMessageParser *directParser = new DirectMessageParser();
+	HTTimelineParser *timeLineParser;
 	std::string replyMsg(" ");
 	
 	HTGTweetItem *mostRecentItem = NULL;
@@ -499,7 +497,7 @@ updateTimeLineThread(void *data)
 	
 	switch(TYPE) {
 		case TIMELINE_HOME:
-			twitObj->timelineHomeGet();
+			//twitObj->timelineHomeGet();
 			break;
 		case TIMELINE_FRIENDS:
 			twitObj->timelineFriendsGet();
@@ -515,9 +513,6 @@ updateTimeLineThread(void *data)
 			break;
 		case TIMELINE_SEARCH:
 			twitObj->search(htmlFormatedString(super->Name()));
-			break;
-		case TIMELINE_DIRECT:
-			twitObj->directMessageGet();
 			break;
 		case TIMELINE_HDD:
 			return B_OK;
@@ -548,54 +543,34 @@ updateTimeLineThread(void *data)
 	else
 		errorCount = 0;
 
-	if(TYPE == TIMELINE_SEARCH) {
-			try {
-				searchParser->readData(replyMsg.c_str());
-			} catch( ... ) {
-				std::cout << super->Name() << ": Error while parsing data." << std::endl;
-				//delete timeLineParser;
-				timeLineParser = NULL;
-				return B_OK;
-			}
-			timeLineParser = (TimeLineParser *)searchParser; //I'm not so sure this is a good way to go,
-															//so don't tell anyone;-)
+	if(TYPE == TIMELINE_SEARCH)
+		timeLineParser = new HTSearchParser();
+	else
+		timeLineParser = new HTTimelineParser();
+
+	try {
+		timeLineParser->Parse(replyMsg);
 	}
-	else if(TYPE == TIMELINE_DIRECT) {
-			try {
-				directParser->readData(replyMsg.c_str());
-			} catch( ... ) {
-				std::cout << super->Name() << ": Error while parsing data." << std::endl;
-				//delete timeLineParser;
-				timeLineParser = NULL;
-				return B_OK;
-			}
-			timeLineParser = (TimeLineParser *)directParser; //I'm not so sure this is a good way to go,
-															//so don't tell anyone;-)
-	}
-	else {
-		try {
-			timeLineParser->readData(replyMsg.c_str());
-		} catch( ... ) {
-				std::cout << super->Name() << ": Error while parsing data." << std::endl;
-				//delete timeLineParser;
-				timeLineParser = NULL;
-				return B_OK;
-		}
+	catch( ... ) {
+		std::cout << super->Name() << ": Error while parsing data." << std::endl;
+		delete timeLineParser;
+		timeLineParser = NULL;
+		return B_OK;
 	}
 	
-	if(timeLineParser->count() < 1) {//timeLineParser failed, return!
-			std::cout << super->Name() << ": Parser didn't find any tweets." << std::endl;
-			delete timeLineParser;
-			timeLineParser = NULL;
-			return B_OK;
-		}
+	if(timeLineParser->Tweets()->CountItems() < 1) {//timeLineParser failed, return!
+		std::cout << super->Name() << ": Parser didn't find any tweets." << std::endl;
+		delete timeLineParser;
+		timeLineParser = NULL;
+		return B_OK;
+	}
 	
 	bool initialLoad = (listView->FirstItem() == NULL && super->unhandledList->FirstItem() == NULL);
 	
 	if(!initialLoad && listView->FirstItem() != NULL) {
 		mostRecentItem = (HTGTweetItem *)listView->FirstItem();
 		mostRecentTweet = mostRecentItem->getTweetPtr();
-		currentTweet = timeLineParser->getTweets()[0];
+		currentTweet = (HTTweet *)timeLineParser->Tweets()->ItemAt(0);
 	
 		/*If we are up to date: redraw, clean up and return - Note this should not be done here,
 		rather as a result of some BPulse I guess...*/
@@ -617,8 +592,8 @@ updateTimeLineThread(void *data)
 		mostRecentTweet = mostRecentItem->getTweetPtr();
 	}
 	
-	for (int i = 0; i < timeLineParser->count(); i++) {
-		currentTweet = timeLineParser->getTweets()[i];
+	for (int i = 0; i < timeLineParser->Tweets()->CountItems(); i++) {
+		currentTweet = (HTTweet *)timeLineParser->Tweets()->ItemAt(i);
 		bool addItem = initialLoad;
 		if(!initialLoad) {
 			if(mostRecentTweet != NULL)

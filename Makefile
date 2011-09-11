@@ -5,7 +5,7 @@
 
 APP = HaikuTwitter
 CC = gcc
-LIBS += -L/boot/common/lib/ -lbe -ltranslation -lcurl -lxerces-c -lstdc++ -lcrypto
+LIBS += -L/boot/common/lib/ -lbe -ltranslation -lcurl -lstdc++ -lcrypto
 SVNDEV = -D'SVN_REV="$(shell svnversion -n .)"'
 CFLAGS = $(SVNDEV) ${DEBUG}
 BDIR = bin
@@ -13,7 +13,7 @@ ODIR = ${BDIR}/obj
 
 all: ${APP}
 
-_OBJ = HaikuTwitter.o AnimationHelper.o HTGTweetMenuItem.o HTGErrorHandling.o HTGLogoView.o HTGAuthorizeWindow.o oauth.o oauth_http.o xmalloc.o twitcurl.o SearchParser.o SmartTabView.o HTGSearchForWindow.o TimeLineParser.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o DirectMessageParser.o HTStorage.o HTGTweetViewWindow.o HyperTextActions.o HTGAvatarView.o HTGStatusBar.o HTAccountCredentials.o HTGListView.o
+_OBJ = HaikuTwitter.o AnimationHelper.o HTGTweetMenuItem.o HTGErrorHandling.o HTGLogoView.o HTGAuthorizeWindow.o oauth.o oauth_http.o xmalloc.o twitcurl.o SmartTabView.o HTGSearchForWindow.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o HTStorage.o HTGTweetViewWindow.o HyperTextActions.o HTGAvatarView.o HTGStatusBar.o HTAccountCredentials.o HTGListView.o HTTimelineParser.o HTSearchParser.o entities.o
 OBJ =  $(patsubst %,$(ODIR)/%, $(_OBJ))
 
 ${APP}: ${OBJ}
@@ -29,6 +29,9 @@ ${ODIR}/%.o: oauth/%.c
 
 ${ODIR}/%.o: %.cpp
 	${CC} -c -o $@ $< ${CFLAGS}
+	
+${ODIR}/%.o: %.c
+	${CC} -c -std=c99 -o $@ $< ${CFLAGS}
 	
 clean:
 	rm -rf ${ODIR}/*.o

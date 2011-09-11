@@ -52,7 +52,7 @@ HTTweet::HTTweet(HTTweet *originalTweet)
 	if (originalTweet->imageBitmap != NULL)
 		if(originalTweet->imageBitmap->IsValid()) //Not interested in corrupted data.
 			this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
-	this->date = originalTweet->getDate();
+	this->setDate(originalTweet->getUnixTime());
 	this->id = string(originalTweet->getId());
 	this->sourceName = originalTweet->getSourceName();
 	this->view = originalTweet->getView();
@@ -193,25 +193,25 @@ HTTweet::getProfileImageUrl()
 }
 
 void
-HTTweet::setScreenName(string &screenName)
+HTTweet::setScreenName(string screenName)
 {
 	this->screenName = screenName;
 }
 
 void
-HTTweet::setFullName(string &fullName)
+HTTweet::setFullName(string fullName)
 {
 	this->fullName = fullName;
 }
 
 void
-HTTweet::setSourceName(string &sourceName)
+HTTweet::setSourceName(string sourceName)
 {
 	this->sourceName = sourceName;
 }
 
 void
-HTTweet::setText(string &text)
+HTTweet::setText(string text)
 {
 	this->text = text;
 }
@@ -223,7 +223,7 @@ HTTweet::setView(BView* view)
 }
 
 void
-HTTweet::setDate(string &dateString)
+HTTweet::setDate(string dateString)
 {
 	if(dateString.length() < 29) { //29
 		#ifdef DEBUG_ENABLED
@@ -259,7 +259,7 @@ HTTweet::setDate(time_t unixTime)
 }
 
 void
-HTTweet::setPublishedDate(string &dateString)
+HTTweet::setPublishedDate(string dateString)
 {
 	if(dateString.length() < 17) {
 		#ifdef DEBUG_ENABLED
@@ -453,7 +453,7 @@ HTTweet::monthToString(int month) const
 }
 
 void
-HTTweet::setProfileImageUrl(string &profileImageUrl)
+HTTweet::setProfileImageUrl(string profileImageUrl)
 {
 	this->profileImageUrl = profileImageUrl;
 }
