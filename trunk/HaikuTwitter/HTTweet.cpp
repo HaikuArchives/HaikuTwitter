@@ -358,11 +358,32 @@ HTTweet::setProfileImageUrl(string profileImageUrl)
 BBitmap*
 HTTweet::getBitmap()
 {
-	if(!bitmapDownloadInProgress && bitmapData != NULL) {
+	if(bitmapDownloadInProgress)
+		return NULL;
+		
+	if(bitmapData != NULL && bitmapData->BufferLength() > 32) {
 		imageBitmap = BTranslationUtils::GetBitmap(bitmapData);
 		delete bitmapData;
 		bitmapData = NULL;
 	}
+	
+	//Make sure the translation was a success
+	if(imageBitmap == NULL || imageBitmap->BitsLength() < 32) {
+		#ifdef DEBUG_ENABLED
+		std::cout << "imageBitmap's bits length to small - Retry image download..." << std::endl;
+		std::cout << "url: " << profileImageUrl << std::endl;
+		#endif
+		if(bitmapData != NULL)
+			delete bitmapData;
+		if(imageBitmap != NULL)
+			delete imageBitmap;
+		imageBitmap = NULL;
+		bitmapData = NULL;
+		downloadBitmap();
+		
+		return NULL;
+	}
+		
 	return imageBitmap;
 }
 

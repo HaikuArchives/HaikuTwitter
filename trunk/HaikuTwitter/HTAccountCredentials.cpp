@@ -46,8 +46,13 @@ HTAccountCredentials::Fetch(int32 id)
 status_t
 HTAccountCredentials::FetchSelf()
 {	
-	if(!twitObj->verifyCredentials())
-		return B_ERROR;
+	int32 errorCount = 0;
+	while(!twitObj->verifyCredentials()) {
+		if(errorCount < kMaxRetries)
+			errorCount++;
+		else
+			return B_ERROR;
+	}
 		
 	std::string reply(" ");
 	twitObj->getLastWebResponse(reply);
