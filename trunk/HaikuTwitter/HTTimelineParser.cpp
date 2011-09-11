@@ -30,7 +30,7 @@ namespace TwitterTags {
 //Define some constants for using the twitter api
 namespace TwitterAPI {	
 	const string TIME_FORMAT			= "%*s %s %d %d:%d:%d %d %d";//Sat Sep 10 10:17:38 +0000 2011
-	const string ID_FORMAT				= "tag:search.twitter.com,2005:%llu";//tag:search.twitter.com,2005:50093060641656832
+	const string ID_FORMAT				= "%llu";//50093060641656832
 }
 
 HTTimelineParser::HTTimelineParser()
@@ -159,7 +159,7 @@ HTTimelineParser::_ParseNodes(BList* nodeList, BList* resultList)
 		if(status == B_OK && FindValue(&buffer, TwitterTags::ID_TAG, *parsingNode, 0) == string::npos, false)
 			status = B_ERROR;
 		else
-			currentTweet->setId(buffer.c_str());
+			currentTweet->setId(_StrToId(buffer.c_str()));
 		
 		if(status == B_OK)
 			resultList->AddItem(currentTweet);
@@ -265,4 +265,15 @@ HTTimelineParser::FindValue(std::string* buffer, const char* tag, const std::str
 		*buffer = std::string(ourBuffer);
 
 	return end;
+}
+
+//Convert from Twitter id string to uint64
+uint64
+HTTimelineParser::_StrToId(const char* str)
+{
+	uint64 id = 0;
+		
+	sscanf(str, TwitterAPI::ID_FORMAT.c_str(), &id);
+		
+	return id;
 }

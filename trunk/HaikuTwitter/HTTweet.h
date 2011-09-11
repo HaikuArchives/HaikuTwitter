@@ -23,6 +23,7 @@
 #include <Roster.h>
 
 #include <ctime>
+#include <sstream>
 #include <curl/curl.h>
 
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
@@ -72,12 +73,13 @@ public:
 	void setDate(string);
 	void setDate(time_t);
 	void setPublishedDate(string);
-	void setId(const char*);
+	void setId(uint64);
 	void setSourceName(string);
 	void setBitmap(BBitmap *);
 	void waitUntilDownloadComplete();
 	bool isDownloadingBitmap();
-	const char* getId();
+	uint64 getId();
+	const char* getIdString();
 	bool following();
 	void setFollowing(bool);
 	
@@ -98,7 +100,7 @@ private:
 	string rawDate;				//Archived
 	string sourceName;			//Archived
 	struct DateStruct date;		//Not archived
-	string id;					//Archived
+	uint64 id;					//Archived
 	bool isFollowing;			//Archived
 };
 #endif

@@ -29,6 +29,6 @@ private:
 			
 	virtual	time_t				_StrToTime(const char*); //Convert from Twitter format to time_t
 	virtual	int32				_StrToMonth(const char *) const;
-			//uint64			_StrToId(const char*); //Extract id from <id> tag
+	virtual	uint64				_StrToId(const char*); //Extract id from <id> tag
 };
 #endif

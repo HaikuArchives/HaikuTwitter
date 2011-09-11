@@ -22,5 +22,6 @@ private:
 			size_t				_FindProfileImage(std::string* buffer, const std::string& data);
 			
 			time_t				_StrToTime(const char*); //Convert from Twitter format to time_t
+			uint64				_StrToId(const char* str);
 };
 #endif
