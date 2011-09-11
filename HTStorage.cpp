@@ -20,8 +20,8 @@ HTStorage::saveTweet(HTTweet *theTweet)
 	tweetsDir.CreateDirectory(path.Path(), NULL); //Assume this is successfull
 	
 	/*Prepare the file*/
-	if(strlen(theTweet->getId()) > 4)
-		path.Append(theTweet->getId());
+	if(strlen(theTweet->getIdString()) > 4)
+		path.Append(theTweet->getIdString());
 	else
 		return B_OK;
 
@@ -59,7 +59,9 @@ HTStorage::saveTweet(HTTweet *theTweet)
 	status = node->WriteAttr(HAIKUTWITTER_ATTR_SOURCE, B_STRING_TYPE, 0, theTweet->getSourceName().c_str(), theTweet->getSourceName().length());
 	if(status < B_OK)
 		return status;
-	status = node->WriteAttr(HAIKUTWITTER_ATTR_ID, B_STRING_TYPE, 0, theTweet->getId(), strlen(theTweet->getId()));
+	int64 id = theTweet->getId();
+	std::cout << id << std::endl;
+	status = node->WriteAttr(HAIKUTWITTER_ATTR_ID, B_INT64_TYPE, 0, &id, sizeof(int64));
 	if(status < B_OK)
 		return status;
 	int32 creationTime = theTweet->getUnixTime();
@@ -92,11 +94,11 @@ HTStorage::loadTweet(entry_ref* ref)
 	char buffer[255];
 
 	//Read ID attribute
-	attrSize = node->ReadAttr(HAIKUTWITTER_ATTR_ID, B_STRING_TYPE, 0, &buffer, 255);
+	int64 id = 0;
+	attrSize = node->ReadAttr(HAIKUTWITTER_ATTR_ID, B_INT64_TYPE, 0, &id, sizeof(int64));
 	if(attrSize == B_ENTRY_NOT_FOUND)
 		return NULL;
-	buffer[attrSize] = '\0';
-	loadedTweet->setId(buffer);
+	loadedTweet->setId(id);
 	
 	//Read screenname attribute
 	attrSize = node->ReadAttr(HAIKUTWITTER_ATTR_SCREENNAME, B_STRING_TYPE, 0, &buffer, 255);
@@ -173,7 +175,7 @@ HTStorage::makeMimeType(bool remakeMIMETypes)
 
 		// Set up the list of twitter related attributes that Tracker will
 		// let you display in columns for tweets.
-		addAttribute(info, HAIKUTWITTER_ATTR_ID, "Id");
+		addAttribute(info, HAIKUTWITTER_ATTR_ID, "Id", B_INT64_TYPE);
 		addAttribute(info, HAIKUTWITTER_ATTR_FULLNAME, "Full name", B_STRING_TYPE, true);
 		addAttribute(info, HAIKUTWITTER_ATTR_SCREENNAME, "Screen name");
 		addAttribute(info, HAIKUTWITTER_ATTR_WHEN, "When", B_TIME_TYPE, true, false, 200);

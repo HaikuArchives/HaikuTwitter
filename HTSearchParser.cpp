@@ -193,7 +193,7 @@ HTSearchParser::_StrToTime(const char* str)
 }
 
 //Convert from Twitter id string to uint64
-/*uint64
+uint64
 HTSearchParser::_StrToId(const char* str)
 {
 	uint64 id = 0;
@@ -201,4 +201,4 @@ HTSearchParser::_StrToId(const char* str)
 	sscanf(str, TwitterSearchAPI::ID_FORMAT.c_str(), &id);
 		
 	return id;
-}*/
+}

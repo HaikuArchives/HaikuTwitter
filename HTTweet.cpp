@@ -15,7 +15,7 @@ HTTweet::HTTweet()
 	date.hour = 0;
 	date.minute = 0;
 	date.second = 0;
-	id = string("");
+	id = 0;
 	sourceName = string("");
 	bitmapDownloadInProgress = false;
 	view = NULL;
@@ -33,7 +33,7 @@ HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, stri
 	this->setDate(dateString);
 	this->rawDate = dateString;
 	imageBitmap = NULL;
-	id = string("");
+	id = 0;
 	sourceName = string("");
 	bitmapDownloadInProgress = false;
 	view = NULL;
@@ -53,7 +53,7 @@ HTTweet::HTTweet(HTTweet *originalTweet)
 		if(originalTweet->imageBitmap->IsValid()) //Not interested in corrupted data.
 			this->imageBitmap = new BBitmap(*originalTweet->getBitmap());
 	this->setDate(originalTweet->getUnixTime());
-	this->id = string(originalTweet->getId());
+	this->id = originalTweet->getId();
 	this->sourceName = originalTweet->getSourceName();
 	this->view = originalTweet->getView();
 	bitmapDownloadInProgress = false;
@@ -80,8 +80,9 @@ HTTweet::HTTweet(BMessage* archive)
 	setDate(rawDate);
 	archive->FindString("HTTweet::sourceName", *buff);
 	sourceName = std::string(buff);
-	archive->FindString("HTTweet::id", *buff);
-	id = std::string(buff);
+	
+	archive->FindUInt64("HTTweet::id", &id);
+	
 	archive->FindBool("HTTweet::isFollowing", &isFollowing);
 	
 	/*Unarchive profileImage*/
@@ -130,7 +131,7 @@ HTTweet::Archive(BMessage* archive, bool deep)
 	archive->AddString("HTTweet::profileImageUrl", profileImageUrl.c_str());
 	archive->AddString("HTTweet::rawDate", rawDate.c_str());
 	archive->AddString("HTTweet::sourceName", sourceName.c_str());
-	archive->AddString("HTTweet::id", id.c_str());
+	archive->AddUInt64("HTTweet::id", id);
 	archive->AddBool("HTTweet::isFollowing", isFollowing);
 	
 	/*Archive profileImage*/
@@ -350,20 +351,24 @@ HTTweet::operator<(const HTTweet &b) const
 	return (this->getUnixTime() < b.getUnixTime());
 }
 
-const char*
+uint64
 HTTweet::getId()
 {
-	return id.c_str();
+	return id;
+}
+
+const char*
+HTTweet::getIdString()
+{
+	std::stringstream out;
+	out << id;
+	return out.str().c_str();
 }
 
 void
-HTTweet::setId(const char* id)
+HTTweet::setId(uint64 id)
 {
-	string idClean(id);
-	int pos = idClean.find(" ");
-	if(pos != std::string::npos)
-		idClean.resize(pos-1);
-	this->id = idClean;
+	this->id = id;
 }
 
 bool

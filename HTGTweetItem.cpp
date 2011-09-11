@@ -98,7 +98,7 @@ HTGTweetItem::calculateSize(BRect frame, BView *owner)
 	textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
 	textView->SetWordWrap(true);
 	textView->MakeEditable(false);
-	textView->setTweetId(theTweet->getId());
+	textView->setTweetId(theTweet->getIdString());
 	textView->SetText(theTweet->getText().c_str());
 	
 	calculatedSize = textView->TextHeight(0,999)+kMargin*6;
@@ -236,7 +236,7 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		textFont.SetSize(textFont.Size()-2);
 		textView->SetFontAndColor(&textFont, B_FONT_ALL, &displayColors.textColor);
 		textView->SetViewColor(owner->ViewColor());
-		textView->setTweetId(theTweet->getId());
+		textView->setTweetId(theTweet->getIdString());
 		textView->SetText(theTweet->getText().c_str());
 		if(!isReplicant)
 			textView->MakeHyperText();
