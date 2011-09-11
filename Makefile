@@ -1,5 +1,5 @@
 # Uncomment this line to enable more debugging information (printed to console)
-#DEBUG = -DDEBUG_ENABLED
+DEBUG = -DDEBUG_ENABLED
 
 ### Nothing below this should be changed ###
 

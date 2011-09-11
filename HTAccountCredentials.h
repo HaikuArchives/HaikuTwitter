@@ -14,6 +14,7 @@
 
 
 const int32 READY = 'ACRD';
+const int32 kMaxRetries = 3;
 
 class HTAccountCredentials {
 public:

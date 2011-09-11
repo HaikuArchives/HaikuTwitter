@@ -44,8 +44,14 @@ HTSearchParser::Parse(const std::string& data)
 {    
     status_t status = B_OK;
 	
-	if(data.length() < 30)
-		return B_ERROR;
+	#ifdef DEBUG_ENABLED
+	std::cout << data << std::endl;
+	#endif
+	
+	if(data.length() < 1) {
+		std::cout << "Parse error: data was empty" << std::endl;
+		return B_ERROR;	
+	}
 	
 	//Devide data into nodes.
 	BList* nodeList = new BList();

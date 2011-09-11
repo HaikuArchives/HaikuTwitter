@@ -24,7 +24,8 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	
 	/*Get account credentials*/
 	accountCredentials = new HTAccountCredentials(newTweetObj, this);
-	accountCredentials->Fetch();
+	if(!noAuth)
+		accountCredentials->Fetch();
 	
 	/*Set up the menu bar*/
 	_SetupMenu();
