@@ -43,7 +43,6 @@ struct DateStruct {
 class HTTweet : public BArchivable {
 public:
 	HTTweet();
-	HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString);
 	HTTweet(HTTweet *originalTweet);
 	HTTweet(BMessage* archive);
 	~HTTweet();
@@ -56,7 +55,6 @@ public:
 	const string getText();
 	const string getProfileImageUrl();
 	const string getRelativeDate() const;
-	const string getRawDate();
 	const string getSourceName();
 	time_t getUnixTime() const;
 	BBitmap* getBitmap();
@@ -70,9 +68,7 @@ public:
 	void setFullName(string);
 	void setText(string);
 	void setProfileImageUrl(string);
-	void setDate(string);
 	void setDate(time_t);
-	void setPublishedDate(string);
 	void setId(uint64);
 	void setSourceName(string);
 	void setBitmap(BBitmap *);
@@ -88,7 +84,6 @@ public:
 	BMallocIO* bitmapData;
 	
 private:
-	const int stringToMonth(const char *date);	
 	const char* monthToString(int month) const;
 	BView *view;				//Not archived
 	thread_id downloadThread;	//Not archived
@@ -97,7 +92,6 @@ private:
 	string fullName;			//Archived
 	string text;				//Archived
 	string profileImageUrl;		//Archived
-	string rawDate;				//Archived
 	string sourceName;			//Archived
 	struct DateStruct date;		//Not archived
 	uint64 id;					//Archived

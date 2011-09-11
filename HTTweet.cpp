@@ -20,24 +20,6 @@ HTTweet::HTTweet()
 	bitmapDownloadInProgress = false;
 	view = NULL;
 	isFollowing = false;
-	this->setDate(*new string(" "));
-}
-
-HTTweet::HTTweet(string &screenName, string &text, string &profileImageUrl, string &dateString)
-{
-	HTTweet::HTTweet();
-	bitmapData = NULL;
-	this->screenName = screenName;
-	this->text = text;
-	this->profileImageUrl = profileImageUrl;
-	this->setDate(dateString);
-	this->rawDate = dateString;
-	imageBitmap = NULL;
-	id = 0;
-	sourceName = string("");
-	bitmapDownloadInProgress = false;
-	view = NULL;
-	isFollowing = false;
 }
 
 HTTweet::HTTweet(HTTweet *originalTweet)
@@ -75,9 +57,6 @@ HTTweet::HTTweet(BMessage* archive)
 	text = std::string(buff);
 	archive->FindString("HTTweet::profileImageUrl", *buff);
 	profileImageUrl = std::string(buff);
-	archive->FindString("HTTweet::rawDate", *buff);
-	rawDate = std::string(buff);
-	setDate(rawDate);
 	archive->FindString("HTTweet::sourceName", *buff);
 	sourceName = std::string(buff);
 	
@@ -129,7 +108,6 @@ HTTweet::Archive(BMessage* archive, bool deep)
 	archive->AddString("HTTweet::fullName", fullName.c_str());
 	archive->AddString("HTTweet::text", text.c_str());
 	archive->AddString("HTTweet::profileImageUrl", profileImageUrl.c_str());
-	archive->AddString("HTTweet::rawDate", rawDate.c_str());
 	archive->AddString("HTTweet::sourceName", sourceName.c_str());
 	archive->AddUInt64("HTTweet::id", id);
 	archive->AddBool("HTTweet::isFollowing", isFollowing);
@@ -152,12 +130,6 @@ BView*
 HTTweet::getView()
 {
 	return view;
-}
-
-const string
-HTTweet::getRawDate()
-{
-	return rawDate;
 }
 
 const string
@@ -224,29 +196,6 @@ HTTweet::setView(BView* view)
 }
 
 void
-HTTweet::setDate(string dateString)
-{
-	if(dateString.length() < 29) { //29
-		#ifdef DEBUG_ENABLED
-		std::cout << "HTTweet::setDate(string &): Got invalid date string" << std::endl;
-		#endif
-		dateString = std::string("Wed Jan 01 00:00:00 +0000 1970");
-	}
-	
-	this->rawDate = dateString;
-	const char *cString = dateString.c_str();
-	date.month = stringToMonth(cString);
-	
-	// The number 1 is represented by ASCII code 49.
-	// We substract every char by 48 to make it int.
-	date.day = cString[9]-48 + (cString[8]-48)*10;
-	date.hour = cString[12]-48 + (cString[11]-48)*10;;
-	date.minute = cString[15]-48 + (cString[14]-48)*10;
-	date.second = cString[18]-48 + (cString[17]-48)*10;
-	date.year = cString[29]-48 + (cString[28]-48)*10 + (cString[27]-48)*100 + (cString[26]-48)*1000;
-}
-
-void
 HTTweet::setDate(time_t unixTime)
 {	
 	struct tm* timeinfo;
@@ -257,29 +206,6 @@ HTTweet::setDate(time_t unixTime)
 	date.day = timeinfo->tm_mday;
 	date.hour = timeinfo->tm_hour;
 	date.minute = timeinfo->tm_min;
-}
-
-void
-HTTweet::setPublishedDate(string dateString)
-{
-	if(dateString.length() < 17) {
-		#ifdef DEBUG_ENABLED
-		std::cout << "HTTweet::setPublishedDate(string &): Got invalid date string" << std::endl;
-		#endif
-		dateString = std::string("1970-01-01T00:00:00Z");
-	}
-	
-	this->rawDate = dateString;
-	const char *cString = dateString.c_str();
-	
-	// The number 1 is represented by ASCII code 49.
-	// We substract every char by 48 to make it int.
-	date.day = cString[9]-48 + (cString[8]-48)*10;
-	date.month = (cString[6]-48 + (cString[5]-48)*10) -1; //tm_mon (0-11)
-	date.hour = cString[12]-48 + (cString[11]-48)*10;;
-	date.minute = cString[15]-48 + (cString[14]-48)*10;
-	date.second = cString[18]-48 + (cString[17]-48)*10;
-	date.year = cString[3]-48 + (cString[2]-48)*10 + (cString[1]-48)*100 + (cString[0]-48)*1000;
 }
 
 struct DateStruct
@@ -381,40 +307,6 @@ void
 HTTweet::setFollowing(bool isFollowing)
 {
 	this->isFollowing = isFollowing;
-}
-
-const int
-HTTweet::stringToMonth(const char *date)
-{
-	//jan feb mar apr may jun jul aug sep oct nov dec
-	if(strncmp(date+4, "Jan", 3) == 0)
-		return 0;
-	if(strncmp(date+4, "Feb", 3) == 0)
-		return 1;
-	if(strncmp(date+4, "Mar", 3) == 0)
-		return 2;
-	if(strncmp(date+4, "Apr", 3) == 0)
-		return 3;
-	if(strncmp(date+4, "May", 3) == 0)
-		return 4;
-	if(strncmp(date+4, "Jun", 3) == 0)
-		return 5;
-	if(strncmp(date+4, "Jul", 3) == 0)
-		return 6;
-	if(strncmp(date+4, "Aug", 3) == 0)
-		return 7;
-	if(strncmp(date+4, "Sep", 3) == 0)
-		return 8;
-	if(strncmp(date+4, "Oct", 3) == 0)
-		return 9;
-	if(strncmp(date+4, "Nov", 3) == 0)
-		return 10;
-	if(strncmp(date+4, "Dec", 3) == 0)
-		return 11;
-	#ifdef DEBUG_ENABLED
-	std::cout << "HTTweet::stringToMonth: Failed" << std::endl;
-	#endif
-	return 0;
 }
 
 const char*
