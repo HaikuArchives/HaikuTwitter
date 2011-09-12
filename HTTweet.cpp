@@ -360,28 +360,13 @@ HTTweet::getBitmap()
 {
 	if(bitmapDownloadInProgress)
 		return NULL;
-		
-	if(bitmapData != NULL && bitmapData->BufferLength() > 32) {
+	
+	if(bitmapData != NULL) {
+		if(imageBitmap != NULL)
+			delete imageBitmap;
 		imageBitmap = BTranslationUtils::GetBitmap(bitmapData);
 		delete bitmapData;
 		bitmapData = NULL;
-	}
-	
-	//Make sure the translation was a success
-	if(imageBitmap == NULL || imageBitmap->BitsLength() < 32) {
-		#ifdef DEBUG_ENABLED
-		std::cout << "imageBitmap's bits length to small - Retry image download..." << std::endl;
-		std::cout << "url: " << profileImageUrl << std::endl;
-		#endif
-		if(bitmapData != NULL)
-			delete bitmapData;
-		if(imageBitmap != NULL)
-			delete imageBitmap;
-		imageBitmap = NULL;
-		bitmapData = NULL;
-		downloadBitmap();
-		
-		return NULL;
 	}
 		
 	return imageBitmap;
@@ -436,6 +421,16 @@ _threadDownloadBitmap(void *data)
 	
 	/*cleanup curl stuff*/
 	curl_easy_cleanup(curl_handle);
+	
+	if(mallocIO->BufferLength() < 512) {
+		#ifdef DEBUG_ENABLED
+		std::cout << "Data length to small - Retrying image download..." << std::endl;
+		#endif
+		
+		delete mallocIO;
+		sleep(0.2);
+		return _threadDownloadBitmap(data);
+	}
 	
 	/*Translate downloaded data to bitmap*/
 	if(super->getView() != NULL && super->getView()->LockLooper()) {

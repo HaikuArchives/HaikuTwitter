@@ -378,7 +378,7 @@ HTGTimeLineView::addUnhandledTweets()
 {
 	if(unhandledList->IsEmpty())
 		return;
-
+		
 	BList *newList = new BList();
 
 	newList->AddList(unhandledList);
@@ -402,7 +402,7 @@ HTGTimeLineView::addUnhandledTweets()
 	
 	/*Add our new list*/
 	listView->AddList(newList);
-	
+		
 	/*Clean up*/
 	unhandledList->MakeEmpty();
 }
@@ -529,7 +529,7 @@ updateTimeLineThread(void *data)
 	 	std::cout << "---End of reply---" << std::endl;
 	 #endif
 
-	if(replyMsg.length() < 100) {
+	if(replyMsg.length() < 10) {
 		errorCount++;
 		if(errorCount < kMaximumRetries) {
 			super->waitingForUpdate = true;

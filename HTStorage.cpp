@@ -60,7 +60,6 @@ HTStorage::saveTweet(HTTweet *theTweet)
 	if(status < B_OK)
 		return status;
 	int64 id = theTweet->getId();
-	std::cout << id << std::endl;
 	status = node->WriteAttr(HAIKUTWITTER_ATTR_ID, B_INT64_TYPE, 0, &id, sizeof(int64));
 	if(status < B_OK)
 		return status;
