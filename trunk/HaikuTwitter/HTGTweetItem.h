@@ -26,6 +26,7 @@ struct htg_color {
 static BRect kAvatarRect(9, 5, 56, 52);
 static BPoint kNamePoint(64, 0);
 static BPoint kSourcePoint(0, 2);
+static BPoint kRetweetPoint(64, 2);
 static BPoint kTextPoint(64, 3);
 static int32 kMargin = 5;
 
@@ -39,6 +40,7 @@ public:
 	BRect NameBounds(BRect frame, BView* view, float lineHeight, const char* name);
 	BRect TimeBounds(BRect frame, BView* view, float lineHeight, const char* time);
 	BRect SourceBounds(BRect frame, BView* view, float lineHeight, const char* source);
+	BRect RetweetBounds(BRect frame, BView* view, float lineHeight, const char* str);
 	void LeftClicked(BPoint point, BView* owner, BRect frame);
 	void RightClicked(BPoint point, BView* owner, BRect frame);
 	virtual void ClearView();

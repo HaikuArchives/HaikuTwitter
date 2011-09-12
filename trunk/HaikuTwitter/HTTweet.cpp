@@ -16,6 +16,7 @@ HTTweet::HTTweet()
 	date.minute = 0;
 	date.second = 0;
 	id = 0;
+	retweetedBy = string("");
 	sourceName = string("");
 	bitmapDownloadInProgress = false;
 	view = NULL;
@@ -27,6 +28,7 @@ HTTweet::HTTweet(HTTweet *originalTweet)
 	HTTweet::HTTweet();
 	bitmapData = NULL;
 	imageBitmap = NULL;
+	this->retweetedBy = originalTweet->getRetweetedBy();
 	this->screenName = originalTweet->getScreenName();
 	this->fullName = originalTweet->getFullName();
 	this->text = originalTweet->getText();
@@ -133,6 +135,12 @@ HTTweet::getView()
 }
 
 const string
+HTTweet::getRetweetedBy() const
+{
+	return retweetedBy;
+}
+
+const string
 HTTweet::getScreenName() const
 {
 	return screenName;	
@@ -169,6 +177,12 @@ void
 HTTweet::setScreenName(string screenName)
 {
 	this->screenName = screenName;
+}
+
+void
+HTTweet::setRetweetedBy(string retweetedBy)
+{
+	this->retweetedBy = retweetedBy;
 }
 
 void

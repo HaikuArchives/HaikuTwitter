@@ -497,7 +497,7 @@ updateTimeLineThread(void *data)
 	
 	switch(TYPE) {
 		case TIMELINE_HOME:
-			//twitObj->timelineHomeGet();
+			twitObj->timelineHomeGet();
 			break;
 		case TIMELINE_FRIENDS:
 			twitObj->timelineFriendsGet();

@@ -24,6 +24,7 @@ namespace TwitterTags {
 	const char* SOURCE_TAG			= "<source>";
 	const char* ID_TAG				= "<id>";
 	const char* FOLLOW_TAG			= "<following>";
+	const char* RETWEETED_TAG		= "<retweeted_status>";
 	const char* PROFILEIMAGEURL_TAG	= "<profile_image_url>";
 }
 
@@ -105,45 +106,58 @@ HTTimelineParser::_ParseNodes(BList* nodeList, BList* resultList)
 		if(parsingNode == NULL)
 			return B_BAD_INDEX;	
 		currentTweet = new HTTweet();
+		
+		size_t start = 0;
+		
+		//Is a retweet?
+		size_t retweetPos = FindValue(&buffer, TwitterTags::RETWEETED_TAG, *parsingNode, start, false);
+		
+		if(retweetPos != string::npos) { //It is a retweet!
+			start = retweetPos-buffer.length(); //Parse for content inside RETWEETED_TAG
+			if(FindValue(&buffer, TwitterTags::REALNAME_TAG, *parsingNode, retweetPos) == string::npos)
+				status = B_ERROR;
+			else
+				currentTweet->setRetweetedBy(buffer);
+		}
 				
 		//Content
-		if(FindValue(&buffer, TwitterTags::CONTENT_TAG, *parsingNode, 0) == string::npos)
+		if(FindValue(&buffer, TwitterTags::CONTENT_TAG, *parsingNode, start) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->setText(buffer);
 			
 		//Screen name
-		if(status == B_OK && FindValue(&buffer, TwitterTags::USERNAME_TAG, *parsingNode, 0) == string::npos)
+		if(status == B_OK && FindValue(&buffer, TwitterTags::USERNAME_TAG, *parsingNode, start) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->setScreenName(buffer);
 			
 		//Real name
-		if(status == B_OK && FindValue(&buffer, TwitterTags::REALNAME_TAG, *parsingNode, 0) == string::npos)
+		if(status == B_OK && FindValue(&buffer, TwitterTags::REALNAME_TAG, *parsingNode, start) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->setFullName(buffer);
 			
 		//Profile image url
-		if(status == B_OK && FindValue(&buffer, TwitterTags::PROFILEIMAGEURL_TAG, *parsingNode, 0) == string::npos, false)
+		if(status == B_OK && FindValue(&buffer, TwitterTags::PROFILEIMAGEURL_TAG, *parsingNode, start, false) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->setProfileImageUrl(buffer);
 		
 		//When
-		if(status == B_OK && FindValue(&buffer, TwitterTags::WHEN_TAG, *parsingNode, 0) == string::npos)
+		if(status == B_OK && FindValue(&buffer, TwitterTags::WHEN_TAG, *parsingNode, start) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->setDate( _StrToTime(buffer.c_str()) );
 			
 		//Follow
-		if(status == B_OK && FindValue(&buffer, TwitterTags::FOLLOW_TAG, *parsingNode, 0) == string::npos, false)
+		if(status == B_OK && FindValue(&buffer, TwitterTags::FOLLOW_TAG, *parsingNode, start, false) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->setFollowing(buffer.find("true") != string::npos);
 		
 		//Source
-		if(status == B_OK && FindValue(&buffer, TwitterTags::SOURCE_TAG, *parsingNode, 0) == string::npos)
+		if(status == B_OK && FindValue(&buffer, TwitterTags::SOURCE_TAG, *parsingNode, start) == string::npos)
 			status = B_ERROR;
 		else {
 			// Parse the data for Application name
@@ -162,7 +176,7 @@ HTTimelineParser::_ParseNodes(BList* nodeList, BList* resultList)
 		}
 			
 		//Tweet id
-		if(status == B_OK && FindValue(&buffer, TwitterTags::ID_TAG, *parsingNode, 0) == string::npos, false)
+		if(status == B_OK && FindValue(&buffer, TwitterTags::ID_TAG, *parsingNode, start, false) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->setId(_StrToId(buffer.c_str()));
