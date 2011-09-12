@@ -225,6 +225,29 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		owner->SetFont(&currentFont);
 	}
 	
+	/*Write retweeted by*/
+	if(theTweet->getRetweetedBy().length() > 0) {
+		std::string retweetedString = theTweet->getRetweetedBy();
+		retweetedString.insert(0, "♺ ");
+		
+		BFont textFont;
+		BFont currentFont;
+		
+		owner->GetFont(&textFont);
+		owner->GetFont(&currentFont);
+		textFont.SetEncoding(B_UNICODE_UTF8);
+		textFont.SetSize(textFont.Size()-2);
+		owner->SetFont(&textFont, B_FONT_ALL);
+		owner->SetHighColor(displayColors.nameColor);
+		owner->GetFontHeight(&height);
+		lineHeight = (height.ascent + height.descent + height.leading);
+		BRect rtBounds = RetweetBounds(frame, owner, lineHeight, retweetedString.c_str());
+		owner->MovePenTo(rtBounds.left, rtBounds.top);
+		
+		owner->DrawString(retweetedString.c_str());
+		owner->SetFont(&currentFont);
+	}
+	
 	/*Write text*/
 	owner->GetFontHeight(&height);
 	lineHeight = (height.ascent + height.descent + height.leading);
@@ -296,6 +319,19 @@ HTGTweetItem::SourceBounds(BRect frame, BView* view, float lineHeight, const cha
 	bounds.left = kSourcePoint.x+frame.right-view->StringWidth(source)-kMargin;
 	bounds.top = kSourcePoint.y+frame.bottom-kMargin;
 	bounds.right = frame.right-kMargin;
+	bounds.bottom = frame.top+lineHeight;
+	
+	return bounds;
+}
+
+BRect
+HTGTweetItem::RetweetBounds(BRect frame, BView* view, float lineHeight, const char* str)
+{
+	BRect bounds = BRect();
+
+	bounds.left = kRetweetPoint.x+frame.left;
+	bounds.top = kRetweetPoint.y+frame.bottom-kMargin;
+	bounds.right = bounds.left+view->StringWidth(str);
 	bounds.bottom = frame.top+lineHeight;
 	
 	return bounds;

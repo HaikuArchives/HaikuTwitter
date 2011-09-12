@@ -51,10 +51,17 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	
 	if(!noAuth) {
 		/*Set up friends timeline*/
-		twitCurl *timelineTwitObj = new twitCurl();
+		/*twitCurl *timelineTwitObj = new twitCurl();
 		timelineTwitObj->setAccessKey( key );
 		timelineTwitObj->setAccessSecret( secret );
 		friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_FRIENDS, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
+		tabView->AddTab(friendsTimeLine);*/
+		
+		/*Set up home timeline*/
+		twitCurl *timelineTwitObj = new twitCurl();
+		timelineTwitObj->setAccessKey( key );
+		timelineTwitObj->setAccessSecret( secret );
+		friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_HOME, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 		tabView->AddTab(friendsTimeLine);
 	
 		/*Set up mentions timeline*/

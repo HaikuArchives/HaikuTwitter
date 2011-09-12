@@ -51,6 +51,7 @@ public:
 	bool operator<(const HTTweet &b) const;
 	BView* getView();
 	const string getScreenName() const;
+	const string getRetweetedBy() const;
 	const string getFullName();
 	const string getText();
 	const string getProfileImageUrl();
@@ -64,6 +65,7 @@ public:
 	static BBitmap* defaultBitmap();
 	void setView(BView *);
 	void downloadBitmap();
+	void setRetweetedBy(string);
 	void setScreenName(string);
 	void setFullName(string);
 	void setText(string);
@@ -93,6 +95,7 @@ private:
 	string text;				//Archived
 	string profileImageUrl;		//Archived
 	string sourceName;			//Archived
+	string retweetedBy;
 	struct DateStruct date;		//Not archived
 	uint64 id;					//Archived
 	bool isFollowing;			//Archived
