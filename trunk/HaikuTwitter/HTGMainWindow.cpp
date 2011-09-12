@@ -109,6 +109,17 @@ addSavedSearchesThreadFunction(void *data)
 	std::string replyMsg(" ");
 	twitObj->getLastWebResponse(replyMsg);
 	
+	if(replyMsg.length() < 64) {
+		#ifdef DEBUG_ENABLED
+		std::cout << "Data length to small - Retrying saved searches download..." << std::endl;
+		#endif
+		
+		delete twitObj;
+		sleep(0.2);
+		return addSavedSearchesThreadFunction(data);
+	}
+
+	
 	/*Setup BList to hold the new timeline views*/
 	BList *viewList = new BList();
 	

@@ -48,7 +48,7 @@ HTSearchParser::Parse(const std::string& data)
 	std::cout << data << std::endl;
 	#endif
 	
-	if(data.length() < 1) {
+	if(data.length() < 30) {
 		std::cout << "Parse error: data was empty" << std::endl;
 		return B_ERROR;	
 	}
@@ -108,13 +108,19 @@ HTSearchParser::_ParseNodes(BList* nodeList, BList* resultList)
 			//Parse (Format: "martinhpedersen (Martin H. Pedersen)"
 			int screenNameEndIndex = buffer.find(" (");
 			int fullNameEndIndex = buffer.find(")");
-			if(fullNameEndIndex < buffer.length())
+			
+			if(fullNameEndIndex != std::string::npos) {
 				currentTweet->setFullName(buffer.substr(screenNameEndIndex+2, fullNameEndIndex-2-screenNameEndIndex).c_str());
-			currentTweet->setScreenName(buffer.substr(0, screenNameEndIndex).c_str());
+				currentTweet->setScreenName(buffer.substr(0, screenNameEndIndex).c_str());
+			}
+			else {
+				status = B_ERROR;
+				std::cout << "Error parsing for full/screen name" << std::endl;
+			}
 		}
 			
 		//Profile image url
-		if(status == B_OK && _FindProfileImage(&buffer, *parsingNode) == string::npos, false)
+		if(status == B_OK && _FindProfileImage(&buffer, *parsingNode) == string::npos)
 			status = B_ERROR;
 		else
 			currentTweet->setProfileImageUrl(buffer.c_str());
@@ -145,10 +151,10 @@ HTSearchParser::_ParseNodes(BList* nodeList, BList* resultList)
 		}
 			
 		//ExternalId
-		/*if(status == B_OK && FindValue(&buffer, TwitterSearchTags::ID_TAG, *parsingNode, 0) == string::npos)
+		if(status == B_OK && FindValue(&buffer, TwitterSearchTags::ID_TAG, *parsingNode, 0) == string::npos)
 			status = B_ERROR;
 		else
-			currentTweet->SetExternalId( _StrToId(buffer.c_str()) );*/
+			currentTweet->setId( _StrToId(buffer.c_str()) );
 		
 		if(status == B_OK)
 			resultList->AddItem(currentTweet);

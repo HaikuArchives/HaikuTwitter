@@ -191,10 +191,10 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	float lineHeight = (height.ascent + height.descent + height.leading);
 
 	/*Write name*/
-	BRect nameBounds = NameBounds(frame, owner, lineHeight, theTweet->getScreenName().c_str());
+	BRect nameBounds = NameBounds(frame, owner, lineHeight, theTweet->getFullName().c_str());
 	owner->SetHighColor(displayColors.nameColor);
 	owner->MovePenTo(nameBounds.left, nameBounds.top);	
-	owner->DrawString(theTweet->getScreenName().c_str());
+	owner->DrawString(theTweet->getFullName().c_str());
 		
 	/*Write time*/
 	BRect timeBounds = TimeBounds(frame, owner, lineHeight, theTweet->getRelativeDate().c_str());
@@ -254,8 +254,11 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	
 	/*Draw userIcon*/
 	if(!theTweet->isDownloadingBitmap()) {
-		owner->SetDrawingMode(B_OP_ALPHA);
-		owner->DrawBitmapAsync(theTweet->getBitmap(), AvatarBounds(frame));
+		BBitmap* bitmap = theTweet->getBitmap();
+		if(bitmap != NULL) {
+			owner->SetDrawingMode(B_OP_ALPHA);
+			owner->DrawBitmapAsync(bitmap, AvatarBounds(frame));
+		}
 	}
 }
 
