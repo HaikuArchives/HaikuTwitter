@@ -82,7 +82,7 @@ HTTimelineParser::Parse(const std::string& data)
 	//Parse nodes
 	status = _ParseNodes(nodeList, fTweets);
 	
-	//Delete all nodes
+	//Delete all nodes (data has been copied to HTTweets)
 	while(!nodeList->IsEmpty())
 		delete (string *)nodeList->RemoveItem((int32)0);
 	delete nodeList;
@@ -99,10 +99,10 @@ HTTimelineParser::_ParseNodes(BList* nodeList, BList* resultList)
 	HTTweet* currentTweet;
 	string buffer("");
 	
-	while(!nodeList->IsEmpty()) {
+	for(int32 i = 0; i < nodeList->CountItems(); i++) {
 		status = B_OK;
 		buffer = string("");
-		parsingNode = (string *)nodeList->RemoveItem((int32)0);
+		parsingNode = (string *)nodeList->ItemAt(i);
 		if(parsingNode == NULL)
 			return B_BAD_INDEX;	
 		currentTweet = new HTTweet();
