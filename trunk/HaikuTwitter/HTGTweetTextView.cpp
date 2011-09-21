@@ -171,7 +171,7 @@ HTGTweetTextView::MakeHyperText()
 		if(Text()[i] == '@') {
 			i++;
 			int start = i;
-			while(isValidScreenNameChar(Text()[i]))
+			while(isValidScreenNameChar(Text()[i]) && i < strlen(Text()))
 				i++;
 			int end = i;
 			BFont font;
