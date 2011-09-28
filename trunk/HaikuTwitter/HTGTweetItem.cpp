@@ -190,19 +190,19 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 	owner->GetFontHeight(&height);
 	float lineHeight = (height.ascent + height.descent + height.leading);
 
-	/*Write name*/
+	// Write name
 	BRect nameBounds = NameBounds(frame, owner, lineHeight, theTweet->getFullName().c_str());
 	owner->SetHighColor(displayColors.nameColor);
 	owner->MovePenTo(nameBounds.left, nameBounds.top);	
 	owner->DrawString(theTweet->getFullName().c_str());
 		
-	/*Write time*/
+	// Write time
 	BRect timeBounds = TimeBounds(frame, owner, lineHeight, theTweet->getRelativeDate().c_str());
 	owner->SetHighColor(displayColors.timeColor);
 	owner->MovePenTo(timeBounds.left, timeBounds.top);
 	owner->DrawString(theTweet->getRelativeDate().c_str());
 	
-	/*Write source name*/
+	// Write source name
 	if(theTweet->getSourceName().length() < 25 && theTweet->getSourceName().length() > 1) {
 		std::string viaString = theTweet->getSourceName();
 		viaString.insert(0, "via ");
@@ -225,7 +225,7 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		owner->SetFont(&currentFont);
 	}
 	
-	/*Write retweeted by*/
+	// Write retweeted by
 	if(theTweet->getRetweetedBy().length() > 0) {
 		std::string retweetedString = theTweet->getRetweetedBy();
 		retweetedString.insert(0, "♺ ");
@@ -248,7 +248,7 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 		owner->SetFont(&currentFont);
 	}
 	
-	/*Write text*/
+	// Write text
 	owner->GetFontHeight(&height);
 	lineHeight = (height.ascent + height.descent + height.leading);
 	BRect textRect(kTextPoint.x,frame.top+lineHeight+kTextPoint.y, frame.right, frame.bottom-lineHeight+1);
@@ -265,17 +265,16 @@ HTGTweetItem::DrawItem(BView *owner, BRect frame, bool complete)
 			textView->MakeHyperText();
 	}
 	else{
-		textFont.SetEncoding(B_UNICODE_UTF8);
 		textFont.SetSize(textFont.Size()-2);
 		textView->MoveTo(textRect.left, textRect.top);
 		textView->ResizeTo(textRect.Width()+2, textRect.Height()+1);
 		textView->SetTextRect(BRect(0,0,frame.right-kAvatarRect.right-kMargin*2,frame.bottom-lineHeight-kMargin));
 	}
 	
-	/*Draw seperator*/
+	// Draw seperator
 	owner->StrokeLine(BPoint(frame.left, frame.bottom), BPoint(frame.right, frame.bottom));
 	
-	/*Draw userIcon*/
+	// Draw userIcon
 	if(!theTweet->isDownloadingBitmap()) {
 		BBitmap* bitmap = theTweet->getBitmap();
 		if(bitmap != NULL) {
