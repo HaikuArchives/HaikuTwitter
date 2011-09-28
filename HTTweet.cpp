@@ -358,9 +358,6 @@ HTTweet::monthToString(int month) const
 			#endif
 			return "Jan";
 	}
-	
-	
-	//return "Jan";
 }
 
 void
