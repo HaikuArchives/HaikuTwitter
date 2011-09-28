@@ -296,14 +296,13 @@ HTGTweetTextView::getUrls()
 	while(pos != std::string::npos) {
 		pos = theText.find("://", pos);
 		if(pos != std::string::npos) {
-			int start = pos;
+			int start = pos-1;
 			int end = pos;
 			while(start > -1 && (theText[start] >= 'A' && theText[start] <= 'z')) {
 				start--;
 			}
-			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n') {
+			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n')
 				end++;
-			}
 			BMessage *theMessage = new BMessage(GO_TO_URL);
 			theMessage->AddString("url", theText.substr(start+1, end-start-1).c_str());
 			theList->AddItem(new HTGTweetMenuItem(theText.substr(start+1, end-start-1).c_str(), theMessage));
