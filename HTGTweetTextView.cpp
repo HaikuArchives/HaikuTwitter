@@ -166,12 +166,12 @@ HTGTweetTextView::MakeHyperText()
 	}
 	
 	/*Screen names*/
-	for(int i = 0; Text()[i] != '\0'; i++) {
+	for(int i = 0; theText[i] != '\0'; i++) {
 		string newName;
-		if(Text()[i] == '@') {
+		if(theText[i] == '@') {
 			i++;
 			int start = i;
-			while(isValidScreenNameChar(Text()[i]) && i < strlen(Text()))
+			while(isValidScreenNameChar(theText[i]) && i < theText.length())
 				i++;
 			int end = i;
 			BFont font;
