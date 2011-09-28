@@ -2,7 +2,6 @@
 #DEBUG = -DDEBUG_ENABLED
 
 ### Nothing below this should be changed ###
-
 APP = HaikuTwitter
 CC = gcc
 LIBS += -L/boot/common/lib/ -lbe -ltranslation -lcurl -lstdc++ -lcrypto
@@ -13,7 +12,13 @@ ODIR = ${BDIR}/obj
 
 all: ${APP}
 
-_OBJ = HaikuTwitter.o AnimationHelper.o HTGTweetMenuItem.o HTGErrorHandling.o HTGLogoView.o HTGAuthorizeWindow.o oauth.o oauth_http.o xmalloc.o twitcurl.o SmartTabView.o HTGSearchForWindow.o HTGTweetTextView.o HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o HTStorage.o HTGTweetViewWindow.o HyperTextActions.o HTGAvatarView.o HTGStatusBar.o HTAccountCredentials.o HTGListView.o HTTimelineParser.o HTSearchParser.o entities.o
+_OBJ = HaikuTwitter.o AnimationHelper.o HTGTweetMenuItem.o HTGErrorHandling.o HTGLogoView.o HTGAuthorizeWindow.o
+_OBJ += oauth.o oauth_http.o xmalloc.o twitcurl.o SmartTabView.o HTGSearchForWindow.o HTGTweetTextView.o
+_OBJ += HTGInfoPopperSettingsWindow.o HTGTextView.o HTGTimeLineView.o HTGGoToUserWindow.o HTTweet.o HTGMainWindow.o
+_OBJ += HTGNewTweetWindow.o HTGTweetItem.o HTGAccountSettingsWindow.o HTGTimeLineWindow.o HTStorage.o HTGTweetViewWindow.o
+_OBJ += HyperTextActions.o HTGAvatarView.o HTGStatusBar.o HTAccountCredentials.o HTGListView.o HTTimelineParser.o
+_OBJ += HTSearchParser.o entities.o
+
 OBJ =  $(patsubst %,$(ODIR)/%, $(_OBJ))
 
 ${APP}: ${OBJ}
