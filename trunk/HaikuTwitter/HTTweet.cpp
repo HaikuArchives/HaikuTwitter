@@ -412,35 +412,48 @@ _threadDownloadBitmap(void *data)
 	HTTweet *super = (HTTweet*)data;
 	super->bitmapDownloadInProgress = true;
 	CURL *curl_handle;
-	BMallocIO *mallocIO = new BMallocIO();
+	BMallocIO *mallocIO;
 	
-	curl_global_init(CURL_GLOBAL_ALL);
-	curl_handle = curl_easy_init();
-	curl_easy_setopt(curl_handle, CURLOPT_URL, super->getProfileImageUrl().c_str());
+	int32 retryCount = 0;
 	
-	/*send all data to this function*/
-	curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
+	while(true) {
+		mallocIO = new BMallocIO();
+		curl_global_init(CURL_GLOBAL_ALL);
+		curl_handle = curl_easy_init();
+		curl_easy_setopt(curl_handle, CURLOPT_URL, super->getProfileImageUrl().c_str());
 	
-	/*we pass out 'mallocIO' object to the callback function*/
-	curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)mallocIO);
+		/*send all data to this function*/
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteMemoryCallback);
 	
-	curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "haikutwitter-agent/1.0");
+		/*we pass out 'mallocIO' object to the callback function*/
+		curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, (void *)mallocIO);
 	
-	/*get the data*/
-	if(curl_easy_perform(curl_handle) < 0)
-		std::cout << "libcURL: Download of bitmap failed." << std::endl;
+		curl_easy_setopt(curl_handle, CURLOPT_USERAGENT, "haikutwitter-agent/1.0");
 	
-	/*cleanup curl stuff*/
-	curl_easy_cleanup(curl_handle);
+		/*get the data*/
+		if(curl_easy_perform(curl_handle) < 0)
+			std::cout << "libcURL: Download of bitmap failed." << std::endl;
 	
-	if(mallocIO->BufferLength() < 512) {
-		#ifdef DEBUG_ENABLED
-		std::cout << "Data length to small - Retrying image download..." << std::endl;
-		#endif
+		/*cleanup curl stuff*/
+		curl_easy_cleanup(curl_handle);
 		
-		delete mallocIO;
-		sleep(0.2);
-		return _threadDownloadBitmap(data);
+		/*Handle unsuccessful downloads*/
+		if(mallocIO->BufferLength() < 256) {
+			if(retryCount > 10)
+				break;
+			else {
+				retryCount ++;
+				delete mallocIO;
+				sleep(0.2*retryCount);
+
+				#ifdef DEBUG_ENABLED
+				std::cout << "Data length to small - Retrying image download..." << std::endl;
+				std::cout << super->getProfileImageUrl().c_str() << std::endl;
+				#endif
+			}
+		}
+		else
+			break;
 	}
 	
 	/*Translate downloaded data to bitmap*/
