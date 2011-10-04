@@ -15,6 +15,9 @@ namespace CredentialTags {
 	const char* COUNTFOLLOWERS_TAG	= "<followers_count>";
 }
 
+extern "C" size_t decode_html_entities_utf8(char *dest, const char *src);
+using namespace std;
+
 HTAccountCredentials::HTAccountCredentials(twitCurl* twitObj, BHandler* msgHandler)
 {
 	this->twitObj = twitObj;
@@ -56,35 +59,87 @@ HTAccountCredentials::FetchSelf()
 		
 	std::string reply(" ");
 	twitObj->getLastWebResponse(reply);
+	
+	std::cout << reply << std::endl;
 
-	id = atoi(_FindValue(CredentialTags::ID_TAG, reply));
-	screenName = _FindValue(CredentialTags::SCREENNAME_TAG, reply);
-	realName = _FindValue(CredentialTags::REALNAME_TAG, reply);
-	location = _FindValue(CredentialTags::LOCATION_TAG, reply);
-	description = _FindValue(CredentialTags::DESCRIPTION_TAG, reply);
-	profileImageUrl = _FindValue(CredentialTags::PROFILEIMAGEURL_TAG, reply);
-	countFollowers = atoi(_FindValue(CredentialTags::COUNTFOLLOWERS_TAG, reply));
+	status_t status = B_OK;
+	string buffer("");
+	
+	//Id
+	if(FindValue(&buffer, CredentialTags::ID_TAG, reply, 0) == string::npos)
+		status = B_ERROR;
+	else
+		id = atoi(buffer.c_str());
+	
+	//Screen name
+	if(FindValue(&buffer, CredentialTags::SCREENNAME_TAG, reply, 0) == string::npos)
+		status = B_ERROR;
+	else
+		screenName = buffer.c_str();
+		
+	//realName
+	if(FindValue(&buffer, CredentialTags::REALNAME_TAG, reply, 0) == string::npos)
+		status = B_ERROR;
+	else
+		realName = buffer.c_str();
+		
+	//location
+	if(FindValue(&buffer, CredentialTags::LOCATION_TAG, reply, 0) == string::npos)
+		status = B_ERROR;
+	else
+		location = buffer.c_str();
+		
+	//description
+	if(FindValue(&buffer, CredentialTags::DESCRIPTION_TAG, reply, 0) == string::npos)
+		status = B_ERROR;
+	else
+		description = buffer.c_str();
+		
+	//profileImageUrl
+	if(FindValue(&buffer, CredentialTags::PROFILEIMAGEURL_TAG, reply, 0) == string::npos)
+		status = B_ERROR;
+	else
+		profileImageUrl = buffer.c_str();
+	
+	//count followers
+	if(FindValue(&buffer, CredentialTags::COUNTFOLLOWERS_TAG, reply, 0) == string::npos)
+		status = B_ERROR;
+	else
+		countFollowers = atoi(buffer.c_str());
 	
 	verified = (screenName.Length() > 1);
 	
 	return B_OK;
 }
 
-const char*
-HTAccountCredentials::_FindValue(const char* tag, const std::string& str)
+size_t
+HTAccountCredentials::FindValue(std::string* buffer, const char* tag, const std::string& data, size_t pos, bool decodeHtml)
 {
+	std::string ourBuffer;
+	
 	std::string endTag(tag);
 	endTag.insert(1, "/");
 	
-	size_t start = str.find(tag);
+	size_t start = data.find(tag, pos);
 	size_t end;
 	if(start == std::string::npos)
-		return "";
+		return std::string::npos;
 		
 	start += strlen(tag);
-	end = str.find(endTag, start);
+	end = data.find(endTag, start);
 	
-	return str.substr(start, end-start).c_str();
+	if(end != std::string::npos)
+		ourBuffer = data.substr(start, end-start).c_str();
+		
+	if(decodeHtml) {
+		char decodeBuffer[1024];
+		decode_html_entities_utf8(&decodeBuffer[0], ourBuffer.c_str());
+		*buffer = std::string(&decodeBuffer[0]);
+	}
+	else
+		*buffer = std::string(ourBuffer);
+
+	return end;
 }
 
 const char*
