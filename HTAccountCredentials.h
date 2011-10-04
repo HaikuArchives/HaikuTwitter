@@ -12,7 +12,6 @@
 #ifndef HT_ACCOUNTCREDENTIALS_H
 #define HT_ACOOUNTCREDENTIALS_H
 
-
 const int32 READY = 'ACRD';
 const int32 kMaxRetries = 3;
 
@@ -45,6 +44,6 @@ private:
 			twitCurl*	twitObj;
 			BHandler*	msgHandler;
 			
-			const char* _FindValue(const char* tag, const std::string&);
+			size_t		FindValue(std::string*, const char*, const std::string&, size_t, bool decodeHtml = true);
 };
 #endif
