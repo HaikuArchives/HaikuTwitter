@@ -246,17 +246,6 @@ HTTimelineParser::_StrToMonth(const char *date) const
 	return 0;
 }
 
-//Convert from Twitter id string to uint64
-/*uint64
-HTTimelineParser::_StrToId(const char* str)
-{
-	uint64 id = 0;
-		
-	sscanf(str, TwitterAPI::ID_FORMAT.c_str(), &id);
-		
-	return id;
-}*/
-
 size_t
 HTTimelineParser::FindValue(std::string* buffer, const char* tag, const std::string& data, size_t pos, bool decodeHtml)
 {
@@ -292,7 +281,6 @@ uint64
 HTTimelineParser::_StrToId(const char* str)
 {
 	uint64 id = 0;
-		
 	sscanf(str, TwitterAPI::ID_FORMAT.c_str(), &id);
 		
 	return id;

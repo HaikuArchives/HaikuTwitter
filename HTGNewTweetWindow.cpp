@@ -6,7 +6,7 @@
 
 #include "HTGNewTweetWindow.h"
 
-HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj)
+HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj, BHandler *parent)
 	: BWindow(BRect(100, 100, 500, 200), "What's Happening?", B_TITLED_WINDOW, B_NOT_RESIZABLE)
 {
 	this->twitObj = twitObj;
@@ -35,6 +35,8 @@ HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj)
 	counterView = new BStringView(BRect(350, 75, 400, 95), "Counter", "140");
 	counterView->SetHighColor(128, 128, 128);
 	theView->AddChild(counterView);
+	
+	this->parent = parent;
 	
 	message->MakeFocus();
 }
@@ -65,11 +67,15 @@ HTGNewTweetWindow::postTweet()
 		int errorEnd = replyMsg.find("<\error>");
 		if(errorStart-errorEnd > 0)
 			HTGErrorHandling::displayError(replyMsg.substr(errorStart, errorEnd-errorStart).c_str());
+		else { // Send "status updated" to parent, so we can refresh timelines
+			BMessage* statusUpdated = new BMessage(STATUS_UPDATED);
+			statusUpdated->AddString("content", message->Text());
+			parent->MessageReceived(statusUpdated);
+		}
 	}
 	else {
-		twitObj->getLastCurlError( replyMsg );
-		printf( "\ntwitterClient:: twitCurl::updateStatus error:\n%s\n", replyMsg.c_str() );
-		BAlert *theAlert = new BAlert("Oops, sorry!", replyMsg.c_str(), "Ok", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_STOP_ALERT); 	
+		//twitObj->getLastCurlError( replyMsg );
+		HTGErrorHandling::displayError("Oops, sorry! Looks like curl failed at some point..."); 	
 	}
 }
 
