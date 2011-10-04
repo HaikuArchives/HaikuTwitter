@@ -37,6 +37,7 @@
 #include "HTAccountCredentials.h"
 
 const int32 NEW_TWEET = 'NWTW';
+const int32 NEW_RETWEET = 'NRTW';
 const int32 REFRESH = 'REFR';
 const int32 ACCOUNT_SETTINGS = 'ACC';
 const int32 INFOPOPPER_SETTINGS = 'IPS';

@@ -28,7 +28,8 @@
 #define HTG_TWEETTEXTVIEW_H
 
 const int32 GO_TO_URL = 'GURL';
-const int32 GO_RETWEET = 'GRT';
+const int32 GO_RETWEET = 'GRTW';
+const int32 GO_QUOTE = 'GQUO';
 const int32 GO_REPLY = 'GRPL';
 const struct rgb_color kLinkBlue = {80, 80, 200, 255 };
 
@@ -83,6 +84,7 @@ private:
 			void				openUrl(const char *);
 			bool				isValidScreenNameChar(const char &);
 			void				sendRetweetMsgToParent();
+			void				sendQuoteMsgToParent();
 			void				sendReplyMsgToParent();
 			
 			BList*				getScreenNames();

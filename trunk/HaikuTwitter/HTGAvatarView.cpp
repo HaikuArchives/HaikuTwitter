@@ -172,8 +172,9 @@ void
 HTGAvatarView::postTweet()
 {
 	std::string replyMsg( "" );
+	std::string replyId( "" );
 	std::string postMsg = urlEncode(fMessage->Text());
-	if( twitObj->statusUpdate(postMsg) )  {
+	if( twitObj->statusUpdate(postMsg, replyId) )  {
 		printf( "Status update: OK\n" );
 		twitObj->getLastWebResponse(replyMsg);
 		int errorStart = replyMsg.find("<error>");

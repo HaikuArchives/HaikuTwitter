@@ -620,6 +620,13 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 			newTweetWindow->setTweetId(msg->FindString(id_label, (int32)0)); //Set id (RT, reply, ie)
 			newTweetWindow->Show();
 			break;
+		case NEW_RETWEET:
+			{
+				std::string id(msg->FindString("retweet_id"));
+				newTweetObj->statusRetweet(id);
+				HTGTimeLineView *homeTimeline = dynamic_cast<HTGTimeLineView*>(tabView->TabAt(0)->View());
+				homeTimeline->updateTimeLine();
+			}
 		case REFRESH:
 			if(trendingRefreshCounter > 3) {//Refresh only every 4 timeline-refresh.
 				_addTrending();

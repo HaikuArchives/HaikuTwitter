@@ -220,7 +220,8 @@ HTGTweetTextView::MouseDown(BPoint point)
 			myPopUp->AddSeparatorItem();
 		}
 	
-		myPopUp->AddItem(new HTGTweetMenuItem("Retweet...", new BMessage(GO_RETWEET)));
+		//myPopUp->AddItem(new HTGTweetMenuItem("Retweet", new BMessage(GO_RETWEET)));
+		myPopUp->AddItem(new HTGTweetMenuItem("Quote...", new BMessage(GO_QUOTE)));
 		myPopUp->AddItem(new HTGTweetMenuItem("Reply...", new BMessage(GO_REPLY)));
 		myPopUp->AddSeparatorItem();
 	
@@ -389,15 +390,25 @@ HTGTweetTextView::isValidScreenNameChar(const char& c)
 void
 HTGTweetTextView::sendRetweetMsgToParent()
 {
-	BMessage *retweetMsg = new BMessage(NEW_TWEET);
+	BMessage *retweetMsg = new BMessage(NEW_RETWEET);
+	retweetMsg->AddString("retweet_id", tweetId.c_str());
+	std::cout << tweetId << std::endl;
+
+	BTextView::MessageReceived(retweetMsg);
+}
+
+void
+HTGTweetTextView::sendQuoteMsgToParent()
+{
+	BMessage *quoteMsg = new BMessage(NEW_TWEET);
 	std::string RTString(this->Text());
 	RTString.insert(0, ": ");
 	RTString.insert(0, this->Name());
 	RTString.insert(0, "@");
 	RTString.insert(0, "♺ ");
-	retweetMsg->AddString("text", RTString.c_str());
-	retweetMsg->AddString("reply_to_id", tweetId.c_str());
-	BTextView::MessageReceived(retweetMsg);
+	quoteMsg->AddString("text", RTString.c_str());
+	quoteMsg->AddString("reply_to_id", tweetId.c_str());
+	BTextView::MessageReceived(quoteMsg);
 }
 
 void
@@ -419,6 +430,9 @@ HTGTweetTextView::MessageReceived(BMessage *msg)
 	const char* name_label = "screenName";
 	std::string newTweetAppend(" ");
 	switch(msg->what) {
+		case GO_QUOTE:
+			this->sendQuoteMsgToParent();
+			break;
 		case GO_RETWEET:
 			this->sendRetweetMsgToParent();
 			break;

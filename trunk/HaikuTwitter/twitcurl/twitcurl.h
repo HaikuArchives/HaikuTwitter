@@ -48,6 +48,7 @@ namespace twitterDefaults
     const std::string TWITCURL_STATUSUPDATE_URL = "http://twitter.com/statuses/update.xml";
     const std::string TWITCURL_STATUSSHOW_URL = "http://twitter.com/statuses/show/";
     const std::string TWITCURL_STATUDESTROY_URL = "http://twitter.com/statuses/destroy/";
+    const std::string TWITCURL_STATUSRETWEET_URL = "http://api.twitter.com/1/statuses/retweet/";
 
     /* Timeline URLs */
     const std::string TWITCURL_HOME_TIMELINE_URL = "http://twitter.com/statuses/home_timeline.xml";
@@ -130,7 +131,8 @@ public:
     bool trendsCurrentGet();
 
     /* Twitter status APIs */
-    bool statusUpdate( std::string& newStatus, const char* replyTo = ""  );
+    bool statusUpdate( std::string& newStatus, std::string& replyId  );
+    bool statusRetweet( std::string& statusId );
     bool statusShowById( std::string& statusId );
     bool statusDestroyById( std::string& statusId );
 

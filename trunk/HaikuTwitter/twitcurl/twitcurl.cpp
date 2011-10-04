@@ -450,16 +450,16 @@ bool twitCurl::trendsCurrentGet( )
 *          response by twitter. Use getLastWebResponse() for that.
 *
 *--*/
-bool twitCurl::statusUpdate( std::string& newStatus, const char* replyTo )
+bool twitCurl::statusUpdate( std::string& newStatus, std::string& replyId )
 {
     bool retVal = false;
     if( isCurlInit() && newStatus.length() )
     {
         /* Prepare new status message */
         std::string newStatusMsg( "" );
-        if( strlen(replyTo)  > 1 ) {
+        if( replyId.length() > 1 ) {
         	newStatusMsg.append(twitCurlDefaults::TWITCURL_REPLYTOID);
-        	newStatusMsg.append(replyTo);
+        	newStatusMsg.append(replyId);
         	newStatusMsg.append("&");
         }
         newStatusMsg.append( twitCurlDefaults::TWITCURL_STATUSSTRING );
@@ -470,6 +470,37 @@ bool twitCurl::statusUpdate( std::string& newStatus, const char* replyTo )
 
         /* Perform POST */
         retVal = performPost( twitterDefaults::TWITCURL_STATUSUPDATE_URL, newStatusMsg );
+    }
+    return retVal;
+}
+
+/*++
+* @method: twitCurl::statusRetweet
+*
+* @description: method to retweet a status message by its id
+*
+* @input: statusId - a number in std::string format
+*
+* @output: true if POST is success, otherwise false. This does not check http
+*          response by twitter. Use getLastWebResponse() for that.
+*
+*--*/
+bool twitCurl::statusRetweet( std::string& statusId )
+{
+    bool retVal = false;
+    if( isCurlInit() && statusId.length() )
+    {
+        /* Prepare standard params */
+        prepareStandardParams();
+
+        /* Prepare URL */
+        std::string buildUrl( "" );
+        buildUrl = twitterDefaults::TWITCURL_STATUSRETWEET_URL;
+        buildUrl.append( statusId.c_str() );
+        buildUrl.append( twitCurlDefaults::TWITCURL_EXTENSIONFORMAT.c_str() );
+
+        /* Perform GET */
+        retVal = performPost( buildUrl );
     }
     return retVal;
 }
