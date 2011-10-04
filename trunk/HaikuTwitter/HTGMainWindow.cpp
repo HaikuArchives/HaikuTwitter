@@ -422,7 +422,7 @@ HTGMainWindow::_SetupAvatarView()
 	if(fHideAvatarViewMenuItem->IsMarked())
 		viewRect.bottom = fMenuBar->Bounds().bottom;
 	
-	fAvatarView = new HTGAvatarView(newTweetObj, viewRect);
+	fAvatarView = new HTGAvatarView(newTweetObj, this, viewRect);
 	fAvatarView->SetAvatarTweet(avatar);
 	AddChild(fAvatarView);
 }
@@ -579,6 +579,12 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 	const char* text_label = "text";
 	const char* id_label = "reply_to_id";
 	switch(msg->what) {
+		case STATUS_UPDATED:
+			{
+				HTGTimeLineView *homeTimeline = dynamic_cast<HTGTimeLineView*>(tabView->TabAt(0)->View());
+				homeTimeline->updateTimeLine();
+			}
+			break;
 		case POST:
 			fAvatarView->MessageReceived(msg);
 			break;
@@ -609,7 +615,7 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 				_removePublicTimeLine();
 			break;
 		case NEW_TWEET:
-			newTweetWindow = new HTGNewTweetWindow(newTweetObj);
+			newTweetWindow = new HTGNewTweetWindow(newTweetObj, this);
 			newTweetWindow->SetText(msg->FindString(text_label, (int32)0)); //Set text (RT, reply, ie)
 			newTweetWindow->setTweetId(msg->FindString(id_label, (int32)0)); //Set id (RT, reply, ie)
 			newTweetWindow->Show();

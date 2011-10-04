@@ -17,7 +17,7 @@
 class HTGAvatarView : public BView {
 public:
 							HTGAvatarView();
-							HTGAvatarView(twitCurl* twitObj, BRect frame = BRect(), uint32 resizingMode = B_FOLLOW_LEFT_RIGHT);
+							HTGAvatarView(twitCurl* twitObj, BHandler* parent, BRect frame = BRect(), uint32 resizingMode = B_FOLLOW_LEFT_RIGHT);
 	virtual					~HTGAvatarView();
 
 			void			SetAvatarTweet(HTTweet*);
@@ -40,5 +40,6 @@ private:
 			HTTweet*		avatarTweet;
 			bool			displayAvatar;
 			twitCurl*		twitObj;
+			BHandler*		fParent;
 };
 #endif

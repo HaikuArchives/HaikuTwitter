@@ -5,13 +5,15 @@
 
 #include "HTGAvatarView.h"
 
-HTGAvatarView::HTGAvatarView(twitCurl* twitObj, BRect frame, uint32 resizingMode)
+HTGAvatarView::HTGAvatarView(twitCurl* twitObj, BHandler* parent, BRect frame, uint32 resizingMode)
 	: BView(frame, "AvatarView", resizingMode, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE)
 {	
 	SetViewColor(ui_color(B_PANEL_BACKGROUND_COLOR));
 	avatarTweet = NULL;
 	this->twitObj = twitObj;
 	displayAvatar = true;
+	
+	fParent = parent;
 		
 	//Set up text view 
 	BRect viewRect(5,22,frame.right-60,45);
@@ -178,11 +180,15 @@ HTGAvatarView::postTweet()
 		int errorEnd = replyMsg.find("<\error>");
 		if(errorStart-errorEnd > 0)
 			HTGErrorHandling::displayError(replyMsg.substr(errorStart, errorEnd-errorStart).c_str());
+		else { // Send "status updated" to parent, so we can refresh timelines
+			BMessage* statusUpdated = new BMessage(STATUS_UPDATED);
+			statusUpdated->AddString("content", fMessage->Text());
+			fParent->MessageReceived(statusUpdated);
+		}
 	}
 	else {
-		twitObj->getLastCurlError( replyMsg );
-		printf( "\ntwitterClient:: twitCurl::updateStatus error:\n%s\n", replyMsg.c_str() );
-		BAlert *theAlert = new BAlert("Oops, sorry!", replyMsg.c_str(), "Ok", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_STOP_ALERT); 	
+		//twitObj->getLastCurlError( replyMsg );
+		HTGErrorHandling::displayError("Oops, sorry! Looks like curl failed at some point..."); 	
 	}
 }
 

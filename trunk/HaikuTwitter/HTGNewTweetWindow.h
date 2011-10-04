@@ -25,10 +25,11 @@ const int32 POST = 'POST';
 const int32 CANCEL = 'CNL';
 const int32 UPDATED = 'UPDT';
 const int32 SHORTEN = 'SURL';
+const int32 STATUS_UPDATED = 'SUPD';
 
 class HTGNewTweetWindow : public BWindow {
 public:
-	HTGNewTweetWindow(twitCurl *);
+	HTGNewTweetWindow(twitCurl *, BHandler*);
 	~HTGNewTweetWindow();
 	void inputChanged(int length);
 	void MessageReceived(BMessage *msg);
@@ -50,5 +51,6 @@ private:
 	BButton *shortenButton;
 	BView *theView;
 	BStringView *counterView;
+	BHandler *parent;
 };
 #endif
