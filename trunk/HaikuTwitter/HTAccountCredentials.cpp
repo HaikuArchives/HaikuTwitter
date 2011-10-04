@@ -60,8 +60,10 @@ HTAccountCredentials::FetchSelf()
 	std::string reply(" ");
 	twitObj->getLastWebResponse(reply);
 	
+	#ifdef DEBUG_ENABLED
 	std::cout << reply << std::endl;
-
+	#endif
+	
 	status_t status = B_OK;
 	string buffer("");
 	
