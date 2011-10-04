@@ -146,7 +146,7 @@ HTGNewTweetWindow::shortenAllUrls()
 			while(end < theText.length() && theText[end] != ' ') {
 				end++;
 			}
-			char *shortUrl = shortenUrl(theText.substr(start+1, end-start-1).c_str());
+			const char *shortUrl = shortenUrl(theText.substr(start+1, end-start-1).c_str());
 			message->SetText(theText.replace(start+1, end-start-1, shortUrl).c_str());
 			pos = end;
 		}
@@ -187,7 +187,7 @@ HTGNewTweetWindow::updateCounter()
 	counterView->SetText(counterString);
 }
 
-char*
+const char*
 HTGNewTweetWindow::shortenUrl(const char *longUrl)
 {
 	// Use bit.ly for shortening
@@ -232,7 +232,7 @@ HTGNewTweetWindow::shortenUrl(const char *longUrl)
 	if(startPos == std::string::npos) {
 		std::cout << "bi.ly/shorten failed." << std::endl;
 		delete mallocIO;
-		return NULL;
+		return longUrl;
 		
 	}
 	

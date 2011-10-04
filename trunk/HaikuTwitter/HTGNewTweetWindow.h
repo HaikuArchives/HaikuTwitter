@@ -39,7 +39,7 @@ private:
 	void postTweet();
 	void updateCounter();
 	void shortenAllUrls();
-	char *shortenUrl(const char *longUrl);
+	const char *shortenUrl(const char *longUrl);
 	std::string urlEncode(const char* input);
 	std::string tweetId;
 	
