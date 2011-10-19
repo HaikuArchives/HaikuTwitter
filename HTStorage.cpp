@@ -176,7 +176,7 @@ HTStorage::cacheBitmap(BMallocIO* bitmapData, std::string& url)
 	status = node->InitCheck();
 	if (status < B_OK)
 		return status;
-		
+
 	//Write attributes
 	status = node->WriteAttr(HAIKUTWITTER_CACHE_IMAGE, B_RAW_TYPE, 0, bitmapData->Buffer(), bitmapData->BufferLength());
 	if(status < B_OK)
@@ -227,15 +227,17 @@ HTStorage::findBitmap(std::string& url, BMallocIO** mallocIO)
 		if(attrSize == B_ENTRY_NOT_FOUND)
 			return B_ENTRY_NOT_FOUND;
 
-	if(attrSize != dataSize) {
+	//Someone is still writing to the node,
+	//the caller have to be more patient
+	if(attrSize != dataSize)
 		return B_BUSY;
-	}
 	
 	BMallocIO* returnData = new BMallocIO();
 	if(returnData->Write(buffer, dataSize) == dataSize)
 		*mallocIO = returnData;
 	else {
 		delete[] buffer;
+		std::cout << "HTStorage::findBitmap(): failed to write buffer to BMallocIO" << std::endl;
 		return B_ERROR;
 	}
 	
