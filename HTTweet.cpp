@@ -467,7 +467,7 @@ _threadDownloadBitmap(void *data)
 	}
 	
 	/*Success!*/
-	if(cacheStatus != B_OK)
+	if(cacheStatus == B_ENTRY_NOT_FOUND)
 		HTStorage::cacheBitmap(mallocIO, url);
 	if(super->getView() != NULL && super->getView()->LockLooper()) {
 			super->bitmapData = mallocIO;
