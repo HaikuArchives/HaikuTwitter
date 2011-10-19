@@ -143,6 +143,117 @@ HTStorage::loadTweet(entry_ref* ref)
 	
 	return loadedTweet;
 }
+
+status_t 
+HTStorage::cacheBitmap(BMallocIO* bitmapData, std::string& url)
+{
+	status_t status;
+	
+	/*Prepare the path*/
+	BPath path;
+	status = getCachePath(path);
+	if (status < B_OK)
+		return status;
+
+	/*Prepare the directory*/
+	BDirectory cacheDir(path.Path());
+	cacheDir.CreateDirectory(path.Path(), NULL); //Assume this is successfull
+	
+	/*Prepare the file*/
+	stringstream out;
+	out << FNVHash(url);
+	path.Append(out.str().c_str());
+	
+	/*Write the file*/
+	BFile file(path.Path(), B_READ_WRITE | B_CREATE_FILE);
+	status = file.WriteAt(0, "", 0);
+	
+	if(bitmapData == NULL)
+		return B_OK;
+	
+	/*Open a node for the file*/
+	BNode * node = new BNode(path.Path());
+	status = node->InitCheck();
+	if (status < B_OK)
+		return status;
+		
+	//Write attributes
+	status = node->WriteAttr(HAIKUTWITTER_CACHE_IMAGE, B_RAW_TYPE, 0, bitmapData->Buffer(), bitmapData->BufferLength());
+	if(status < B_OK)
+		return status;
+	int32 size = bitmapData->BufferLength();
+	status = node->WriteAttr(HAIKUTWITTER_CACHE_IMAGE_SIZE, B_INT32_TYPE, 0, &size, sizeof(int32));
+	if(status < B_OK)
+		return status;
+		
+	status = node->Sync();
+	if(status < B_OK)
+		return status;
+		
+	delete node;
+	
+	return status;
+}
+
+status_t
+HTStorage::findBitmap(std::string& url, BMallocIO** mallocIO)
+{
+	/*Prepare the path*/
+	BPath path;
+	if (getCachePath(path) < B_OK)
+		return B_ERROR;
+	stringstream out;
+	out << FNVHash(url);
+	path.Append(out.str().c_str());
+	
+	//Load the node
+	BNode *node = new BNode(path.Path());
+	status_t status = node->InitCheck();
+	if (status < B_OK)
+		return B_ENTRY_NOT_FOUND;
+		
+	ssize_t attrSize = -1;
+
+	//Read size attribute
+	int32 dataSize = 0;
+	attrSize = node->ReadAttr(HAIKUTWITTER_CACHE_IMAGE_SIZE, B_INT32_TYPE, 0, &dataSize, sizeof(int32));
+	if(attrSize == B_ENTRY_NOT_FOUND)
+		return B_BUSY; //Someone has probably touched the file... and is downloading image
+	
+	char* buffer = new char[dataSize+1];
+	
+	//Read image data attribute
+	attrSize = node->ReadAttr(HAIKUTWITTER_CACHE_IMAGE, B_RAW_TYPE, 0, buffer, dataSize);
+		if(attrSize == B_ENTRY_NOT_FOUND)
+			return B_ENTRY_NOT_FOUND;
+
+	if(attrSize != dataSize) {
+		return B_BUSY;
+	}
+	
+	BMallocIO* returnData = new BMallocIO();
+	if(returnData->Write(buffer, dataSize) == dataSize)
+		*mallocIO = returnData;
+	else {
+		delete[] buffer;
+		return B_ERROR;
+	}
+	
+	delete[] buffer;
+	return B_OK;
+}
+
+status_t
+HTStorage::getCachePath(BPath &path)
+{
+	status_t status = find_directory(B_USER_SETTINGS_DIRECTORY, &path);
+	if (status < B_OK)
+		return status;
+		
+	path.Append("HaikuTwitter/");
+	return B_OK;
+}
+
 status_t
 HTStorage::getTweetPath(BPath &path)
 {
@@ -228,4 +339,17 @@ HTStorage::makeIndices()
 
 		fs_create_index(device, HAIKUTWITTER_ATTR_WHEN, B_INT32_TYPE, 0);
 	}
+}
+
+unsigned int
+HTStorage::FNVHash(const std::string& str)
+{
+	const unsigned int fnv_prime = 0x811C9DC5;
+	unsigned int hash = 0;
+	for(std::size_t i = 0; i < str.length(); i++) {
+		hash *= fnv_prime;
+		hash ^= str[i];
+	}
+
+	return hash;
 }

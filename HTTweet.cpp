@@ -4,6 +4,7 @@
  */ 
 
 #include "HTTweet.h"
+#include "HTStorage.h"
 
 HTTweet::HTTweet()
 {
@@ -411,12 +412,20 @@ _threadDownloadBitmap(void *data)
 {
 	HTTweet *super = (HTTweet*)data;
 	super->bitmapDownloadInProgress = true;
-	CURL *curl_handle;
-	BMallocIO *mallocIO;
+	std::string url(super->getProfileImageUrl());
+	BMallocIO *mallocIO = NULL;
 	
+	status_t cacheStatus = HTStorage::findBitmap(url, &mallocIO);
+	while(cacheStatus == B_BUSY) {
+		usleep(500);
+		cacheStatus = HTStorage::findBitmap(url, &mallocIO);
+	}
+
+	CURL *curl_handle;
 	int32 retryCount = 0;
 	
-	while(true) {
+	while(mallocIO == NULL) {
+		HTStorage::cacheBitmap(NULL, url); //Touch the cache file so we don't start multiple downloads
 		mallocIO = new BMallocIO();
 		curl_global_init(CURL_GLOBAL_ALL);
 		curl_handle = curl_easy_init();
@@ -444,7 +453,8 @@ _threadDownloadBitmap(void *data)
 			else {
 				retryCount ++;
 				delete mallocIO;
-				sleep(0.2*retryCount);
+				mallocIO = NULL;
+				usleep(200*retryCount);
 
 				#ifdef DEBUG_ENABLED
 				std::cout << "Data length to small - Retrying image download..." << std::endl;
@@ -456,7 +466,9 @@ _threadDownloadBitmap(void *data)
 			break;
 	}
 	
-	/*Translate downloaded data to bitmap*/
+	/*Success!*/
+	if(cacheStatus != B_OK)
+		HTStorage::cacheBitmap(mallocIO, url);
 	if(super->getView() != NULL && super->getView()->LockLooper()) {
 			super->bitmapData = mallocIO;
 			super->bitmapDownloadInProgress = false;
