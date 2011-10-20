@@ -366,18 +366,22 @@ HTGMainWindow::_saveSettings()
 void
 HTGMainWindow::showAbout()
 {
-	std::string text("HaikuTwitter Beta (rev. ");
+	std::string header("HaikuTwitter 1.0b");
+	std::string text("");
+	#ifdef SVN_REV
+	text.append(" (rev. ");
 	text.append(SVN_REV);
-	text.append(")\n");
-	text.append("\tWritten by Martin Hebnes Pedersen\n"
+	text.append(")");
+	#endif
+	text.append("\n\tWritten by Martin Hebnes Pedersen\n"
 				"\tCopyright 2010-2011\n"
 				"\tAll rights reserved.\n"
+				"\tDistributed under the terms of the MIT License.\n"
 				"\t\n"
-				"\tIcon by Michele Frau.\n"
-				"\t\n"
-				"\tDistributed under the terms of the MIT License.");
-				
-	BAlert *alert = new BAlert("about", text.c_str(), "OK");
+				"\tIcon by Michele Frau.\n");
+	std::string fulltext = header;
+	fulltext.append(text);
+	BAlert *alert = new BAlert("about", fulltext.c_str(), "OK");
 	BTextView *view = alert->TextView();
 	BFont font;
 
@@ -385,10 +389,10 @@ HTGMainWindow::showAbout()
 	
 	view->GetFont(&font);
 	font.SetSize(10);
-	view->SetFontAndColor(text.length()-48-3, text.length(), &font);
+	view->SetFontAndColor(header.length(), fulltext.length(), &font);
 	font.SetSize(18);
 	font.SetFace(B_BOLD_FACE);
-	view->SetFontAndColor(0, 18, &font);
+	view->SetFontAndColor(0, header.length(), &font);
 
 	alert->Go();
 }
