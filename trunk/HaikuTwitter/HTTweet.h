@@ -64,7 +64,7 @@ public:
 	static int sortByDateFunc(const void*, const void*);
 	static BBitmap* defaultBitmap();
 	void setView(BView *);
-	void downloadBitmap();
+	void downloadBitmap(bool async = false);
 	void setRetweetedBy(string);
 	void setScreenName(string);
 	void setFullName(string);
