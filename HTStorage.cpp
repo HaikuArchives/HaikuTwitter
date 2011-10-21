@@ -152,7 +152,7 @@ HTStorage::cacheBitmap(BMallocIO* bitmapData, std::string& url)
 	/*Prepare the path*/
 	BPath path;
 	status = getCachePath(path);
-	if (status < B_OK)
+	if(status < B_OK)
 		return status;
 
 	/*Prepare the directory*/
@@ -163,10 +163,10 @@ HTStorage::cacheBitmap(BMallocIO* bitmapData, std::string& url)
 	stringstream out;
 	out << FNVHash(url);
 	path.Append(out.str().c_str());
-	
+		
 	/*Write the file*/
 	BFile file(path.Path(), B_READ_WRITE | B_CREATE_FILE);
-	status = file.WriteAt(0, "", 0);
+	status = file.WriteAt(0, " ", 1);
 	
 	if(bitmapData == NULL)
 		return B_OK;
@@ -175,6 +175,9 @@ HTStorage::cacheBitmap(BMallocIO* bitmapData, std::string& url)
 	BNode * node = new BNode(path.Path());
 	status = node->InitCheck();
 	if (status < B_OK)
+		return status;
+	status = node->Lock();
+	if(status < B_OK)
 		return status;
 
 	//Write attributes
@@ -209,40 +212,42 @@ HTStorage::findBitmap(std::string& url, BMallocIO** mallocIO)
 	//Load the node
 	BNode *node = new BNode(path.Path());
 	status_t status = node->InitCheck();
-	if (status < B_OK)
+	if(status == B_BUSY)
+		return status;
+	if(status < B_OK)
 		return B_ENTRY_NOT_FOUND;
 		
 	ssize_t attrSize = -1;
 
 	//Read size attribute
-	int32 dataSize = 0;
+	int32 dataSize = -1;
 	attrSize = node->ReadAttr(HAIKUTWITTER_CACHE_IMAGE_SIZE, B_INT32_TYPE, 0, &dataSize, sizeof(int32));
 	if(attrSize == B_ENTRY_NOT_FOUND)
 		return B_BUSY; //Someone has probably touched the file... and is downloading image
 	
-	char* buffer = new char[dataSize+1];
+	char* buffer = new char[(dataSize/sizeof(char))+1];
 	
 	//Read image data attribute
 	attrSize = node->ReadAttr(HAIKUTWITTER_CACHE_IMAGE, B_RAW_TYPE, 0, buffer, dataSize);
-		if(attrSize == B_ENTRY_NOT_FOUND)
-			return B_ENTRY_NOT_FOUND;
+	if(attrSize == B_ENTRY_NOT_FOUND) {
+		return B_ENTRY_NOT_FOUND;
+	}
 
-	//Someone is still writing to the node,
-	//the caller have to be more patient
+	//File is corrupted
 	if(attrSize != dataSize)
-		return B_BUSY;
+		return B_ERROR;
 	
 	BMallocIO* returnData = new BMallocIO();
-	if(returnData->Write(buffer, dataSize) == dataSize)
+	if(returnData->Write(buffer, dataSize) == dataSize) {
 		*mallocIO = returnData;
+		delete[] buffer;
+		return B_OK;
+	}
 	else {
 		delete[] buffer;
 		std::cout << "HTStorage::findBitmap(): failed to write buffer to BMallocIO" << std::endl;
 		return B_ERROR;
 	}
-	
-	delete[] buffer;
-	return B_OK;
 }
 
 status_t
@@ -327,7 +332,6 @@ HTStorage::makeIndices()
 	};
 
 	// add tweet indices for all devices capable of querying
-
 	int32 cookie = 0;
 	dev_t device;
 	while ((device = next_dev(&cookie)) >= B_OK) {
@@ -347,10 +351,10 @@ unsigned int
 HTStorage::FNVHash(const std::string& str)
 {
 	const unsigned int fnv_prime = 0x811C9DC5;
-	unsigned int hash = 0;
+	unsigned int hash = 2166136261u;
 	for(std::size_t i = 0; i < str.length(); i++) {
-		hash *= fnv_prime;
 		hash ^= str[i];
+		hash *= fnv_prime;
 	}
 
 	return hash;
