@@ -84,7 +84,6 @@ private:
 	void _addPublicTimeLine();
 	void _removePublicTimeLine();
 	void _addSavedSearches();
-	void _addTrending();
 	void _setTimelineTextSize(int);
 	status_t _getSettingsPath(BPath &path);
 	void _retrieveSettings();
@@ -123,7 +122,6 @@ private:
 	BMenu *fTwitterMenu;
 	BMenu *fViewMenu;
 	BMenu *fSettingsMenu;
-	BMenu *fTrendingSubMenu;
 	BMenuItem *fHideAvatarViewMenuItem;
 	BMenuItem *fEnablePublicMenuItem;
 	BMenuItem *fAutoStartMenuItem;
