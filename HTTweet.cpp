@@ -26,7 +26,6 @@ HTTweet::HTTweet()
 
 HTTweet::HTTweet(HTTweet *originalTweet)
 {
-	HTTweet::HTTweet();
 	bitmapData = NULL;
 	imageBitmap = NULL;
 	this->retweetedBy = originalTweet->getRetweetedBy();
