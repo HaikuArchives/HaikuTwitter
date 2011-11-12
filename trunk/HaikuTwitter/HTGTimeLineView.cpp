@@ -482,7 +482,7 @@ updateTimeLineThread(void *data)
 	
 	HTGListView *listView = super->listView;
 	bool saveTweets = super->saveTweets;
-	int32 errorCount = super->errorCount;
+	//int32 errorCount = super->errorCount;
 	
 	int32 TYPE = super->TYPE;
 	twitCurl *twitObj = super->twitObj;
@@ -530,20 +530,20 @@ updateTimeLineThread(void *data)
 	 #endif
 
 	if(replyMsg.length() < 10) {
-		errorCount++;
-		if(errorCount < kMaximumRetries) {
+		super->errorCount++;
+		if(super->errorCount < kMaximumRetries) {
 			super->waitingForUpdate = true;
-			super->updateTimeLine();
 			#ifdef DEBUG_ENABLED
-			std::cout << "No connection, retry: " << errorCount << "/" << kMaximumRetries << std::endl;
+			std::cout << "No connection, retry: " << super->errorCount << "/" << kMaximumRetries << std::endl;
 			#endif
+			super->updateTimeLine();
 			return B_ERROR;
 		}
 		else
 			replyMsg= string("error");
 	}
 	else
-		errorCount = 0;
+		super->errorCount = 0;
 
 	if(TYPE == TIMELINE_SEARCH)
 		timeLineParser = new HTSearchParser();
