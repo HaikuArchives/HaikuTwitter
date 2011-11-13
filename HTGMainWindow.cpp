@@ -290,7 +290,7 @@ HTGMainWindow::_saveSettings()
 void
 HTGMainWindow::showAbout()
 {
-	std::string header("HaikuTwitter devel");
+	std::string header("HaikuTwitter unstable");
 	std::string text("");
 	#ifdef SVN_REV
 	text.append(" (rev. ");
