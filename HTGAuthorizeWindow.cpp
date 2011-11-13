@@ -45,6 +45,7 @@ HTGAuthorizeWindow::HTGAuthorizeWindow(int refreshTime, BPoint position, int hei
 	theView->AddChild(openButton);
 	
 	cancelButton = new BButton(BRect(100, 160, 260, 190), NULL, "Use without account", new BMessage(USE_WITHOUT_ACCOUNT));
+	cancelButton->SetEnabled(false); //Using without account is BROKEN (see Issue 21)
 	theView->AddChild(cancelButton);
 	
 	/*Set up text control*/
