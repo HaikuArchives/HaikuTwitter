@@ -225,7 +225,7 @@ HTStorage::findBitmap(std::string& url, BMallocIO** mallocIO)
 	if(attrSize == B_ENTRY_NOT_FOUND)
 		return B_BUSY; //Someone has probably touched the file... and is downloading image
 	
-	char* buffer = new char[(dataSize/sizeof(char))+1];
+	char* buffer = new char[dataSize];
 	
 	//Read image data attribute
 	attrSize = node->ReadAttr(HAIKUTWITTER_CACHE_IMAGE, B_RAW_TYPE, 0, buffer, dataSize);

@@ -482,7 +482,6 @@ updateTimeLineThread(void *data)
 	
 	HTGListView *listView = super->listView;
 	bool saveTweets = super->saveTweets;
-	//int32 errorCount = super->errorCount;
 	
 	int32 TYPE = super->TYPE;
 	twitCurl *twitObj = super->twitObj;
