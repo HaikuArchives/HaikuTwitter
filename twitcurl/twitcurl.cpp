@@ -36,6 +36,9 @@ m_curlCallbackParamsSet( false )
         std::string dummyStr( "" );
         getLastCurlError( dummyStr );
     }
+    else {
+         curl_easy_setopt( m_curlHandle, CURLOPT_NOSIGNAL, 1 );
+    }
 }
 
 /*++
