@@ -264,9 +264,10 @@ HTTimelineParser::FindValue(std::string* buffer, const char* tag, const std::str
 	
 	if(end != std::string::npos)
 		ourBuffer = data.substr(start, end-start).c_str();
-		
+	
 	if(decodeHtml) {
-		char* decodeBuffer = new char[ourBuffer.length()];
+		size_t bufSize = ourBuffer.length()*2; //Worst case scenario
+		char* decodeBuffer = new char[bufSize];
 		decode_html_entities_utf8(decodeBuffer, ourBuffer.c_str());
 		*buffer = std::string(decodeBuffer);
 		delete[] decodeBuffer;
