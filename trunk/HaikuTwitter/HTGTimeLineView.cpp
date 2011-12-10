@@ -651,15 +651,17 @@ HTGTimeLineView::sendNotificationFor(HTTweet *theTweet)
 	BNotification notification(B_INFORMATION_NOTIFICATION);
 
 	//Prepare the message
-	notification.SetGroup("HaikuTwitter");
-	notification.SetTitle(theTweet->getFullName().c_str());
+	std::string title("New tweet from ");
+	title.append(theTweet->getFullName());
+	notification.SetApplication("HaikuTwitter");
+	notification.SetTitle(title.c_str());
 	notification.SetContent(theTweet->getText().c_str());
 	notification.SetOnClickApp("application/x-vnd.HaikuTwitter");
 	theTweet->waitUntilDownloadComplete();
 	notification.SetIcon(theTweet->getBitmap());
 
 	//Send the notification
-	notification.Send();		
+	be_roster->Notify(notification, (bigtime_t)0);		
 }
 
 bool

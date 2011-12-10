@@ -3,18 +3,18 @@ resource app_signature "application/x-vnd.HaikuTwitter";
 resource app_flags B_SINGLE_LAUNCH;
 
 resource app_version {
-	major  = 9,
-	middle = 9,
-	minor  = 9,
+	major  = 1,
+	middle = 0,
+	minor  = 0,
 
 	/* 0 = development	1 = alpha			2 = beta
 	   3 = gamma		4 = golden master	5 = final */
-	variety = 0,
+	variety = 5,
 
 	internal = 0,
 
 	short_info = "HaikuTwitter",
-	long_info  = "HaikuTwitter © 2010-2011 Martin Hebnes Pedersen."
+	long_info  = "HaikuTwitter © 2010-2012 Martin Hebnes Pedersen."
 };
 
 //Icon by Michele Frau
