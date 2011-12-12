@@ -161,10 +161,10 @@ HTTimelineParser::_ParseNodes(BList* nodeList, BList* resultList)
 			status = B_ERROR;
 		else {
 			// Parse the data for Application name
-            int pos = buffer.find(">", 0); //<a href="http://www.tweetdeck.com/" rel="nofollow">TweetDeck</a>
+            size_t pos = buffer.find(">", 0); //<a href="http://www.tweetdeck.com/" rel="nofollow">TweetDeck</a>
 			if(pos != std::string::npos) {
-				int start = pos;
-				int end = pos;
+				size_t start = pos;
+				size_t end = pos;
 				while(end < buffer.length() && buffer[end] != '<') {
 					end++;
 				}

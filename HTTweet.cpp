@@ -6,6 +6,9 @@
 #include "HTTweet.h"
 #include "HTStorage.h"
 
+static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
+status_t _threadDownloadBitmap(void *);
+
 HTTweet::HTTweet()
 {
 	bitmapData = NULL;

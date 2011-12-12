@@ -43,7 +43,6 @@ HTGGoToUserWindow::findUser()
 void
 HTGGoToUserWindow::MessageReceived(BMessage *msg)
 {
-	const char* text_label = "text";
 	switch(msg->what) {
 		case GO:
 			this->findUser();

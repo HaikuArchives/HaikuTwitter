@@ -13,7 +13,7 @@
 
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
-#include "HTGTweetItem.h"
+//#include "HTGTweetItem.h"
 #include "HTGTimeLineView.h"
 
 #ifndef HTG_TIMELINEWINDOW_H

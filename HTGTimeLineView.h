@@ -20,7 +20,7 @@
 #include "HTSearchParser.h"
 #include "twitcurl/twitcurl.h"
 #include "HTTweet.h"
-#include "HTGTweetItem.h"
+//#include "HTGTweetItem.h"
 #include "HTGInfoPopperSettingsWindow.h"
 
 #ifndef HTG_TIMELINEVIEW_H

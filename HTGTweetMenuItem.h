@@ -27,9 +27,6 @@ enum icon_source {
 	kSupertypeIcon
 };
 
-static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
-status_t _threadDownloadLinkIcon(void *);
-
 class HTGTweetMenuItem : public BMenuItem {
 public:
 	HTGTweetMenuItem(const char* label, BMessage* message, char shortcut = 0, uint32 modifiers = 0);

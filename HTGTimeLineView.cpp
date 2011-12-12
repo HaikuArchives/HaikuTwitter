@@ -124,7 +124,7 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	: BView(archive)
 {
 	dragger = NULL;
-	const char **ptr;
+	const char *ptr = NULL;
 	
 	isReplicant = true;
 	errorCount = 0;
@@ -132,9 +132,9 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	archive->FindBool("HTGTimeLineView::waitingForUpdate", &waitingForUpdate);
 	archive->FindBool("HTGTimeLineView::wantsNotifications", &wantsNotifications);
 	archive->FindBool("HTGTimeLineView::saveTweets", &saveTweets);
-	archive->FindString("HTGTimeLineView::name", ptr);
+	archive->FindString("HTGTimeLineView::name", &ptr);
 	archive->FindInt32("HTGTimeLineView::TYPE", &TYPE);
-	SetName(*ptr);
+	SetName(ptr);
 	
 	BMessage msg;
 	BArchivable* unarchived;
@@ -152,7 +152,7 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	}
 	
 	/*Set up unhandled list*/
-	int i;
+	int i = 0;
 	unhandledList = new BList();
 	while(archive->FindMessage("HTGTimeLineView::unhandled", i++, &msg) == B_OK) {
 		unarchived = instantiate_object(&msg);
@@ -164,10 +164,10 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	
 	/*Set up twitcurl*/
 	twitObj = new twitCurl();
-	archive->FindString("HTGTimeLineView::oauthKey", ptr);
-	std::string key(*ptr);
-	archive->FindString("HTGTimeLineView::oauthSecret", ptr);
-	std::string secret(*ptr);
+	archive->FindString("HTGTimeLineView::oauthKey", &ptr);
+	std::string key(ptr);
+	archive->FindString("HTGTimeLineView::oauthSecret", &ptr);
+	std::string secret(ptr);
 	twitObj->setAccessKey(key);
 	twitObj->setAccessSecret(secret);
 	
@@ -230,7 +230,7 @@ HTGTimeLineView::Archive(BMessage* archive, bool deep) const
 		
 		BMessage unhandled;
 		HTGTweetItem* currentItem;
-		for(int i; i < unhandledList->CountItems(); i++) {
+		for(int i = 0; i < unhandledList->CountItems(); i++) {
 			currentItem = (HTGTweetItem* )(unhandledList->ItemAt(i));
 			if(currentItem->Archive(&unhandled, deep) == B_OK) {
 				if(status == B_OK)
@@ -363,7 +363,7 @@ HTGTimeLineView::AttachedToWindow()
 		listView->SetHighColor(ViewColor());
 		
 		/*Setup runner to refresh the timeline*/
-		BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), 3*1000000*60);
+		new BMessageRunner(this, new BMessage(REFRESH), 3*1000000*60);
 		
 		/*We don't want notifications for replicants*/
 		wantsNotifications = false;
@@ -455,7 +455,7 @@ HTGTimeLineView::savedSearchCreateSelf()
 	saveObj->getLastWebResponse(replyMsg);
 
 	/*Parse result*/
-	int pos = 0;
+	size_t pos = 0;
 	const char *idTag = "<id>";
 	pos = replyMsg.find(idTag, pos);
 	if(pos != std::string::npos) {

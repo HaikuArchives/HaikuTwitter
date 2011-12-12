@@ -58,7 +58,6 @@ HaikuTwitter::createAndShowMainWindow()
 void
 HaikuTwitter::RefsReceived(BMessage* message)
 {
-	int32 index = 0;
 	entry_ref ref;
 	BList* tweets = new BList();
 	for(int i = 0; (message->FindRef("refs", i, &ref) == B_OK); i++) {
@@ -154,8 +153,8 @@ retrieveOAuth()
 	oauth_settings theSettings;
 	
 	/*Set the defaults, just in case anything bad happens*/
-	sprintf(theSettings.key, "");
-	sprintf(theSettings.secret, "");
+	theSettings.key[0] = '\0';
+	theSettings.secret[0] = '\0';
 	
 	BPath path;
 	

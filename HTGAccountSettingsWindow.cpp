@@ -163,7 +163,7 @@ HTGAccountSettingsWindow::_saveSettings()
 		return B_OK;
 		
 	BAlert *theAlert = new BAlert("Please restart!", "You must restart HaikuTwitter for the changes to take place.", "Ok", NULL, NULL, B_WIDTH_AS_USUAL, B_OFFSET_SPACING, B_WARNING_ALERT);	
-	int32 button_index = theAlert->Go();
+	theAlert->Go();
 		
 	sprintf(theSettings.username, usernameView->Text());
 	if(strlen(passwordView->Text()) > 0)
@@ -182,4 +182,6 @@ HTGAccountSettingsWindow::_saveSettings()
 		
 	file.WriteAt(0, &theSettings, sizeof(twitter_settings));
 	std::cout << "Settings saved" << std::endl;
+	
+	return B_OK;
 }

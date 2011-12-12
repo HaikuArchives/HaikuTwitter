@@ -9,6 +9,5 @@ void
 HTGErrorHandling::displayError(const char* theError)
 {
 	BAlert *alert = new BAlert("error", theError, "OK");
-	BTextView *view = alert->TextView();
 	alert->Go();
 }
