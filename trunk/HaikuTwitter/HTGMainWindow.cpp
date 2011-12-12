@@ -81,7 +81,7 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 		_addSavedSearches();
 	
 	/*Fire a REFRESH message every 'refreshTime' minute*/
-	BMessageRunner *refreshTimer = new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
+	new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
 
 status_t
@@ -120,8 +120,8 @@ addSavedSearchesThreadFunction(void *data)
 	BList *viewList = new BList();
 	
 	/*Parse saved searches for query*/
-	int pos = 0;
-	int i = 0;
+	size_t pos = 0;
+	size_t i = 0;
 	const char *queryTag = "<query>"; 
 	while(pos != std::string::npos) {
 		pos = replyMsg.find(queryTag, pos);
@@ -285,6 +285,8 @@ HTGMainWindow::_saveSettings()
 		return status;
 		
 	file.WriteAt(0, &theSettings, sizeof(twitter_settings));
+	
+	return B_OK;
 }
 
 void
@@ -627,7 +629,7 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 		{
 			BFont font;
 			tabView->TabAt(0)->View()->GetFont(&font);
-			int size = font.Size();
+			size_t size = font.Size();
 			if(msg->what == TEXT_SIZE_INCREASE)
 				size += 1;
 			else if(msg->what == TEXT_SIZE_DECREASE)

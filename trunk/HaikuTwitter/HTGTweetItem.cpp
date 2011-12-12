@@ -6,6 +6,14 @@
 
 #include "HTGTweetItem.h"
 
+//Drawing constants
+static BRect kAvatarRect(9, 5, 56, 52);
+static BPoint kNamePoint(64, 0);
+static BPoint kSourcePoint(0, 2);
+static BPoint kRetweetPoint(64, 2);
+static BPoint kTextPoint(64, 3);
+static int32 kMargin = 5;
+
 HTGTweetItem::HTGTweetItem(HTTweet *theTweet, bool displayFullName)
 	: BListItem()
 {

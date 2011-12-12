@@ -97,7 +97,7 @@ HTGTweetTextView::MakeHyperText()
 		pos = theText.find("://", pos);
 		if(pos != std::string::npos) {
 			int start = pos-1;
-			int end = pos;
+			size_t end = pos;
 			while(start > -1 && (theText[start] >= 'A' && theText[start] <= 'z')) {
 				start--;
 			}
@@ -123,8 +123,8 @@ HTGTweetTextView::MakeHyperText()
 		if(theText.find("://", pos-3, 3) != std::string::npos) //So we don't add URL's detected from the method above.
 			pos++;
 		else if (pos != std::string::npos) {
-			int start = pos;
-			int end = pos;
+			size_t start = pos;
+			size_t end = pos;
 			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n')
 				end++;
 			
@@ -147,8 +147,8 @@ HTGTweetTextView::MakeHyperText()
 	while(pos != std::string::npos) {
 		pos = theText.find("#", pos);
 		if(pos != std::string::npos) {
-			int start = pos;
-			int end = pos;
+			size_t start = pos;
+			size_t end = pos;
 			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n' && theText[end] != ',' && theText[end] != '.' && theText[end] != '"') {
 				end++;
 			}
@@ -166,11 +166,11 @@ HTGTweetTextView::MakeHyperText()
 	}
 	
 	/*Screen names*/
-	for(int i = 0; theText[i] != '\0'; i++) {
+	for(size_t i = 0; theText[i] != '\0'; i++) {
 		string newName;
 		if(theText[i] == '@') {
 			i++;
-			int start = i;
+			size_t start = i;
 			while(isValidScreenNameChar(theText[i]) && i < theText.length())
 				i++;
 			int end = i;
@@ -298,7 +298,7 @@ HTGTweetTextView::getUrls()
 		pos = theText.find("://", pos);
 		if(pos != std::string::npos) {
 			int start = pos-1;
-			int end = pos;
+			size_t end = pos;
 			while(start > -1 && (theText[start] >= 'A' && theText[start] <= 'z')) {
 				start--;
 			}
@@ -323,8 +323,8 @@ HTGTweetTextView::getUrls()
 		if(theText.find("://", pos-3, 3) != std::string::npos) //So we don't add URL's detected from the method above.
 			pos++;
 		else if (pos != std::string::npos) {
-			int start = pos;
-			int end = pos;
+			size_t start = pos;
+			size_t end = pos;
 			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n') {
 				end++;
 			}
@@ -355,8 +355,8 @@ HTGTweetTextView::getTags()
 	while(pos != std::string::npos) {
 		pos = theText.find("#", pos);
 		if(pos != std::string::npos) {
-			int start = pos;
-			int end = pos;
+			size_t start = pos;
+			size_t end = pos;
 			while(end < theText.length() && theText[end] != ' ' && theText[end] != '\n' && theText[end] != ',' && theText[end] != '.' && theText[end] != '"') {
 				end++;
 			}
@@ -427,8 +427,6 @@ void
 HTGTweetTextView::MessageReceived(BMessage *msg)
 {
 	const char* url_label = "url";
-	const char* name_label = "screenName";
-	std::string newTweetAppend(" ");
 	switch(msg->what) {
 		case GO_QUOTE:
 			this->sendQuoteMsgToParent();
@@ -518,7 +516,7 @@ _threadDownloadLinkIconURLs(void *data)
 		
 		/*Parse for base-url*/
 		std::string location(currentItem->Label());
-		int pos = 0;
+		size_t pos = 0;
 		while(pos != std::string::npos) {
 		pos = location.find("http://", pos);
 			if(pos != std::string::npos) {

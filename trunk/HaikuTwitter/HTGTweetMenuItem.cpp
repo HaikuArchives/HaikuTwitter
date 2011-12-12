@@ -6,6 +6,9 @@
 
 #include "HTGTweetMenuItem.h"
 
+static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
+status_t _threadDownloadLinkIcon(void *);
+
 HTGTweetMenuItem::HTGTweetMenuItem(const char* label, BMessage* message, char shortcut, uint32 modifiers)
 	: BMenuItem(label, message, shortcut, modifiers)
 {
@@ -43,7 +46,7 @@ HTGTweetMenuItem::setLinkIconUrl(std::string& url)
 		BRect iconRect(0, 0, B_MINI_ICON-1, B_MINI_ICON-1);
 		linkIcon = new BBitmap(iconRect, B_RGBA32);
 		BMimeType mimeType("text/html");
-		status_t status=icon_for_type(mimeType,*linkIcon,B_MINI_ICON);
+		icon_for_type(mimeType,*linkIcon,B_MINI_ICON);
 		
 		if(Menu()->LockLooper()) {
 			Menu()->Invalidate();

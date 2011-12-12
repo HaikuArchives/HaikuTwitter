@@ -28,7 +28,7 @@
 #include "HTGSearchForWindow.h"
 #include "HTGAccountSettingsWindow.h"
 #include "HTGInfoPopperSettingsWindow.h"
-#include "HTGTweetItem.h"
+//#include "HTGTweetItem.h"
 #include "HTGTimeLineView.h"
 #include "HTGTimeLineWindow.h"
 #include "HTGErrorHandling.h"
@@ -36,25 +36,25 @@
 #include "HTGStatusBar.h"
 #include "HTAccountCredentials.h"
 
-const int32 NEW_TWEET = 'NWTW';
-const int32 NEW_RETWEET = 'NRTW';
-const int32 REFRESH = 'REFR';
-const int32 ACCOUNT_SETTINGS = 'ACC';
-const int32 INFOPOPPER_SETTINGS = 'IPS';
-const int32 GO_USER = 'GUSR';
-const int32 FIND_USER = 'FUSR';
-const int32 SEARCH_FOR = 'SFOR';
-const int32 GO_SEARCH = 'SRCH';
-const int32 ABOUT = 'BOUT';
-const int32 CLOSE_TAB = 'CTAB';
-const int32 TOGGLE_AVATARVIEW = 'TATR';
-const int32 TOGGLE_TABS = 'TTAB';
-const int32 TOGGLE_PUBLIC = 'TPUB';
-const int32 TOGGLE_AUTOSTART = 'ASTT';
-const int32 TOGGLE_SAVETWEETS = 'STTG';
-const int32 TEXT_SIZE_INCREASE = 'TINC';
-const int32 TEXT_SIZE_DECREASE = 'TDEC';
-const int32 TEXT_SIZE_REVERT = 'TREV';
+const uint32 NEW_TWEET = 'NWTW';
+const uint32 NEW_RETWEET = 'NRTW';
+const uint32 REFRESH = 'REFR';
+const uint32 ACCOUNT_SETTINGS = 'ACC';
+const uint32 INFOPOPPER_SETTINGS = 'IPS';
+const uint32 GO_USER = 'GUSR';
+const uint32 FIND_USER = 'FUSR';
+const uint32 SEARCH_FOR = 'SFOR';
+const uint32 GO_SEARCH = 'SRCH';
+const uint32 ABOUT = 'BOUT';
+const uint32 CLOSE_TAB = 'CTAB';
+const uint32 TOGGLE_AVATARVIEW = 'TATR';
+const uint32 TOGGLE_TABS = 'TTAB';
+const uint32 TOGGLE_PUBLIC = 'TPUB';
+const uint32 TOGGLE_AUTOSTART = 'ASTT';
+const uint32 TOGGLE_SAVETWEETS = 'STTG';
+const uint32 TEXT_SIZE_INCREASE = 'TINC';
+const uint32 TEXT_SIZE_DECREASE = 'TDEC';
+const uint32 TEXT_SIZE_REVERT = 'TREV';
 
 status_t addSavedSearchesThreadFunction(void *data);
 status_t addTrendingThreadFunction(void *data);

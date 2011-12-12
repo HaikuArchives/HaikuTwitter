@@ -5,6 +5,8 @@
 
 #include "HTGAvatarView.h"
 
+static int32 kMargin = 5;
+
 HTGAvatarView::HTGAvatarView(twitCurl* twitObj, BHandler* parent, BRect frame, uint32 resizingMode)
 	: BView(frame, "AvatarView", resizingMode, B_WILL_DRAW | B_FULL_UPDATE_ON_RESIZE)
 {	
@@ -14,7 +16,7 @@ HTGAvatarView::HTGAvatarView(twitCurl* twitObj, BHandler* parent, BRect frame, u
 	displayAvatar = true;
 	
 	fParent = parent;
-		
+
 	//Set up text view 
 	BRect viewRect(5,22,frame.right-60,45);
 	fMessage = new HTGTextView(viewRect, "Text", BRect(5,5,viewRect.right-5,viewRect.bottom-5), B_FOLLOW_LEFT_RIGHT, B_WILL_DRAW);
@@ -198,7 +200,7 @@ HTGAvatarView::urlEncode(const char* input)
 {
 	std::string output(input);
 	
-	for(int i = 0; i < output.length(); i++) {
+	for(size_t i = 0; i < output.length(); i++) {
 		if(output[i] == '%')
 			output.replace(i, 1, "%25");
 		if(output[i] == '&')

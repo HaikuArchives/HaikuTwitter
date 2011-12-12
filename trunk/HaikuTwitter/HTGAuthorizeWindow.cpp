@@ -75,10 +75,10 @@ HTGAuthorizeWindow::openUrl(std::string url)
 void
 HTGAuthorizeWindow::copyToClipboard(const char* theString)
 {
-	BMessage *clip = (BMessage *)NULL;
 	if (be_clipboard->Lock()) {
 		be_clipboard->Clear();
-		if (clip = be_clipboard->Data()) {
+		BMessage *clip = be_clipboard->Data();
+		if (clip != NULL) {
 			clip->AddData("text/plain", B_MIME_TYPE, theString, strlen(theString));
 			be_clipboard->Commit();
 		}
@@ -119,7 +119,6 @@ HTGAuthorizeWindow::_getSettingsPath(BPath &path)
 void
 HTGAuthorizeWindow::MessageReceived(BMessage *msg)
 {
-	const char* text_label = "text";
 	switch(msg->what) {
 		case GO_TO_AUTH_URL: {
 			goButton->MakeFocus();

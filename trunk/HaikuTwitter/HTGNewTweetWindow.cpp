@@ -6,6 +6,8 @@
 
 #include "HTGNewTweetWindow.h"
 
+static size_t WriteMemoryCallback(void*, size_t, size_t, void*);
+
 HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj, BHandler *parent)
 	: BWindow(BRect(100, 100, 500, 200), "What's Happening?", B_TITLED_WINDOW, B_NOT_RESIZABLE)
 {
@@ -84,7 +86,7 @@ HTGNewTweetWindow::urlEncode(const char* input)
 {
 	std::string output(input);
 	
-	for(int i = 0; i < output.length(); i++) {
+	for(size_t i = 0; i < output.length(); i++) {
 		if(output[i] == '%')
 			output.replace(i, 1, "%25");
 		if(output[i] == '&')
@@ -144,9 +146,9 @@ HTGNewTweetWindow::shortenAllUrls()
 	while(pos != std::string::npos) {
 		pos = theText.find("://", pos);
 		if(pos != std::string::npos) {
-			int start = pos;
-			int end = pos;
-			while(start >= 0 && theText[start] != ' ') {
+			size_t start = pos;
+			size_t end = pos;
+			while(start != 0 && theText[start] != ' ') {
 				start--;
 			}
 			while(end < theText.length() && theText[end] != ' ') {

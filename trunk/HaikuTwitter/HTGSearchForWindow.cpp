@@ -43,7 +43,6 @@ HTGSearchForWindow::search()
 void
 HTGSearchForWindow::MessageReceived(BMessage *msg)
 {
-	const char* text_label = "text";
 	switch(msg->what) {
 		case SEARCH:
 			this->search();
