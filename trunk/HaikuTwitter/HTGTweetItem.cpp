@@ -82,7 +82,6 @@ int
 HTGTweetItem::calculateSize(BRect frame, BView *owner)
 {
 	float calculatedSize = 0;
-	float sizeOfTextView = 0;
 	string tweetContent = theTweet->getText();
 	
 	BFont textFont;
@@ -106,7 +105,7 @@ HTGTweetItem::calculateSize(BRect frame, BView *owner)
 		calculatedSize = kAvatarRect.top+kAvatarRect.bottom;
 		
 	delete textView;
-	return (int)(calculatedSize + 0.5f);
+	return (int)(calculatedSize + 1.5f);
 }
 
 void
