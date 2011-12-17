@@ -7,7 +7,8 @@ CC = gcc
 LIBS += -L/boot/common/lib/ -lbe -ltranslation -lcurl -lstdc++ -lcrypto
 SVNDEV = -D'SVN_REV="$(shell svnversion -n .)"'
 CFLAGS = -g -O2 -Wall $(SVNDEV) ${DEBUG}
-BDIR = bin
+SDIR = src
+BDIR = build
 ODIR = ${BDIR}/obj
 
 all: ${APP}
@@ -23,19 +24,19 @@ OBJ =  $(patsubst %,$(ODIR)/%, $(_OBJ))
 
 ${APP}: ${OBJ}
 	${CC} ${LIBS} $^ -o ${BDIR}/${APP}
-	rc -o ${ODIR}/${APP}.rsrc ${APP}.rdef
+	rc -o ${ODIR}/${APP}.rsrc ${SDIR}/${APP}.rdef
 	xres -o ${BDIR}/${APP} ${ODIR}/${APP}.rsrc
 	
-${ODIR}/twitcurl.o: twitcurl/twitcurl.cpp
+${ODIR}/twitcurl.o: ${SDIR}/twitcurl/twitcurl.cpp
 	${CC} -c -o $@ $< ${CFLAGS}
 	
-${ODIR}/%.o: oauth/%.c
+${ODIR}/%.o: ${SDIR}/oauth/%.c
 	${CC} -c -o $@ $< ${CFLAGS}
 
-${ODIR}/%.o: %.cpp
+${ODIR}/%.o: ${SDIR}/%.cpp
 	${CC} -c -o $@ $< ${CFLAGS}
 	
-${ODIR}/%.o: %.c
+${ODIR}/%.o: ${SDIR}/%.c
 	${CC} -c -std=c99 -o $@ $< ${CFLAGS}
 	
 clean:
