@@ -410,7 +410,13 @@ HTGTimeLineView::addUnhandledTweets()
 void
 HTGTimeLineView::updateTimeLine()
 {
-	previousThread = spawn_thread(updateTimeLineThread, "UpdateThread", 10, this);
+	thread_info info;
+	if(get_thread_info(previousThread, &info) == B_OK) {
+		std::cout << "HTGTimeLineView::updateTimeLine() - Update in progress... abort!" << std::endl;
+		return; //Already updating
+	}
+		
+	previousThread = spawn_thread(updateTimeLineThread, Name(), 10, this);
 	resume_thread(previousThread);
 	waitingForUpdate = false;
 }
@@ -473,12 +479,11 @@ updateTimeLineThread(void *data)
 	//Could not figure out how to update a BListItem with a child view (BTextView).
 	//Could be a bug in Haiku APIs. After hours of investigation without any
 	//result, I just don't care anymore. Reallocating all HTGTweetItem on update.
-		
 	HTGTimeLineView *super = (HTGTimeLineView*)data;
 	
 	/*Wait for previous thread to end*/
 	status_t junkId;
-	wait_for_thread(find_thread("UpdateThread"), &junkId);
+	wait_for_thread(find_thread(super->Name()), &junkId);
 	
 	HTGListView *listView = super->listView;
 	bool saveTweets = super->saveTweets;
@@ -536,15 +541,14 @@ updateTimeLineThread(void *data)
 			std::cout << "No connection, retry: " << super->errorCount << "/" << kMaximumRetries << std::endl;
 			#endif
 			sleep(1);
-			super->updateTimeLine();
-			return B_ERROR;
+			return updateTimeLineThread(super);
 		}
 		else
 			replyMsg= string("error");
 	}
 	else
 		super->errorCount = 0;
-
+	
 	if(TYPE == TIMELINE_SEARCH)
 		timeLineParser = new HTSearchParser();
 	else
