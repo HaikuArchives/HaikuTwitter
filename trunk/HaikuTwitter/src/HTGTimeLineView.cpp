@@ -481,10 +481,6 @@ updateTimeLineThread(void *data)
 	//result, I just don't care anymore. Reallocating all HTGTweetItem on update.
 	HTGTimeLineView *super = (HTGTimeLineView*)data;
 	
-	/*Wait for previous thread to end*/
-	status_t junkId;
-	wait_for_thread(find_thread(super->Name()), &junkId);
-	
 	HTGListView *listView = super->listView;
 	bool saveTweets = super->saveTweets;
 	
