@@ -1,5 +1,5 @@
 /*
- * Copyright 2010-2011 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
+ * Copyright 2010-2012 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
@@ -299,7 +299,7 @@ HTGMainWindow::showAbout()
 	text.append(SVN_REV);
 	#endif
 	text.append("\n\tWritten by Martin Hebnes Pedersen\n"
-				"\tCopyright 2010-2011\n"
+				"\tCopyright 2010-2012\n"
 				"\tAll rights reserved.\n"
 				"\tDistributed under the terms of the MIT License.\n"
 				"\t\n"
