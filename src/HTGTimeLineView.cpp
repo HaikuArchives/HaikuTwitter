@@ -410,10 +410,10 @@ HTGTimeLineView::addUnhandledTweets()
 void
 HTGTimeLineView::updateTimeLine()
 {
+	// Kill ongoing updates
 	thread_info info;
 	if(get_thread_info(previousThread, &info) == B_OK) {
-		std::cout << "HTGTimeLineView::updateTimeLine() - Update in progress... abort!" << std::endl;
-		return; //Already updating
+		kill_thread(info.thread);
 	}
 		
 	previousThread = spawn_thread(updateTimeLineThread, Name(), 10, this);

@@ -37,7 +37,7 @@ m_curlCallbackParamsSet( false )
         getLastCurlError( dummyStr );
     }
     else {
-         curl_easy_setopt( m_curlHandle, CURLOPT_NOSIGNAL, 0 );
+         curl_easy_setopt( m_curlHandle, CURLOPT_NOSIGNAL, 1 );
     }
 }
 
