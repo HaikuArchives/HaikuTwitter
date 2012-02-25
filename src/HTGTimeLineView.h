@@ -35,7 +35,7 @@ const int32 TIMELINE_SEARCH = 'TSCH';
 const int32 TIMELINE_DIRECT = 'DMSG';
 const int32 TIMELINE_HDD = 'THDD';
 
-const int32 kMaximumRetries = 5;
+const int32 kMaximumRetries = 100;
 
 status_t updateTimeLineThread(void *data);
 

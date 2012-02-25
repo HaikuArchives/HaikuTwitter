@@ -536,7 +536,7 @@ updateTimeLineThread(void *data)
 			#ifdef DEBUG_ENABLED
 			std::cout << "No connection, retry: " << super->errorCount << "/" << kMaximumRetries << std::endl;
 			#endif
-			sleep(1);
+			usleep(5000 * pow(super->errorCount,2));
 			return updateTimeLineThread(super);
 		}
 		else
