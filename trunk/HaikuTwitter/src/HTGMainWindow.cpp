@@ -111,7 +111,7 @@ addSavedSearchesThreadFunction(void *data)
 		#endif
 		
 		delete twitObj;
-		usleep(200);
+		sleep(5);
 		return addSavedSearchesThreadFunction(data);
 	}
 
