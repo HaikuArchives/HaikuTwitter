@@ -14,7 +14,6 @@ HaikuTwitter::HaikuTwitter()
 	HTStorage::makeIndices();
 	
 	/*Get configuration*/
-	struct twitter_settings theSettings = retrieveSettings();
 	struct oauth_settings oauth = retrieveOAuth();
     std::string key(oauth.key);
     std::string secret(oauth.secret);
@@ -33,9 +32,6 @@ HaikuTwitter::createAndShowAuthWindow()
 {
 	/*Get configuration*/
 	struct twitter_settings theSettings = retrieveSettings();
-	struct oauth_settings oauth = retrieveOAuth();
-    std::string key(oauth.key);
-    std::string secret(oauth.secret);
     
 	authWindow = new HTGAuthorizeWindow(theSettings.refreshTime, theSettings.position, theSettings.height);
 	authWindow->Show();
