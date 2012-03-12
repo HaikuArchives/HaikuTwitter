@@ -199,6 +199,37 @@ HTStorage::cacheBitmap(BMallocIO* bitmapData, std::string& url)
 }
 
 status_t
+HTStorage::cleanupBitmapCache()
+{
+	BPath path;
+	if (getCachePath(path) < B_OK)
+		return B_ERROR;
+		
+	BDirectory cacheDir;
+	if(cacheDir.SetTo(path.Path()) < B_OK)
+		return B_ERROR;
+	
+	// Delete expired bitmap files
+	//TODO: Use BeFS attr. query instead of sequential scan
+	BEntry entry;
+	struct stat st;
+	while(cacheDir.GetNextEntry(&entry) == B_OK) {
+		entry.GetStat(&st);
+		
+		if(st.st_ctime < (time(NULL) - CACHE_EXPIRE_TIME)) {
+			char buff[1024];
+			entry.GetName(buff);
+			std::cout << "Deleting: " << buff << std::endl;
+			entry.Remove();
+		}
+	}
+	
+	cacheDir.Unset();
+
+	return B_OK;
+}
+
+status_t
 HTStorage::findBitmap(std::string& url, BMallocIO** mallocIO)
 {
 	/*Prepare the path*/

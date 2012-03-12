@@ -36,6 +36,8 @@
 #define HAIKUTWITTER_CACHE_IMAGE		"HaikuTwitter:cache:image"		//Raw image data
 #define HAIKUTWITTER_CACHE_IMAGE_SIZE	"HaikuTwitter:cache:size"		//Size of image data
 
+#define CACHE_EXPIRE_TIME 7*24*3600 // Bitmap cache expire time
+
 class HTStorage {
 public:
 			static status_t			saveTweet(HTTweet*);
@@ -43,6 +45,8 @@ public:
 			
 			static status_t			cacheBitmap(BMallocIO* bitmapData, std::string& url);
 			static status_t			findBitmap(std::string& url, BMallocIO** buffer);
+			static status_t			cleanupBitmapCache();
+
 			
 			static void				makeMimeType(bool remakeMIMETypes);
 			static void				makeIndices();
