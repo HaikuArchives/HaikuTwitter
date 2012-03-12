@@ -1,32 +1,17 @@
 /*
- * Copyright 2010-2011 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
+ * Copyright 2010-2012 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
 #ifndef HT_TWEET_H
 #define HT_TWEET_H
 
-#include <iostream>
-#include <string.h>
 #include <string>
-#include <View.h>
-#include <TranslationUtils.h>
-#include <TranslatorFormats.h>
-#include <DataIO.h>
-#include <Bitmap.h>
+
 #include <Archivable.h>
-#include <File.h>
-#include <BitmapStream.h>
-#include <TranslatorRoster.h>
-#include <Application.h>
-#include <Resources.h>
-#include <Roster.h>
 
-#include <ctime>
-#include <sstream>
-#include <curl/curl.h>
-
-using namespace std;
+class BView;
+class BBitmap;
 
 struct DateStruct {
 	int month;
@@ -47,13 +32,13 @@ public:
 	BArchivable* Instantiate(BMessage* archive);
 	bool operator<(const HTTweet &b) const;
 	BView* getView();
-	const string getScreenName() const;
-	const string getRetweetedBy() const;
-	const string getFullName();
-	const string getText();
-	const string getProfileImageUrl();
-	const string getRelativeDate() const;
-	const string getSourceName();
+	const std::string getScreenName() const;
+	const std::string getRetweetedBy() const;
+	const std::string getFullName();
+	const std::string getText();
+	const std::string getProfileImageUrl();
+	const std::string getRelativeDate() const;
+	const std::string getSourceName();
 	time_t getUnixTime() const;
 	BBitmap* getBitmap();
 	BBitmap getBitmapCopy();
@@ -62,14 +47,14 @@ public:
 	static BBitmap* defaultBitmap();
 	void setView(BView *);
 	void downloadBitmap(bool async = false);
-	void setRetweetedBy(string);
-	void setScreenName(string);
-	void setFullName(string);
-	void setText(string);
-	void setProfileImageUrl(string);
+	void setRetweetedBy(std::string);
+	void setScreenName(std::string);
+	void setFullName(std::string);
+	void setText(std::string);
+	void setProfileImageUrl(std::string);
 	void setDate(time_t);
 	void setId(uint64);
-	void setSourceName(string);
+	void setSourceName(std::string);
 	void setBitmap(BBitmap *);
 	void waitUntilDownloadComplete();
 	bool isDownloadingBitmap();
@@ -79,22 +64,24 @@ public:
 	void setFollowing(bool);
 	
 	/*This must be public (threads)*/
-	bool bitmapDownloadInProgress;//Archived
+	bool bitmapDownloadInProgress; // Archived
 	BMallocIO* bitmapData;
 	
 private:
 	const char* monthToString(int month) const;
-	BView *view;				//Not archived
-	thread_id downloadThread;	//Not archived
-	BBitmap *imageBitmap;		//Archived
-	string screenName;			//Archived
-	string fullName;			//Archived
-	string text;				//Archived
-	string profileImageUrl;		//Archived
-	string sourceName;			//Archived
-	string retweetedBy;
-	struct DateStruct date;		//Not archived
-	uint64 id;					//Archived
-	bool isFollowing;			//Archived
+	BView *view;				// Not archived
+	thread_id downloadThread;	// Not archived
+	BBitmap *imageBitmap;		// Archived
+	std::string screenName;			// Archived
+	std::string fullName;			// Archived
+	std::string text;				// Archived
+	std::string profileImageUrl;		// Archived
+	std::string sourceName;			// Archived
+	std::string retweetedBy;
+	struct DateStruct date;		// Not archived
+	uint64 id;					// Archived
+	bool isFollowing;			// Archived
 };
-#endif
+
+
+#endif // HT_TWEET_H

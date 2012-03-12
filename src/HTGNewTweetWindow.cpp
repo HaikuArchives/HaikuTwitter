@@ -6,6 +6,8 @@
 
 #include "HTGNewTweetWindow.h"
 
+using namespace std;
+
 static size_t WriteMemoryCallback(void*, size_t, size_t, void*);
 
 HTGNewTweetWindow::HTGNewTweetWindow(twitCurl *twitObj, BHandler *parent)
