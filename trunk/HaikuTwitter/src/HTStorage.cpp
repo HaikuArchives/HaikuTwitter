@@ -216,16 +216,11 @@ HTStorage::cleanupBitmapCache()
 	while(cacheDir.GetNextEntry(&entry) == B_OK) {
 		entry.GetStat(&st);
 		
-		if(st.st_ctime < (time(NULL) - CACHE_EXPIRE_TIME)) {
-			char buff[1024];
-			entry.GetName(buff);
-			std::cout << "Deleting: " << buff << std::endl;
+		if(st.st_ctime < (time(NULL) - CACHE_EXPIRE_TIME))
 			entry.Remove();
-		}
 	}
 	
 	cacheDir.Unset();
-
 	return B_OK;
 }
 
