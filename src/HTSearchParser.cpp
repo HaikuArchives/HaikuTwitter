@@ -63,7 +63,8 @@ HTSearchParser::Parse(const std::string& data)
 			break;
 		nodeList->AddItem(new string(buffer));
 	}
-	if(nodeList->IsEmpty()) {	
+	if(nodeList->IsEmpty()) {
+		delete nodeList;
 		return B_OK;
 	}
 		

@@ -76,8 +76,10 @@ HTTimelineParser::Parse(const std::string& data)
 			break;
 		nodeList->AddItem(new string(buffer));
 	}
-	if(nodeList->IsEmpty())	
+	if(nodeList->IsEmpty()) {
+		delete nodeList;
 		return B_OK;
+	}
 	
 	//Parse nodes
 	status = _ParseNodes(nodeList, fTweets);
