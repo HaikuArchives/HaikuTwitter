@@ -25,7 +25,7 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	/*Get account credentials*/
 	accountCredentials = new HTAccountCredentials(newTweetObj, this);
 	if(!noAuth)
-		accountCredentials->Fetch();
+		accountCredentials->Fetch(); //TODO: This should be done async
 	
 	/*Set up the menu bar*/
 	_SetupMenu();
@@ -84,6 +84,7 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	new BMessageRunner(this, new BMessage(REFRESH), refreshTime*1000000*60);
 }
 
+//TODO: Fetching saved searches should have it's own class
 status_t
 addSavedSearchesThreadFunction(void *data) 
 {

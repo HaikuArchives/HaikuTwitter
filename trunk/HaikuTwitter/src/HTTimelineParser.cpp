@@ -6,6 +6,7 @@
 #include "HTTimelineParser.h"
 
 #include <string>
+#include <cstring>
 #include <iostream>
 #include <sstream>
 #include <List.h>

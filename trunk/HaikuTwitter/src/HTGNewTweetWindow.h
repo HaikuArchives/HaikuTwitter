@@ -15,6 +15,7 @@
 
 #include "HTTweet.h"
 #include "HTGErrorHandling.h"
+#include <string>
 
 #ifndef HTG_NEWTWEETWINDOW_H
 #define HTG_NEWTWEETWINDOW_H

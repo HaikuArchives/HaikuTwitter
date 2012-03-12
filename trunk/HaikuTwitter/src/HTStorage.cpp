@@ -1,9 +1,25 @@
 /*
- * Copyright 2010-2011 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
+ * Copyright 2010-2012 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
 #include "HTStorage.h"
+
+#include "HTTweet.h"
+
+#include <sstream>
+#include <iostream>
+#include <cstring>
+
+#include <Message.h>
+#include <View.h>
+#include <fs_index.h>
+#include <fs_info.h>
+#include <NodeInfo.h>
+#include <Directory.h>
+#include <FindDirectory.h>
+
+using namespace std;
 
 status_t
 HTStorage::saveTweet(HTTweet *theTweet)
@@ -145,7 +161,7 @@ HTStorage::loadTweet(entry_ref* ref)
 }
 
 status_t 
-HTStorage::cacheBitmap(BMallocIO* bitmapData, std::string& url)
+HTStorage::cacheBitmap(BMallocIO* bitmapData, string& url)
 {
 	status_t status;
 	
@@ -225,7 +241,7 @@ HTStorage::cleanupBitmapCache()
 }
 
 status_t
-HTStorage::findBitmap(std::string& url, BMallocIO** mallocIO)
+HTStorage::findBitmap(string& url, BMallocIO** mallocIO)
 {
 	/*Prepare the path*/
 	BPath path;
@@ -271,7 +287,7 @@ HTStorage::findBitmap(std::string& url, BMallocIO** mallocIO)
 	}
 	else {
 		delete[] buffer;
-		std::cout << "HTStorage::findBitmap(): failed to write buffer to BMallocIO" << std::endl;
+		cout << "HTStorage::findBitmap(): failed to write buffer to BMallocIO" << endl;
 		return B_ERROR;
 	}
 }
@@ -374,11 +390,11 @@ HTStorage::makeIndices()
 }
 
 unsigned int
-HTStorage::FNVHash(const std::string& str)
+HTStorage::FNVHash(const string& str)
 {
 	const unsigned int fnv_prime = 0x811C9DC5;
 	unsigned int hash = 2166136261u;
-	for(std::size_t i = 0; i < str.length(); i++) {
+	for(size_t i = 0; i < str.length(); i++) {
 		hash ^= str[i];
 		hash *= fnv_prime;
 	}

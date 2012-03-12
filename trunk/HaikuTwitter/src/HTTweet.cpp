@@ -1,10 +1,21 @@
 /*
- * Copyright 2010-2011 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
+ * Copyright 2010-2012 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
 #include "HTTweet.h"
+
+#include <iostream>
+#include <sstream>
+
+#include <curl/curl.h>
+#include <View.h>
+#include <TranslationUtils.h>
+#include <Bitmap.h>
+
 #include "HTStorage.h"
+
+using namespace std;
 
 static size_t WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data);
 status_t _threadDownloadBitmap(void *);
@@ -55,15 +66,15 @@ HTTweet::HTTweet(BMessage* archive)
 	char buff[255];
 	archive->FindBool("HTTweet::bitmapDownloadInProgress", &bitmapDownloadInProgress);
 	archive->FindString("HTTweet::screenName", *buff);
-	screenName = std::string(buff);
+	screenName = string(buff);
 	archive->FindString("HTTweet::fullName", *buff);
-	fullName = std::string(buff);
+	fullName = string(buff);
 	archive->FindString("HTTweet::text", *buff);
-	text = std::string(buff);
+	text = string(buff);
 	archive->FindString("HTTweet::profileImageUrl", *buff);
-	profileImageUrl = std::string(buff);
+	profileImageUrl = string(buff);
 	archive->FindString("HTTweet::sourceName", *buff);
-	sourceName = std::string(buff);
+	sourceName = string(buff);
 	
 	archive->FindUInt64("HTTweet::id", &id);
 	
@@ -77,7 +88,7 @@ HTTweet::HTTweet(BMessage* archive)
 		if(unarchived)
 			imageBitmap = dynamic_cast<BBitmap *>(unarchived);
 		else {
-			std::cout << "Unable to instantiate archived <HTGTimeLineView::imageBitmap>." << std::endl;
+			cout << "Unable to instantiate archived <HTGTimeLineView::imageBitmap>." << endl;
 			imageBitmap = NULL;
 			downloadBitmap();
 		}
@@ -285,7 +296,7 @@ HTTweet::getRelativeDate() const
 	else
 		sprintf(tempString, "Moments ago");
 		
-	return std::string(tempString);
+	return string(tempString);
 }
 
 bool
@@ -303,7 +314,7 @@ HTTweet::getId()
 const char*
 HTTweet::getIdString()
 {
-	std::stringstream out;
+	stringstream out;
 	out << id;
 	return out.str().c_str();
 }
@@ -357,7 +368,7 @@ HTTweet::monthToString(int month) const
 			return "Dec";
 		default:
 			#ifdef DEBUG_ENABLED
-			std::cout << "HTTweet::stringToMonth: Failed" << std::endl;
+			cout << "HTTweet::stringToMonth: Failed" << endl;
 			#endif
 			return "Jan";
 	}
@@ -418,7 +429,7 @@ _threadDownloadBitmap(void *data)
 {
 	HTTweet *super = (HTTweet*)data;
 	super->bitmapDownloadInProgress = true;
-	std::string url(super->getProfileImageUrl());
+	string url(super->getProfileImageUrl());
 	BMallocIO *mallocIO = NULL;
 	
 	status_t cacheStatus = HTStorage::findBitmap(url, &mallocIO);
@@ -451,7 +462,7 @@ _threadDownloadBitmap(void *data)
 	
 		/*get the data*/
 		if(curl_easy_perform(curl_handle) < 0)
-			std::cout << "libcURL: Download of bitmap failed." << std::endl;
+			cout << "libcURL: Download of bitmap failed." << endl;
 	
 		/*cleanup curl stuff*/
 		curl_easy_cleanup(curl_handle);
@@ -467,8 +478,8 @@ _threadDownloadBitmap(void *data)
 				usleep(500*retryCount);
 
 				#ifdef DEBUG_ENABLED
-				std::cout << "Data length to small - Retrying image download..." << std::endl;
-				std::cout << super->getProfileImageUrl().c_str() << std::endl;
+				cout << "Data length to small - Retrying image download..." << endl;
+				cout << super->getProfileImageUrl().c_str() << endl;
 				#endif
 			}
 		}
