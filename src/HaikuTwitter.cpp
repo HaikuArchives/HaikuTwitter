@@ -40,6 +40,9 @@ HaikuTwitter::createAndShowAuthWindow()
 void
 HaikuTwitter::createAndShowMainWindow()
 {
+	// Clean up bitmap cache
+	HTStorage::cleanupBitmapCache();
+	
 	/*Get configuration*/
 	struct twitter_settings theSettings = retrieveSettings();
 	struct oauth_settings oauth = retrieveOAuth();
@@ -47,6 +50,7 @@ HaikuTwitter::createAndShowMainWindow()
     std::string secret(oauth.secret);
 	
 	mainWindow= new HTGMainWindow(key, secret, theSettings.refreshTime, theSettings.position, theSettings.height);
+	
 	mainWindow->Show();
 	mainWindow->setQuitOnClose(true); //Application should quit when this window is closed
 }
