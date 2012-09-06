@@ -1,5 +1,6 @@
 /*
  * Copyright 2010-2011 Martin Hebnes Pedersen, martinhpedersen @ "google mail"
+ * Multibyte string count by Yoshida Mitsunori
  * All rights reserved. Distributed under the terms of the MIT License.
  */ 
 
@@ -61,17 +62,20 @@ HTGAvatarView::_UpdateCounter()
 {
 	char counterString[32];
 	int symbolsLeft =  NUMBER_OF_ALLOWED_CHARS;
-	
-	/*Have to check every character for a character with 2 byte representation
-	 *Twitter count them as one character... and yeah, this is an UGLY FIX;p
-	 *It's really late, so I'm not that interested in testing this for every char.
-	 *Btw, I assume that two-byte chars is marked as negative.
-	 */
-	for(int i = 0;fMessage->Text()[i] != '\0';i++) {
-		if(fMessage->Text()[i] < 0) //If negative, then skip a step.
-			i++;
-		symbolsLeft--;
+  	
+	/*Calculate the number of characters left*/
+	int utf8length = 0;
+	uchar c;
+	for(int i=0; (c=fMessage->ByteAt(i))!='\0'; i++) {
+		if ((c&0x80) == 0) {
+			// UTF-8 single byte char
+			utf8length++;
+		} else if ((c&0xc0) != 0x80) {
+			// first byte of UTF-8 multi byte character
+			utf8length++;
+		}
 	}
+	symbolsLeft -= utf8length;
 	sprintf(counterString, "%i", symbolsLeft);
 	
 	/*Check symbolsLeft, disable/enable post button and change counter color.*/
