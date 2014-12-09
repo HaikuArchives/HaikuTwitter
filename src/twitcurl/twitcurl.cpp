@@ -19,7 +19,7 @@ m_curlHandle( NULL ),
 m_curlProxyParamsSet( false ),
 m_curlLoginParamsSet( false ),
 m_curlCallbackParamsSet( false ),
-m_eApiFormatType( twitCurlTypes::eTwitCurlApiFormatJson ),
+m_eApiFormatType( twitCurlTypes::eTwitCurlApiFormatXml ), // MODIFIED for HaikuTwitter
 m_eProtocolType( twitCurlTypes::eTwitCurlProtocolHttps )
 {
     /* Alloc memory for cURL error responses */
