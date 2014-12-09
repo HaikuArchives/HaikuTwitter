@@ -49,6 +49,7 @@ HTAccountCredentials::Fetch(int32 id)
 status_t
 HTAccountCredentials::FetchSelf()
 {	
+	/* // TODO: was removed from twitcurl.
 	int32 errorCount = 0;
 	while(!twitObj->verifyCredentials()) {
 		if(errorCount < kMaxRetries)
@@ -56,6 +57,7 @@ HTAccountCredentials::FetchSelf()
 		else
 			return B_ERROR;
 	}
+	*/
 		
 	std::string reply(" ");
 	twitObj->getLastWebResponse(reply);

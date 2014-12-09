@@ -14,8 +14,8 @@ HTGTimeLineWindow::HTGTimeLineWindow(BWindow *parent, string key, string secret,
 	
 	/*Set up timeline*/
 	twitCurl *timelineTwitObj = new twitCurl();
-	timelineTwitObj->setAccessKey( key );
-	timelineTwitObj->setAccessSecret( secret );
+	timelineTwitObj->getOAuth().setOAuthTokenKey( key );
+	timelineTwitObj->getOAuth().setOAuthTokenSecret( secret );
 	theTimeLine = new HTGTimeLineView(timelineTwitObj, TYPE, Bounds(), requestInfo);
 	theTimeLine->showScrollbar(false);
 	this->AddChild(theTimeLine);

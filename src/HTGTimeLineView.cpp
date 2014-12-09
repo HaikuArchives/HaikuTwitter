@@ -168,8 +168,8 @@ HTGTimeLineView::HTGTimeLineView(BMessage* archive)
 	std::string key(ptr);
 	archive->FindString("HTGTimeLineView::oauthSecret", &ptr);
 	std::string secret(ptr);
-	twitObj->setAccessKey(key);
-	twitObj->setAccessSecret(secret);
+	twitObj->getOAuth().setOAuthTokenKey(key);
+	twitObj->getOAuth().setOAuthTokenSecret(secret);
 	
 	previousThread = B_NAME_NOT_FOUND;
 	
@@ -216,10 +216,14 @@ HTGTimeLineView::Archive(BMessage* archive, bool deep) const
 		status = archive->AddString("HTGTimeLineView::name", Name());
 	
 	/*Archive login information*/
+	std::string tokenSecret;
+	twitObj->getOAuth().getOAuthTokenSecret(tokenSecret);
 	if(status == B_OK)
-		status = archive->AddString("HTGTimeLineView::oauthSecret", twitObj->getAccessSecret().c_str());
+		status = archive->AddString("HTGTimeLineView::oauthSecret", tokenSecret.c_str());
+	std::string tokenKey;
+	twitObj->getOAuth().getOAuthTokenKey(tokenKey);
 	if(status == B_OK)
-		status = archive->AddString("HTGTimeLineView::oauthKey", twitObj->getAccessKey().c_str());
+		status = archive->AddString("HTGTimeLineView::oauthKey", tokenKey.c_str());
 	
 	if(deep) {	
 		BMessage listViewArchive;
@@ -437,8 +441,7 @@ HTGTimeLineView::savedSearchDestoySelf()
 {
 	/*Destroy saved search on twitter*/
 	twitCurl *saveObj = new twitCurl();
-	saveObj->setAccessKey(twitObj->getAccessKey());
-	saveObj->setAccessSecret(twitObj->getAccessSecret());
+	saveObj->getOAuth() = twitObj->getOAuth().clone();
 	std::string id;
 	std::stringstream out;
 	out << this->getSearchID(); //Converting int to string
@@ -454,8 +457,7 @@ HTGTimeLineView::savedSearchCreateSelf()
 	/*Save search to twitter*/
 	std::string query(::htmlFormatedString(Name()));
 	twitCurl *saveObj = new twitCurl();
-	saveObj->setAccessKey(twitObj->getAccessKey());
-	saveObj->setAccessSecret(twitObj->getAccessSecret());
+	saveObj->getOAuth() = twitObj->getOAuth().clone();
 	saveObj->savedSearchCreate(query);
 	std::string replyMsg(" ");
 	saveObj->getLastWebResponse(replyMsg);
@@ -509,7 +511,7 @@ updateTimeLineThread(void *data)
 			twitObj->timelinePublicGet();
 			break;
 		case TIMELINE_USER:
-			twitObj->timelineUserGet(*new std::string(super->Name()), false);
+			twitObj->timelineUserGet(true, true, 25); // TODO: is this correct?
 			break;
 		case TIMELINE_SEARCH:
 			twitObj->search(htmlFormatedString(super->Name()));

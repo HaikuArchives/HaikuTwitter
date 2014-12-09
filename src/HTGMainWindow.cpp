@@ -19,8 +19,8 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	this->noAuth = (key.find("NOAUTH") != std::string::npos);
 	
 	newTweetObj = new twitCurl();
-	newTweetObj->setAccessKey( key );
-	newTweetObj->setAccessSecret( secret );
+	newTweetObj->getOAuth().setOAuthTokenKey( key );
+	newTweetObj->getOAuth().setOAuthTokenSecret( secret );
 	
 	/*Get account credentials*/
 	accountCredentials = new HTAccountCredentials(newTweetObj, this);
@@ -52,15 +52,15 @@ HTGMainWindow::HTGMainWindow(string key, string secret, int refreshTime, BPoint 
 	if(!noAuth) {
 		/*Set up home timeline*/
 		twitCurl *timelineTwitObj = new twitCurl();
-		timelineTwitObj->setAccessKey( key );
-		timelineTwitObj->setAccessSecret( secret );
+		timelineTwitObj->getOAuth().setOAuthTokenKey( key );
+		timelineTwitObj->getOAuth().setOAuthTokenSecret( secret );
 		friendsTimeLine = new HTGTimeLineView(timelineTwitObj, TIMELINE_HOME, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 		tabView->AddTab(friendsTimeLine);
 	
 		/*Set up mentions timeline*/
 		twitCurl *mentionsTwitObj = new twitCurl();
-		mentionsTwitObj->setAccessKey( key );
-		mentionsTwitObj->setAccessSecret( secret );
+		mentionsTwitObj->getOAuth().setOAuthTokenKey( key );
+		mentionsTwitObj->getOAuth().setOAuthTokenSecret( secret );
 		mentionsTimeLine = new HTGTimeLineView(mentionsTwitObj, TIMELINE_MENTIONS, tabView->Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 		tabView->AddTab(mentionsTimeLine);
 	}
@@ -98,8 +98,8 @@ addSavedSearchesThreadFunction(void *data)
 	
 	/*Configure twitter object*/
 	twitCurl *twitObj = new twitCurl();
-	twitObj->setAccessKey( key );
-	twitObj->setAccessSecret( secret );
+	twitObj->getOAuth().setOAuthTokenKey( key );
+	twitObj->getOAuth().setOAuthTokenSecret( secret );
 	
 	/*Download saved searches*/
 	twitObj->savedSearchGet();
@@ -131,8 +131,8 @@ addSavedSearchesThreadFunction(void *data)
 			int end = replyMsg.find("</query>", start);
 			std::string searchQuery(replyMsg.substr(start, end-start));
 			twitCurl *newTabObj = new twitCurl();
-			newTabObj->setAccessKey( key );
-			newTabObj->setAccessSecret( secret );
+			newTabObj->getOAuth().setOAuthTokenKey( key );
+			newTabObj->getOAuth().setOAuthTokenSecret( secret );
 			viewList->AddItem(new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, rect, searchQuery.c_str(), textSize, saveTweets));
 			pos = end;
 			i++;
@@ -181,8 +181,8 @@ void
 HTGMainWindow::_addPublicTimeLine()
 {
 	twitCurl *publicTwitObj = new twitCurl();
-	publicTwitObj->setAccessKey( key );
-	publicTwitObj->setAccessSecret( secret );
+	publicTwitObj->getOAuth().setOAuthTokenKey( key );
+	publicTwitObj->getOAuth().setOAuthTokenSecret( secret );
 	publicTimeLine = new HTGTimeLineView(publicTwitObj, TIMELINE_PUBLIC, Bounds(), "", theSettings.textSize, theSettings.saveTweets);
 	tabView->AddTab(publicTimeLine);	
 }
@@ -550,7 +550,7 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 		case NEW_RETWEET:
 			{
 				std::string id(msg->FindString("retweet_id"));
-				newTweetObj->statusRetweet(id);
+				newTweetObj->retweetById(id);
 				HTGTimeLineView *homeTimeline = dynamic_cast<HTGTimeLineView*>(tabView->TabAt(0)->View());
 				homeTimeline->updateTimeLine();
 			}
@@ -576,8 +576,8 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 			}
 			else if (LockLooper()) {
 				newTabObj = new twitCurl();
-				newTabObj->setAccessKey( key );
-				newTabObj->setAccessSecret( secret );
+				newTabObj->getOAuth().setOAuthTokenKey( key );
+				newTabObj->getOAuth().setOAuthTokenSecret( secret );
 				tabView->AddTab(new HTGTimeLineView(newTabObj, TIMELINE_USER, Bounds(), msg->FindString(text_label, (int32)0), theSettings.textSize, true), true);
 				tabView->Select(tabView->CountTabs()-1); //Select the new tab
 				UnlockLooper();
@@ -598,8 +598,8 @@ HTGMainWindow::MessageReceived(BMessage *msg)
 					 }
 				if(!excists) {
 					newTabObj = new twitCurl();
-					newTabObj->setAccessKey( key );
-					newTabObj->setAccessSecret( secret );
+					newTabObj->getOAuth().setOAuthTokenKey( key );
+					newTabObj->getOAuth().setOAuthTokenSecret( secret );
 					HTGTimeLineView *newTimeline = new HTGTimeLineView(newTabObj, TIMELINE_SEARCH, Bounds(), msg->FindString(text_label, (int32)0), theSettings.textSize, true);
 					tabView->AddTab(newTimeline, true); //Add the new timeline
 					if(theSettings.saveSearches)

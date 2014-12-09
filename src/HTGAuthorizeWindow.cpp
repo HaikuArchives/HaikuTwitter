@@ -89,8 +89,10 @@ HTGAuthorizeWindow::copyToClipboard(const char* theString)
 void
 HTGAuthorizeWindow::storeTokens(std::string key, std::string secret)
 {
+#ifdef DEBUG_ENABLED
 	sprintf(oauth.key, key.c_str());
 	sprintf(oauth.secret, secret.c_str());
+#endif
 	
 	BPath path;
 	status_t status = _getSettingsPath(path);
@@ -122,7 +124,7 @@ HTGAuthorizeWindow::MessageReceived(BMessage *msg)
 	switch(msg->what) {
 		case GO_TO_AUTH_URL: {
 			goButton->MakeFocus();
-			std::string url(twitObj->oauthGetAuthorizeUrl());
+			std::string url; // TODO: was (twitObj->oauthGetAuthorizeUrl());
 			if(url.length() < 10)
 				HTGErrorHandling::displayError("Error while requesting authorization URL.\nPlease try again!\n\nPlease note that system time must be set correctly.\n");
 			else {
@@ -136,14 +138,18 @@ HTGAuthorizeWindow::MessageReceived(BMessage *msg)
 			break;
 		}
 		case GO_AUTH: {
-			if(!twitObj->oauthAuthorize(query->Text())) {
+			twitObj->getOAuth().setOAuthPin(query->Text());
+			if (!twitObj->accountVerifyCredGet()) {
 				query->RemoveSelf();
 				goButton->RemoveSelf();
 				theView->AddChild(openButton);
 				HTGErrorHandling::displayError("Could not confirm your PIN.\nPlease try again from the top!");
 			}
 			else {
-				storeTokens(twitObj->getAccessKey(), twitObj->getAccessSecret());
+				std::string tokenKey, tokenSecret;
+				twitObj->getOAuth().getOAuthTokenKey(tokenKey);
+				twitObj->getOAuth().getOAuthTokenSecret(tokenSecret);
+				storeTokens(tokenKey, tokenSecret);
 				be_app->PostMessage(new BMessage(AUTHORIZATION_DONE));
 				this->Close();
 			}

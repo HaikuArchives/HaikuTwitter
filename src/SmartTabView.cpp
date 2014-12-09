@@ -158,8 +158,11 @@ SmartTabView::MessageReceived(BMessage *message)
 void
 SmartTabView::_OpenAsReplicant(HTGTimeLineView* theTimeline)
 {
-	string key = theTimeline->twitObj->getAccessKey();
-	string secret = theTimeline->twitObj->getAccessSecret();
+	// TODO: FIXME
+	string key;
+	theTimeline->twitObj->getOAuth().getOAuthTokenKey(key);
+	string secret;
+	theTimeline->twitObj->getOAuth().getOAuthTokenSecret(secret);
 	int refreshTime = 5;
 	const int32 TYPE = theTimeline->TYPE;
 	const char* requestInfo = theTimeline->Name();
