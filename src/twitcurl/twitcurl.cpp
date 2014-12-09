@@ -36,6 +36,11 @@ m_eProtocolType( twitCurlTypes::eTwitCurlProtocolHttps )
         getLastCurlError( dummyStr );
     }
     curl_easy_setopt(m_curlHandle, CURLOPT_SSL_VERIFYPEER, 0);
+    
+    // MODIFIED: due to a bug in the Haiku IPv6 stack, connections try
+    // to use IPv6 even if there is no open IPv6 interface and does not
+    // fall back to IPv4.
+    curl_easy_setopt(m_curlHandle, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
 }
 
 /*++

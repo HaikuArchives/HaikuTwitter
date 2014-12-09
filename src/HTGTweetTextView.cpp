@@ -482,6 +482,10 @@ _threadDownloadLinkIconURLs(void *data)
 		
 		curl_global_init(CURL_GLOBAL_ALL);
 		curl_handle = curl_easy_init();
+		
+		// TODO: remove when the bug in Haiku is fixed
+    	curl_easy_setopt(curl_handle, CURLOPT_IPRESOLVE, CURL_IPRESOLVE_V4);
+		
 		curl_easy_setopt(curl_handle, CURLOPT_URL, currentItem->Label());
 		curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1);
 		curl_easy_setopt(curl_handle, CURLOPT_HEADER, 1);
