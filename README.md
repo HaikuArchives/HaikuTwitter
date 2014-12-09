@@ -25,3 +25,6 @@ Compiling
 -------------------------
 HaikuTwitter must be compiled with GCC4 (`setarch x86`).  
 It depends on libcurl.
+
+License: MIT  
+Originally from: https://code.google.com/p/haikutwitter/
