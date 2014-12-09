@@ -526,9 +526,8 @@ updateTimeLineThread(void *data)
 	twitObj->getLastWebResponse(replyMsg);
 	
 	#ifdef DEBUG_ENABLED
-		std::cout << "---Reply from Twitter API---" << std::endl;
+		std::cout << "HTGTimelineView: web response:" << std::endl;
 	 	std::cout << replyMsg << std::endl;
-	 	std::cout << "---End of reply---" << std::endl;
 	 #endif
 
 	if(replyMsg.length() < 10) {
@@ -536,7 +535,9 @@ updateTimeLineThread(void *data)
 		if(super->errorCount < kMaximumRetries) {
 			super->waitingForUpdate = true;
 			#ifdef DEBUG_ENABLED
-			std::cout << "No connection, retry: " << super->errorCount << "/" << kMaximumRetries << std::endl;
+			std::cout << "No connection. Retry " << super->errorCount << "/" << kMaximumRetries << std::endl;
+			std::string error; twitObj->getLastCurlError(error);
+			std::cout << "Curl error: " << error << std::endl;
 			#endif
 			usleep(5000 * pow(super->errorCount,2));
 			return updateTimeLineThread(super);

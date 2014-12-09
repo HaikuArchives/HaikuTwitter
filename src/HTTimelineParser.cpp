@@ -59,6 +59,7 @@ HTTimelineParser::Parse(const std::string& data)
     status_t status = B_OK;
 	
 	#ifdef DEBUG_ENABLED
+	std::cout << "TimelineParser: parsing data:" << std::endl;
 	std::cout << data << std::endl;
 	#endif
 	
