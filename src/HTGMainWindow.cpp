@@ -295,10 +295,7 @@ HTGMainWindow::showAbout()
 {
 	std::string header("HaikuTwitter unstable");
 	std::string text("");
-	#ifdef SVN_REV
-	text.append("\n\trev. ");
-	text.append(SVN_REV);
-	#endif
+
 	text.append("\n\tWritten by Martin Hebnes Pedersen\n"
 				"\tCopyright 2010-2012\n"
 				"\tAll rights reserved.\n"
