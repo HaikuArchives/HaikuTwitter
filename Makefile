@@ -57,10 +57,14 @@ SRCS = src/AnimationHelper.cpp \
 	src/HyperTextActions.cpp \
 	src/SmartTabView.cpp \
 	src/entities.c \
-	src/oauth/oauth.c \
-	src/oauth/oauth_http.c \
-	src/oauth/xmalloc.c \
-	src/twitcurl/twitcurl.cpp
+	\
+	src/twitcurl/base64.cpp \
+	src/twitcurl/HMAC_SHA1.cpp \
+	src/twitcurl/oauthlib.cpp \
+	src/twitcurl/SHA1.cpp \
+	src/twitcurl/twitcurl.cpp \
+	src/twitcurl/urlencode.cpp
+
 
 #	Specify the resource definition files to use. Full or relative paths can be
 #	used.
