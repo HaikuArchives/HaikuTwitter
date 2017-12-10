@@ -3,6 +3,9 @@ HaikuTwitter
 
 A native Twitter client for Haiku.
 
+![HaikuTwitter screenshot](HaikuTwitter.png "HaikuTwitter")
+
+
 Features
 --------------------------------
 + Post tweets
@@ -23,7 +26,7 @@ Features
 
 Compiling
 -------------------------
-HaikuTwitter must be compiled with GCC4 (`setarch x86`).  
+HaikuTwitter must be compiled with a more modern compiler than GCC2 (`setarch x86`).  
 It depends on libcurl.
 
 License: MIT  
