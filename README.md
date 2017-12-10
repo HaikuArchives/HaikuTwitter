@@ -1,6 +1,9 @@
 HaikuTwitter
 ============
 
+![HaikuTwitter screenshot](HaikuTwitter.png "HaikuTwitter")
+
+
 A native Twitter client for Haiku.
 
 Features
